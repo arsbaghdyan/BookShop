@@ -6,7 +6,7 @@ namespace BookShop.Data.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddUniversityDbContext(this IServiceCollection services, DbOptions dbOptions)
+    public static IServiceCollection AddBookShopDbContext(this IServiceCollection services, DbOptions dbOptions)
     {
         services.AddDbContext<BookShopDbContext>(b =>
         {

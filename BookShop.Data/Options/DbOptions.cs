@@ -2,6 +2,6 @@
 
 public class DbOptions
 {
-    public const string Section = nameof(DbOptions);
+    public const string SectionName = nameof(DbOptions);
     public string? ConnectionString { get; set; }
 }

@@ -12,8 +12,6 @@ public class CardDetailsConfiguration : IEntityTypeConfiguration<CardDetails>
         builder.Property(c => c.CardNumber).IsRequired();
         builder.Property(c => c.CVV).IsRequired();
         builder.Property(c => c.ExpiredAt).IsRequired();
-        builder.Property(c => c.FirstName).IsRequired();
-        builder.Property(c => c.LastName).IsRequired();
-        builder.Ignore(c => c.FullName);
+        builder.Property(c => c.FullName).IsRequired();
     }
 }

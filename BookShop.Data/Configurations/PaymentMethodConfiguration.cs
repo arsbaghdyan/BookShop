@@ -12,6 +12,6 @@ public class PaymentMethodConfiguration : IEntityTypeConfiguration<PaymentMethod
         builder.HasOne(pm => pm.Client)
             .WithMany(c => c.PaymentMethods)
             .HasForeignKey(pm => pm.ClientId);
-        builder.OwnsOne(pm => pm.Details);
+        builder.HasOne(pm => pm.Details);
     }
 }
