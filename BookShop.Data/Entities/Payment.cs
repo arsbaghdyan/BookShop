@@ -5,11 +5,9 @@ namespace BookShop.Data.Entities;
 
 public class Payment : IIdentifiable
 {
-    public int Id { get; set; }
-    public int InvoiceId { get; set; }
-    public int PaymentMethodId { get; set; }
+    public long Id { get; set; }
+    public long PaymentMethodId { get; set; }
     public decimal Price { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
     public PaymentMethod? PaymentMethod { get; set; }
-    public Invoice? Invoice { get; set; }
 }

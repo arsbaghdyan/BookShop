@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BookShop.Data.Configurations;
 
-public class WishListConfiguration : IEntityTypeConfiguration<WishList>
+public class WishListConfiguration : IEntityTypeConfiguration<WishListItem>
 {
-    public void Configure(EntityTypeBuilder<WishList> builder)
+    public void Configure(EntityTypeBuilder<WishListItem> builder)
     {
         builder.HasKey(w => w.Id);
 

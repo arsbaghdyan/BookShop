@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BookShop.Data.Configurations;
 
-public class CartConfiguration : IEntityTypeConfiguration<Cart>
+public class CartConfiguration : IEntityTypeConfiguration<CartItem>
 {
-    public void Configure(EntityTypeBuilder<Cart> builder)
+    public void Configure(EntityTypeBuilder<CartItem> builder)
     {
         builder.HasKey(c => c.Id);
 
