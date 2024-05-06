@@ -9,10 +9,8 @@ public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
     public void Configure(EntityTypeBuilder<Payment> builder)
     {
         builder.HasKey(p => p.Id);
-
         builder.HasOne(p => p.PaymentMethod)
-               .WithMany(pm => pm.Payments)
-               .HasForeignKey(p => p.PaymentMethodId)
-               .OnDelete(DeleteBehavior.Cascade);
+            .WithMany(pm => pm.Payments)
+            .HasForeignKey(p => p.PaymentMethodId);
     }
 }

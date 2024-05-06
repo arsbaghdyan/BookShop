@@ -8,16 +8,12 @@ public class CartItemConfiguration : IEntityTypeConfiguration<CartItem>
 {
     public void Configure(EntityTypeBuilder<CartItem> builder)
     {
-        builder.HasKey(c => c.Id);
-
-        builder.HasIndex(c => new { c.ClientId, c.ProductId });
-
-        builder.HasOne(c => c.Client)
-               .WithMany(c => c.CartItems)
-               .HasForeignKey(c => c.ClientId);
-
-        builder.HasOne(c => c.Product)
-               .WithMany(p => p.Carts)
-               .HasForeignKey(c => c.ProductId);
+        builder.HasKey(ci => ci.Id);
+        builder.HasOne(ci => ci.Client)
+            .WithMany(c => c.CartItems)
+            .HasForeignKey(ci => ci.ClientId);
+        builder.HasOne(ci => ci.Product)
+            .WithMany()
+            .HasForeignKey(ci => ci.ProductId);
     }
 }
