@@ -1,6 +1,6 @@
 ﻿namespace BookShop.Data.Enums;
 
-public enum PayingMethod
+public enum PaymentMethod
 {
     Card = 1
 }

@@ -3,11 +3,11 @@ using BookShop.Data.Enums;
 
 namespace BookShop.Data.Entities;
 
-public class Payment : IIdentifiable
+public class PaymentEntity : IIdentifiable
 {
     public long Id { get; set; }
     public long PaymentMethodId { get; set; }
-    public decimal Price { get; set; }
+    public decimal Amount { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
-    public PaymentMethod? PaymentMethod { get; set; }
+    public PaymentMethodEntity? PaymentMethodEntity { get; set; }
 }

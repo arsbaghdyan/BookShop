@@ -17,6 +17,5 @@ public partial class BookShopDbContext : DbContext
         modelBuilder.ApplyConfiguration(new WishListItemConfiguration());
         modelBuilder.ApplyConfiguration(new WishListConfiguration());
         modelBuilder.ApplyConfiguration(new CartConfiguration());
-        modelBuilder.ApplyConfiguration(new CardDetailsConfiguration());
     }
 }

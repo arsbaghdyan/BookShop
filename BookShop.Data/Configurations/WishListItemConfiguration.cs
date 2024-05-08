@@ -4,19 +4,18 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BookShop.Data.Configurations;
 
-public class WishListItemConfiguration : IEntityTypeConfiguration<WishListItem>
+public class WishListItemConfiguration : IEntityTypeConfiguration<WishListItemEntity>
 {
-    public void Configure(EntityTypeBuilder<WishListItem> builder)
+    public void Configure(EntityTypeBuilder<WishListItemEntity> builder)
     {
         builder.HasKey(wli => wli.Id);
-        builder.HasOne(wli => wli.Client)
-            .WithMany(c => c.WishLists)
-            .HasForeignKey(wli => wli.ClientId);
-        builder.HasOne(wli => wli.Product)
-            .WithMany()
-            .HasForeignKey(wli => wli.ProductId);
-        builder.HasOne(wli => wli.WishList)
-            .WithMany(wl => wl.WishListItems)
-            .HasForeignKey(wli => wli.WishListId);
+
+        builder.HasOne(wli => wli.ProductEntity)
+               .WithMany()
+               .HasForeignKey(wli => wli.ProductId);
+
+        builder.HasOne(wli => wli.WishListEntity)
+               .WithMany(wl => wl.WishListItems)
+               .HasForeignKey(wli => wli.WishListId);
     }
 }

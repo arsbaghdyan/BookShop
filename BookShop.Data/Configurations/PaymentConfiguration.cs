@@ -4,13 +4,14 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace BookShop.Data.Configurations;
 
-public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
+public class PaymentConfiguration : IEntityTypeConfiguration<PaymentEntity>
 {
-    public void Configure(EntityTypeBuilder<Payment> builder)
+    public void Configure(EntityTypeBuilder<PaymentEntity> builder)
     {
         builder.HasKey(p => p.Id);
-        builder.HasOne(p => p.PaymentMethod)
-            .WithMany(pm => pm.Payments)
-            .HasForeignKey(p => p.PaymentMethodId);
+
+        builder.HasOne(p => p.PaymentMethodEntity)
+               .WithMany(pm => pm.Payments)
+               .HasForeignKey(p => p.PaymentMethodId);
     }
 }
