@@ -24,6 +24,7 @@ public class ClientController : ControllerBase
     {
         var client = _mapper.Map<ClientEntity>(clientModel);
         await _clientService.RegisterAsync(client);
+
         return Ok();
     }
 
@@ -32,6 +33,7 @@ public class ClientController : ControllerBase
     {
         var client = _mapper.Map<ClientEntity>(clientRemoveModel);
         await _clientService.RemoveAsync(client);
+
         return Ok();
     }
 
@@ -40,6 +42,7 @@ public class ClientController : ControllerBase
     {
         var client = _mapper.Map<ClientEntity>(clientModel);
         await _clientService.UpdateAsync(client);
+
         return Ok();
     }
 }

@@ -55,11 +55,11 @@ internal class ClientService : IClientService
 
             _bookShopDbContext.Clients.Remove(clientToRemove);
             await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"Client with Id {clientEntity.Id} removed successfully.");
+            _logger.LogInformation($"Client with Id {clientToRemove.Id} removed successfully.");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error occurred while retrieving client with Id {clientEntity.Id}.");
+            _logger.LogError(ex, $"Error occurred while retrieving client with Id {clientToRemove.Id}.");
             throw;
         }
     }

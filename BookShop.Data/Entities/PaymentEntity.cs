@@ -10,4 +10,5 @@ public class PaymentEntity : IIdentifiable
     public decimal Amount { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
     public PaymentMethodEntity? PaymentMethodEntity { get; set; }
+    public InvoiceEntity? InvoiceEntity { get; set; }
 }
