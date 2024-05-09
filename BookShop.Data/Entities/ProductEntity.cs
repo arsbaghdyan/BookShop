@@ -11,6 +11,6 @@ public class ProductEntity : IIdentifiable
     public string Details { get; set; }
     public int Count { get; set; }
     public List<OrderEntity> Orders { get; set; } = new();
-    public WishListEntity? WishListEntity { get; set; }
-    public CartEntity? CartEntity { get; set; }
+    public WishListItemEntity? WishListItemEntity { get; set; }
+    public CartItemEntity? CartItemEntity { get; set; }
 }

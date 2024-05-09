@@ -3,6 +3,7 @@ using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 
 namespace BookShop.Services.Impl;
 
@@ -21,6 +22,8 @@ internal class ProductService : IProductService
     {
         try
         {
+            productEntity.Details = SerializeDetails(productEntity.Details);
+
             _bookShopDbContext.Products.Add(productEntity);
             await _bookShopDbContext.SaveChangesAsync();
             _logger.LogInformation($"Product with Id {productEntity.Id} added successfully.");
@@ -107,6 +110,8 @@ internal class ProductService : IProductService
         {
             var productToUpdate = await GetByIdAsync(productEntity.Id);
 
+            productEntity.Details = SerializeDetails(productEntity.Details);
+
             productToUpdate.Name = productEntity.Name;
             productToUpdate.Price = productEntity.Price;
             productToUpdate.Manufacturer = productEntity.Manufacturer;
@@ -122,5 +127,10 @@ internal class ProductService : IProductService
             _logger.LogError(ex, $"Error occurred while updating product with Id {productEntity.Id}.");
             throw;
         }
+    }
+
+    private string SerializeDetails(string details)
+    {
+        return JsonConvert.SerializeObject(details);
     }
 }

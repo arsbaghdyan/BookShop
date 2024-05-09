@@ -24,5 +24,9 @@ public class ClientConfiguration : IEntityTypeConfiguration<ClientEntity>
         builder.HasMany(c => c.Invoices)
                .WithOne(i => i.ClientEntity)
                .HasForeignKey(i => i.ClientId);
+
+        builder.HasOne(w => w.WishListEntity)
+               .WithOne(c => c.ClientEntity)
+               .HasForeignKey<WishListEntity>(w => w.Id);
     }
 }

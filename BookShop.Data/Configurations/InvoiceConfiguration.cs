@@ -10,16 +10,12 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<InvoiceEntity>
     {
         builder.HasKey(i => i.Id);
 
-        builder.HasOne(i => i.ClientEntity)
-               .WithMany(c => c.Invoices)
-               .HasForeignKey(i => i.ClientId);
-
         builder.HasOne(i => i.PaymentEntity)
-               .WithMany()
-               .HasForeignKey(i => i.PaymentId);
+               .WithOne(p=>p.InvoiceEntity)
+               .HasForeignKey<InvoiceEntity>(i => i.PaymentId);
 
         builder.HasOne(i => i.OrderEntity)
-               .WithMany()
-               .HasForeignKey(i => i.OrderId);
+               .WithOne(o=>o.InvoiceEntity)
+               .HasForeignKey<InvoiceEntity>(i => i.OrderId);
     }
 }
