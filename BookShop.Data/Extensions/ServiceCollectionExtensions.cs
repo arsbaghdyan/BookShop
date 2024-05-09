@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
         {
             b.UseNpgsql(dbOptions.ConnectionString);
         });
+
         return services;
     }
 }

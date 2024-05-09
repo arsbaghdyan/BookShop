@@ -27,6 +27,7 @@ public class ProductController : ControllerBase
     {
         var productEntity = _mapper.Map<ProductEntity>(productAddModel);
         await _productService.AddAsync(productEntity);
+
         return Ok(productEntity);
     }
 
@@ -36,6 +37,7 @@ public class ProductController : ControllerBase
     {
         var productEntity = _mapper.Map<ProductEntity>(productUpdateModel);
         var updatedProduct = await _productService.UpdateAsync(productEntity);
+
         return Ok(updatedProduct);
     }
 
@@ -44,6 +46,7 @@ public class ProductController : ControllerBase
     public async Task<ActionResult> ClearProducts()
     {
         await _productService.ClearAsync();
+
         return Ok();
     }
 
@@ -52,6 +55,7 @@ public class ProductController : ControllerBase
     public async Task<ActionResult> RemoveProduct(long id)
     {
         await _productService.RemoveAsync(id);
+
         return Ok();
     }
 
@@ -59,6 +63,7 @@ public class ProductController : ControllerBase
     public async Task<ActionResult<List<ProductEntity>>> GetAllProducts()
     {
         var products = await _productService.GetAllAsync();
+
         return Ok(products);
     }
 
@@ -66,6 +71,7 @@ public class ProductController : ControllerBase
     public async Task<ActionResult<ProductEntity>> GetProduct(long id)
     {
         var product = await _productService.GetByIdAsync(id);
+
         return Ok(product);
     }
 

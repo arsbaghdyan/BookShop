@@ -11,11 +11,11 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<InvoiceEntity>
         builder.HasKey(i => i.Id);
 
         builder.HasOne(i => i.PaymentEntity)
-               .WithOne(p=>p.InvoiceEntity)
+               .WithOne(p => p.InvoiceEntity)
                .HasForeignKey<InvoiceEntity>(i => i.PaymentId);
 
         builder.HasOne(i => i.OrderEntity)
-               .WithOne(o=>o.InvoiceEntity)
+               .WithOne(o => o.InvoiceEntity)
                .HasForeignKey<InvoiceEntity>(i => i.OrderId);
     }
 }
