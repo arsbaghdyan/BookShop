@@ -1,7 +1,10 @@
-﻿namespace BookShop.Api.Models.ClientModels;
+﻿using BookShop.Data.Abstractions;
 
-public class ClientUpdateModel
+namespace BookShop.Api.Models.ClientModels;
+
+public class ClientUpdateModel : IIdentifiable
 {
+    public long Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Address { get; set; }

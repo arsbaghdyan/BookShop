@@ -1,5 +1,5 @@
-﻿using BookShop.Api.Options;
-using BookShop.Data.Options;
+﻿using BookShop.Data.Options;
+using BookShop.Services.Options;
 
 namespace BookShop.Api.Extensions;
 

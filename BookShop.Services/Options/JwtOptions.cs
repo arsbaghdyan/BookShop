@@ -1,4 +1,4 @@
-﻿namespace BookShop.Api.Options;
+﻿namespace BookShop.Services.Options;
 
 public class JwtOptions
 {

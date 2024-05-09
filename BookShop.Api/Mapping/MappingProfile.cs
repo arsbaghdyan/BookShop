@@ -10,11 +10,9 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         CreateMap<ClientRegisterModel, ClientEntity>();
-        CreateMap<ClientRemoveModel, ClientEntity>();
         CreateMap<ClientUpdateModel, ClientEntity>();
 
         CreateMap<ProductAddModel, ProductEntity>();
-        CreateMap<ProductRemoveModel, ProductEntity>();
         CreateMap<ProductUpdateModel, ProductEntity>();
     }
 }

@@ -6,5 +6,5 @@ public interface IClientService
 {
     Task RegisterAsync(ClientEntity clientEntity);
     Task UpdateAsync(ClientEntity clientEntity);
-    Task RemoveAsync(ClientEntity clientEntity);
+    Task RemoveAsync(long clientId);
 }

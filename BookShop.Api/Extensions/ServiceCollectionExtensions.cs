@@ -1,4 +1,4 @@
-﻿using BookShop.Api.Options;
+﻿using BookShop.Services.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
