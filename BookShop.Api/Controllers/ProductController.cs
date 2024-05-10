@@ -27,22 +27,23 @@ public class ProductController : ControllerBase
         var productEntity = _mapper.Map<ProductEntity>(productAddModel);
         await _productService.AddAsync(productEntity);
 
-        return Ok(productEntity);
+        return Ok();
     }
 
     [Authorize]
     [HttpPut]
-    public async Task<ActionResult<ProductEntity>> UpdateProduct(ProductUpdateModel productUpdateModel)
+    public async Task<ActionResult<ProductGetModel>> UpdateProduct(ProductUpdateModel productUpdateModel)
     {
         var productEntity = _mapper.Map<ProductEntity>(productUpdateModel);
         var updatedProduct = await _productService.UpdateAsync(productEntity);
+        var productOutput = _mapper.Map<ProductGetModel>(updatedProduct);
 
-        return Ok(updatedProduct);
+        return Ok(productOutput);
     }
 
     [Authorize]
     [HttpDelete]
-    public async Task<ActionResult> ClearProducts()
+    public async Task<ActionResult<ProductEntity>> ClearProducts()
     {
         await _productService.ClearAsync();
 
@@ -51,7 +52,7 @@ public class ProductController : ControllerBase
 
     [Authorize]
     [HttpDelete("{id}")]
-    public async Task<ActionResult> RemoveProduct(long id)
+    public async Task<ActionResult<ProductEntity>> RemoveProduct(long id)
     {
         await _productService.RemoveAsync(id);
 
@@ -59,23 +60,25 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ProductEntity>>> GetAllProducts()
+    public async Task<ActionResult<List<ProductGetModel>>> GetAllProducts()
     {
         var products = await _productService.GetAllAsync();
+        var productList = new List<ProductGetModel>();
+        foreach (var product in productList)
+        {
+            var productOutput = _mapper.Map<ProductGetModel>(productList);
+            productList.Add(productOutput);
+        }
 
-        return Ok(products);
+        return Ok(productList);
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ProductEntity>> GetProduct(long id)
+    public async Task<ActionResult<ProductGetModel>> GetProduct(long id)
     {
         var product = await _productService.GetByIdAsync(id);
+        var productOutput = _mapper.Map<ProductGetModel>(product);
 
-        return Ok(product);
+        return Ok(productOutput);
     }
-
-    //private string DeserializeDetails(string detailsJson)
-    //{
-    //    return JsonConvert.DeserializeObject<string>(detailsJson);
-    //}
 }

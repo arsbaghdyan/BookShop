@@ -1,13 +1,8 @@
 ﻿using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
-using BookShop.Services.Options;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -17,16 +12,14 @@ internal class ClientService : IClientService
 {
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<ClientService> _logger;
-    private readonly IHttpContextAccessor _contextAccessor;
-    private readonly JwtOptions _jwtOptions;
+    private readonly ICustomAuthenticationService _customAuthenticationService;
 
     public ClientService(BookShopDbContext bookShopDbContext, ILogger<ClientService> logger,
-        IHttpContextAccessor contextAccessor, JwtOptions jwtOptions)
+        ICustomAuthenticationService customAuthenticationService)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
-        _contextAccessor = contextAccessor;
-        _jwtOptions = jwtOptions;
+        _customAuthenticationService = customAuthenticationService;
     }
 
     public async Task RegisterAsync(ClientEntity clientEntity)
@@ -50,7 +43,7 @@ internal class ClientService : IClientService
     {
         try
         {
-            var checkingClientEmail = GetClientEmailFromToken();
+            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
 
             var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientEntity.Id);
 
@@ -95,7 +88,7 @@ internal class ClientService : IClientService
                 throw new Exception("There is no matching Client");
             }
 
-            var checkingClientEmail = GetClientEmailFromToken();
+            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
 
             if (clientToRemove.Email != checkingClientEmail)
             {
@@ -111,31 +104,6 @@ internal class ClientService : IClientService
             _logger.LogError($"Error: {ex.Message}");
             throw;
         }
-    }
-
-    private string GetClientEmailFromToken()
-    {
-        var token = _contextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-        if (token != null)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_jwtOptions.Key);
-
-            tokenHandler.ValidateToken(token, new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ClockSkew = TimeSpan.Zero
-            }, out SecurityToken validatedToken);
-
-            var jwtToken = (JwtSecurityToken)validatedToken;
-            var clientEmail = jwtToken.Claims.First(x => x.Type == ClaimTypes.Email).Value;
-
-            return clientEmail;
-        }
-        throw new InvalidOperationException("Token not found.");
     }
 
     private string HashPassword(string password)
