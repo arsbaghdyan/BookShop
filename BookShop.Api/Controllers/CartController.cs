@@ -34,7 +34,7 @@ namespace BookShop.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<List<CartItemGetModel>>> GetCartItems(long id)
         {
-            var cartItems =await  _cartService.GetAllCartItems(id);
+            var cartItems =await  _cartService.GetAllCartItemsAsync(id);
             var cartItemsOutput = new List<CartItemGetModel>();
             foreach (var cartItem in cartItems)
             {

@@ -22,6 +22,9 @@ public class MappingProfile : Profile
         CreateMap<CartCreateModel, CartEntity>();
 
         CreateMap<CartItemEntity, CartItemGetModel>();
+        CreateMap<CartItemAddModel, CartItemEntity>();
+        CreateMap<CartItemDeleteModel, CartItemEntity>();
+        CreateMap<CartItemUpdateModel, CartItemEntity>();
 
     }
 }

@@ -19,57 +19,11 @@ internal class CartService : ICartService
         _customAuthenticationService = customAuthenticationService;
     }
 
-    public async Task AddItemAsync(CartItemEntity cartItem)
-    {
-        try
-        {
-            if (cartItem == null)
-            {
-                throw new Exception("There is nothing to add");
-            }
-
-            var cart = await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.Id == cartItem.CartId);
-
-            if (cart == null)
-            {
-                throw new Exception("Cart not found");
-            }
-
-            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == cart.ClientId);
-
-            if (client == null)
-            {
-                throw new Exception("Client not Found");
-            }
-
-            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-            if (client.Email != checkingClientEmail)
-            {
-                throw new Exception("Unauthorized: You can only add your own cart.");
-            }
-
-            if (cart.CartItems == null)
-            {
-                cart.CartItems = new List<CartItemEntity>();
-            }
-            cart.CartItems.Add(cartItem);
-
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"Cart with Id {cartItem.Id} added succesfully.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
-    }
-
     public async Task CreateAsync(long clientId)
     {
         try
         {
-            var cart =await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.Id == clientId);
+            var cart = await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.Id == clientId);
 
             if (cart != null)
             {
@@ -102,7 +56,7 @@ internal class CartService : ICartService
         }
     }
 
-    public async Task<List<CartItemEntity>> GetAllCartItems(long cartId)
+    public async Task<List<CartItemEntity>> GetAllCartItemsAsync(long cartId)
     {
         try
         {
@@ -136,16 +90,11 @@ internal class CartService : ICartService
         }
     }
 
-    public async Task RemoveItemAsync(CartItemEntity cartItem)
+    public async Task ClearAsync(long cartId)
     {
         try
         {
-            if (cartItem == null)
-            {
-                throw new Exception("There is nothing to add");
-            }
-
-            var cart = await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.Id == cartItem.CartId);
+            var cart = await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.Id == cartId);
 
             if (cart == null)
             {
@@ -163,21 +112,22 @@ internal class CartService : ICartService
 
             if (client.Email != checkingClientEmail)
             {
-                throw new Exception("Unauthorized: You can only remove your own cart.");
+                throw new Exception("Unauthorized: You can only clear your own cart.");
             }
 
             if (cart.CartItems == null)
             {
                 throw new Exception("Cart is Empty");
             }
-            cart.CartItems.Remove(cartItem);
 
+            _bookShopDbContext.CartItems.RemoveRange(cart.CartItems);
+            cart.CartItems.Clear();
             await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"Cart with Id {cartItem.Id} remove succesfully.");
+            _logger.LogInformation("CartItem cleared successfully.");
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error {ex.Message}");
+            _logger.LogError(ex, "Error occurred while clearing cartItem.");
             throw;
         }
     }

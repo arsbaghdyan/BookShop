@@ -8,6 +8,6 @@ public interface IProductService
     Task RemoveAsync(long productId);
     Task<List<ProductEntity>> GetAllAsync();
     Task<ProductEntity> GetByIdAsync(long productId);
-    Task<ProductEntity> UpdateAsync(ProductEntity productEntity);
+    Task UpdateAsync(ProductEntity productEntity);
     Task ClearAsync();
 }
