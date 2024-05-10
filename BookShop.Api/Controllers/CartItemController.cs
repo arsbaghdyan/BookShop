@@ -9,7 +9,7 @@ namespace BookShop.Api.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class CartItemController : ControllerBase
 {
     private readonly ICartItemService _cartItemService;

@@ -6,43 +6,42 @@ using BookShop.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BookShop.Api.Controllers
+namespace BookShop.Api.Controllers;
+
+[Authorize]
+[ApiController]
+[Route("[controller]")]
+public class CartController : ControllerBase
 {
-    [Authorize]
-    [ApiController]
-    [Route("api/[controller]")]
-    public class CartController : ControllerBase
+    private readonly ICartService _cartService;
+    private readonly IMapper _mapper;
+
+    public CartController(ICartService cartService, IMapper mapper)
     {
-        private readonly ICartService _cartService;
-        private readonly IMapper _mapper;
+        _cartService = cartService;
+        _mapper = mapper;
+    }
 
-        public CartController(ICartService cartService, IMapper mapper)
+    [HttpPost]
+    public async Task<ActionResult<CartEntity>> Create(CartCreateModel cartCreateModel)
+    {
+        var cart = _mapper.Map<CartEntity>(cartCreateModel);
+        await _cartService.CreateAsync(cart.ClientId);
+
+        return Ok();
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<CartItemGetModel>>> GetCartItems(long id)
+    {
+        var cartItems = await _cartService.GetAllCartItemsAsync(id);
+        var cartItemsOutput = new List<CartItemGetModel>();
+        foreach (var cartItem in cartItems)
         {
-            _cartService = cartService;
-            _mapper = mapper;
+            var cartItemOutput = _mapper.Map<CartItemGetModel>(cartItem);
+            cartItemsOutput.Add(cartItemOutput);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<CartEntity>> Create(CartCreateModel cartCreateModel)
-        {
-            var cart = _mapper.Map<CartEntity>(cartCreateModel);
-            await _cartService.CreateAsync(cart.ClientId);
-
-            return Ok();
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<List<CartItemGetModel>>> GetCartItems(long id)
-        {
-            var cartItems = await _cartService.GetAllCartItemsAsync(id);
-            var cartItemsOutput = new List<CartItemGetModel>();
-            foreach (var cartItem in cartItems)
-            {
-                var cartItemOutput = _mapper.Map<CartItemGetModel>(cartItem);
-                cartItemsOutput.Add(cartItemOutput);
-            }
-
-            return Ok(cartItemsOutput);
-        }
+        return Ok(cartItemsOutput);
     }
 }

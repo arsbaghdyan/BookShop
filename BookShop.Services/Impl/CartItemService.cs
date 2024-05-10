@@ -56,7 +56,7 @@ internal class CartItemService : ICartItemService
             }
 
             cartItem.Price = cartItem.Price * cartItem.Count;
-            _bookShopDbContext.Add(cartItem);
+            _bookShopDbContext.CartItems.Add(cartItem);
             await _bookShopDbContext.SaveChangesAsync();
             _logger.LogInformation($"Cart with Id {cartItem.Id} added succesfully.");
         }
@@ -102,7 +102,7 @@ internal class CartItemService : ICartItemService
                 throw new Exception("Cart is Empty");
             }
 
-            _bookShopDbContext.Remove(cartItem);
+            _bookShopDbContext.CartItems.Remove(cartItem);
             await _bookShopDbContext.SaveChangesAsync();
             _logger.LogInformation($"Cart with Id {cartItem.Id} remove succesfully.");
         }
@@ -140,7 +140,7 @@ internal class CartItemService : ICartItemService
 
             if (client.Email != checkingClientEmail)
             {
-                throw new Exception("Unauthorized: You can not create cart for other client.");
+                throw new Exception("Unauthorized: You can not update other client cart.");
             }
 
             var cartItemToUpdate = _bookShopDbContext.CartItems.FirstOrDefault(c => c.Id == cartItemEntity.Id);

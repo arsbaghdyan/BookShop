@@ -30,7 +30,7 @@ internal class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error occurred while adding product.");
+            _logger.LogError(ex, $"Error {ex.Message}");
             throw;
         }
     }
@@ -46,7 +46,7 @@ internal class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while clearing products.");
+            _logger.LogError(ex, $"Error {ex.Message}");
             throw;
         }
     }
@@ -59,7 +59,7 @@ internal class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error occurred while retrieving all products.");
+            _logger.LogError(ex, $"Error {ex.Message}");
             throw;
         }
     }
@@ -79,7 +79,7 @@ internal class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error occurred while retrieving product with Id {productId}.");
+            _logger.LogError(ex, $"Error {ex.Message}");
             throw;
         }
     }
@@ -98,7 +98,7 @@ internal class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error occurred while retrieving product with Id {productId}.");
+            _logger.LogError(ex, $"Error {ex.Message}");
             throw;
         }
     }
@@ -122,7 +122,7 @@ internal class ProductService : IProductService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, $"Error occurred while updating product with Id {productEntity.Id}.");
+            _logger.LogError(ex, $"Error {ex.Message}");
             throw;
         }
     }
