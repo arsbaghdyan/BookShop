@@ -154,7 +154,7 @@ internal class CartItemService : ICartItemService
             cartItemToUpdate.Price = cartItemEntity.Price * cartItemEntity.Count;
 
             await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"CartItem with Id {cartItemEntity.Id} removed from Cart with Id {cart.Id} ")
+            _logger.LogInformation($"CartItem with Id {cartItemEntity.Id} removed from Cart with Id {cart.Id} ");
         }
         catch (Exception ex)
         {

@@ -1,11 +1,10 @@
 ﻿using BookShop.Data.Entities;
 
-namespace BookShop.Services.Abstractions
+namespace BookShop.Services.Abstractions;
+
+public interface ICartItemService
 {
-    public interface ICartItemService
-    {
-        Task AddAsync(CartItemEntity cartItem);
-        Task RemoveAsync(CartItemEntity cartItem);
-        Task UpdateAsync(CartItemEntity cartItemEntity);
-    }
+    Task AddAsync(CartItemEntity cartItem);
+    Task RemoveAsync(CartItemEntity cartItem);
+    Task UpdateAsync(CartItemEntity cartItemEntity);
 }

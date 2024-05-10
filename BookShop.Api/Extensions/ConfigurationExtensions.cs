@@ -17,6 +17,7 @@ public static class ConfigurationExtensions
         var key = configuration.GetSection($"{JwtOptions.SectionName}:{nameof(JwtOptions.Key)}").Value;
         var issuer = configuration.GetSection($"{JwtOptions.SectionName}:{nameof(JwtOptions.Issuer)}").Value;
         var audience = configuration.GetSection($"{JwtOptions.SectionName}:{nameof(JwtOptions.Audience)}").Value;
+
         return new JwtOptions { Key = key, Issuer = issuer, Audience = audience };
     }
 }
