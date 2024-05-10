@@ -27,11 +27,11 @@ internal class ProductService : IProductService
             _bookShopDbContext.Products.Add(productEntity);
             await _bookShopDbContext.SaveChangesAsync();
             _logger.LogInformation($"Product with Id {productEntity.Id} added successfully.");
-
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, $"Error occurred while adding product.");
+            throw;
         }
     }
 

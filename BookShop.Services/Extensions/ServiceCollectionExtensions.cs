@@ -10,6 +10,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient<IClientService, ClientService>();
         services.AddTransient<IProductService, ProductService>();
+        services.AddTransient<ICustomAuthenticationService, CustomAuthenticationService>();
 
         return services;
     }

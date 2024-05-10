@@ -2,6 +2,7 @@
 using BookShop.Api.Models.ClientModels;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
@@ -28,15 +29,16 @@ public class ClientController : ControllerBase
         return Ok();
     }
 
+    [Authorize]
     [HttpDelete]
-    public async Task<ActionResult<ClientEntity>> RemoveClient(ClientRemoveModel clientRemoveModel)
+    public async Task<ActionResult<ClientEntity>> RemoveClient(long clientId)
     {
-        var client = _mapper.Map<ClientEntity>(clientRemoveModel);
-        await _clientService.RemoveAsync(client);
+        await _clientService.RemoveAsync(clientId);
 
         return Ok();
     }
 
+    [Authorize]
     [HttpPut]
     public async Task<ActionResult<ClientEntity>> UpdateClient(ClientUpdateModel clientModel)
     {

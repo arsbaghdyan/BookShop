@@ -4,7 +4,6 @@ using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace BookShop.Api.Controllers;
 
