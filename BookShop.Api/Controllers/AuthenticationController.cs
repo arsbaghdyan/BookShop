@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookShop.Api.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("[controller]")]
 public class AuthenticationController : ControllerBase
 {
     private readonly ICustomAuthenticationService _authenticationService;

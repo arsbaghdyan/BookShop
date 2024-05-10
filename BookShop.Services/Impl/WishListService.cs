@@ -1,18 +1,19 @@
-﻿using BookShop.Data;
-using BookShop.Data.Entities;
+﻿using BookShop.Data.Entities;
+using BookShop.Data;
 using BookShop.Services.Abstractions;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace BookShop.Services.Impl;
 
-internal class CartService : ICartService
+internal class WishListService : IWishListService
 {
     private readonly BookShopDbContext _bookShopDbContext;
-    private readonly ILogger<CartService> _logger;
+    private readonly ILogger<WishListService> _logger;
     private readonly ICustomAuthenticationService _customAuthenticationService;
 
-    public CartService(BookShopDbContext bookShopDbContext, ILogger<CartService> logger, ICustomAuthenticationService customAuthenticationService)
+    public WishListService(BookShopDbContext bookShopDbContext,
+        ILogger<WishListService> logger, ICustomAuthenticationService customAuthenticationService)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
@@ -23,11 +24,11 @@ internal class CartService : ICartService
     {
         try
         {
-            var cart = await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.Id == clientId);
+            var wishlist = await _bookShopDbContext.WishLists.FirstOrDefaultAsync(c => c.Id == clientId);
 
-            if (cart != null)
+            if (wishlist != null)
             {
-                throw new Exception("Cart for client already exist");
+                throw new Exception("Wishlist for client already exist");
             }
 
             var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
@@ -41,13 +42,13 @@ internal class CartService : ICartService
 
             if (client.Email != checkingClientEmail)
             {
-                throw new Exception("Unauthorized: You can not create cart for other client.");
+                throw new Exception("Unauthorized: You can not create wishlist for other client.");
             }
 
-            var cartToAdd = new CartEntity { ClientId = clientId };
-            _bookShopDbContext.Carts.Add(cartToAdd);
+            var wishlistToAdd = new WishListEntity { ClientId = clientId };
+            _bookShopDbContext.WishLists.Add(wishlistToAdd);
             await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"Cart with Id {cartToAdd.Id} is add for client with Id {clientId}");
+            _logger.LogInformation($"Wishlist with Id {wishlistToAdd.Id} is add for client with Id {clientId}");
         }
         catch (Exception ex)
         {
@@ -56,18 +57,18 @@ internal class CartService : ICartService
         }
     }
 
-    public async Task<List<CartItemEntity>> GetAllCartItemsAsync(long cartId)
+    public async Task<List<WishListItemEntity>> GetAllWishListItemsAsync(long wishlistId)
     {
         try
         {
-            var cart = await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.Id == cartId);
+            var wishlist = await _bookShopDbContext.WishLists.FirstOrDefaultAsync(c => c.Id == wishlistId);
 
-            if (cart == null)
+            if (wishlist == null)
             {
-                throw new Exception("Cart not found");
+                throw new Exception("Wishlist not found");
             }
 
-            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == cart.ClientId);
+            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == wishlist.ClientId);
 
             if (client == null)
             {
@@ -78,11 +79,11 @@ internal class CartService : ICartService
 
             if (client.Email != checkingClientEmail)
             {
-                throw new Exception("Unauthorized: You can not create cart for other client.");
+                throw new Exception("Unauthorized: You can not create wishlist for other client.");
             }
 
-            var listToReturn = new List<CartItemEntity>();
-            var listItems = await _bookShopDbContext.CartItems.Where(c => c.CartId == cartId).ToListAsync();
+            var listToReturn = new List<WishListItemEntity>();
+            var listItems = await _bookShopDbContext.WishListItems.Where(c => c.WishListId == wishlistId).ToListAsync();
 
             listToReturn.AddRange(listItems);
 
@@ -95,18 +96,18 @@ internal class CartService : ICartService
         }
     }
 
-    public async Task ClearAsync(long cartId)
+    public async Task ClearAsync(long wishlistId)
     {
         try
         {
-            var cart = await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.Id == cartId);
+            var wishlist = await _bookShopDbContext.WishLists.FirstOrDefaultAsync(c => c.Id == cartId);
 
-            if (cart == null)
+            if (wishlist == null)
             {
-                throw new Exception("Cart not found");
+                throw new Exception("Wishlist not found");
             }
 
-            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == cart.ClientId);
+            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == wishlist.ClientId);
 
             if (client == null)
             {
@@ -120,14 +121,14 @@ internal class CartService : ICartService
                 throw new Exception("Unauthorized: You can only clear your own cart.");
             }
 
-            if (cart.CartItems == null)
+            if (wishlist.WishListItems == null)
             {
-                throw new Exception("Cart is Empty");
+                throw new Exception("Wishlist is Empty");
             }
 
-            _bookShopDbContext.CartItems.RemoveRange(cart.CartItems);
+            _bookShopDbContext.WishListItems.RemoveRange(wishlist.WishListItems);
             await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation("CartItem cleared successfully.");
+            _logger.LogInformation("WishlistItems cleared successfully.");
         }
         catch (Exception ex)
         {

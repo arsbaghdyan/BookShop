@@ -13,6 +13,8 @@ public static class ServiceCollectionExtensions
         services.AddTransient<ICustomAuthenticationService, CustomAuthenticationService>();
         services.AddTransient<ICartService, CartService>();
         services.AddTransient<ICartItemService, CartItemService>();
+        services.AddTransient<IWishListService, WishListService>();
+        services.AddTransient<IWishListItemService, WishListItemService>();
 
         return services;
     }
