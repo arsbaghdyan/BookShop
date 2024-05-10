@@ -11,6 +11,7 @@ public class MappingProfile : Profile
     {
         CreateMap<ClientRegisterModel, ClientEntity>();
         CreateMap<ClientUpdateModel, ClientEntity>();
+        CreateMap<ClientLoginModel, ClientEntity>();
 
         CreateMap<ProductAddModel, ProductEntity>();
         CreateMap<ProductUpdateModel, ProductEntity>();

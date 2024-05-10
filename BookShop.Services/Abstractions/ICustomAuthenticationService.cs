@@ -1,9 +1,9 @@
 ﻿using BookShop.Data.Entities;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace BookShop.Services.Abstractions;
 
 public interface ICustomAuthenticationService
 {
-    JwtSecurityToken GenerateToken(ClientEntity clientEntity);
+    string GenerateToken(ClientEntity clientEntity);
+    Task<ClientEntity> AuthenticateAsync(string email, string password);
 }

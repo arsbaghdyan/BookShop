@@ -22,6 +22,7 @@ builder.Services.AddTransient<GlobalExceptionHandler>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.SwaggerConfiguration();
 builder.Services.JwtConfiguration(jwtOption);
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
