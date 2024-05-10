@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using BookShop.Api.Models.CartItemModels;
+using BookShop.Api.Models.CartModel;
 using BookShop.Api.Models.ClientModels;
 using BookShop.Api.Models.ProductModels;
 using BookShop.Data.Entities;
@@ -15,5 +17,14 @@ public class MappingProfile : Profile
 
         CreateMap<ProductAddModel, ProductEntity>();
         CreateMap<ProductUpdateModel, ProductEntity>();
+        CreateMap<ProductEntity, ProductGetModel>();
+
+        CreateMap<CartCreateModel, CartEntity>();
+
+        CreateMap<CartItemEntity, CartItemGetModel>();
+        CreateMap<CartItemAddModel, CartItemEntity>();
+        CreateMap<CartItemDeleteModel, CartItemEntity>();
+        CreateMap<CartItemUpdateModel, CartItemEntity>();
+
     }
 }
