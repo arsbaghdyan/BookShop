@@ -16,6 +16,7 @@ public static class ServiceCollectionExtensions
         services.AddTransient<IWishListService, WishListService>();
         services.AddTransient<IWishListItemService, WishListItemService>();
         services.AddTransient<IPaymentMethodService, PaymentMethodService>();
+        services.AddTransient<IPaymentService, PaymentService>();
 
         return services;
     }
