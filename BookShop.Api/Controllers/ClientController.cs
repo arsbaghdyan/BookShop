@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class ClientController : ControllerBase
@@ -16,6 +17,7 @@ public class ClientController : ControllerBase
         _clientService = clientService;
     }
 
+    [AllowAnonymous]
     [HttpPost]
     public async Task<ActionResult<ClientRegisterVm>> RegisterClient(ClientRegisterVm clientModel)
     {
@@ -24,7 +26,6 @@ public class ClientController : ControllerBase
         return Ok();
     }
 
-    [Authorize]
     [HttpDelete]
     public async Task<ActionResult> RemoveClient(long clientId)
     {
@@ -33,7 +34,6 @@ public class ClientController : ControllerBase
         return Ok();
     }
 
-    [Authorize]
     [HttpPut]
     public async Task<ActionResult<ClientUpdateVm>> UpdateClient(ClientUpdateVm clientModel)
     {

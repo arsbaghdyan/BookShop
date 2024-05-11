@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class ProductController : ControllerBase
@@ -16,7 +17,6 @@ public class ProductController : ControllerBase
         _productService = productService;
     }
 
-    [Authorize]
     [HttpPost]
     public async Task<ActionResult<ProductAddVm>> AddProduct(ProductAddVm productAddModel)
     {
@@ -25,7 +25,6 @@ public class ProductController : ControllerBase
         return Ok();
     }
 
-    [Authorize]
     [HttpPut]
     public async Task<ActionResult<ProductUpdateVm>> UpdateProduct(ProductUpdateVm productUpdateModel)
     {
@@ -34,7 +33,6 @@ public class ProductController : ControllerBase
         return Ok();
     }
 
-    [Authorize]
     [HttpDelete]
     public async Task<ActionResult> ClearProducts()
     {
@@ -43,7 +41,6 @@ public class ProductController : ControllerBase
         return Ok();
     }
 
-    [Authorize]
     [HttpDelete("{id}")]
     public async Task<ActionResult> RemoveProduct(long productId)
     {
@@ -52,6 +49,7 @@ public class ProductController : ControllerBase
         return Ok();
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<List<ProductGetVm>>> GetAllProducts(long productId)
     {
@@ -60,6 +58,7 @@ public class ProductController : ControllerBase
         return Ok(products);
     }
 
+    [AllowAnonymous]
     [HttpGet("{id}")]
     public async Task<ActionResult<ProductGetVm>> GetProduct(long id)
     {
