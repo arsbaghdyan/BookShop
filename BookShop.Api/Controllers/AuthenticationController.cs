@@ -1,4 +1,5 @@
 ﻿using BookShop.Services.Abstractions;
+using BookShop.Services.Models;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,18 +18,12 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost]
     [Route("login")]
-    public async Task<ActionResult> Login(ClientLoginVm model)
+    public ActionResult<TokenModel> Login(ClientLoginVm model)
     {
-        var clientEntity = await _authenticationService.AuthenticateAsync(model.Email, model.Password);
-        if (clientEntity != null)
-        {
-            var token = _authenticationService.GenerateToken(clientEntity);
+        var token = _authenticationService.GenerateToken(model);
 
-            return Ok(new { token });
-        }
-        else
-        {
-            return Unauthorized(new { message = "Invalid email or password" });
-        }
+        var tokenModel = new TokenModel { Token = token };
+
+        return Ok(tokenModel);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using BookShop.Services.Abstractions;
 using BookShop.Services.Impl;
+using BookShop.Services.Models;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BookShop.Services.Extensions;
@@ -17,6 +18,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IWishListItemService, WishListItemService>();
         services.AddScoped<IPaymentMethodService, PaymentMethodService>();
         services.AddScoped<IPaymentService, PaymentService>();
+        services.AddScoped<TokenModel>();
 
         return services;
     }

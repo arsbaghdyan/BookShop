@@ -1,7 +1,6 @@
-﻿using BookShop.Data.Entities;
-using BookShop.Services.Abstractions;
+﻿using BookShop.Services.Abstractions;
+using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Options;
-using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -12,19 +11,17 @@ namespace BookShop.Services.Impl;
 public class CustomAuthenticationService : ICustomAuthenticationService
 {
     private readonly JwtOptions _jwtOptions;
-    private readonly IHttpContextAccessor _contextAccessor;
 
-    public CustomAuthenticationService(JwtOptions jwtOptions, IHttpContextAccessor contextAccessor)
+    public CustomAuthenticationService(JwtOptions jwtOptions)
     {
         _jwtOptions = jwtOptions;
-        _contextAccessor = contextAccessor;
     }
 
-    public string GenerateToken(ClientEntity clientEntity)
+    public string GenerateToken(ClientLoginVm client)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Email, clientEntity.Email),
+            new Claim(ClaimTypes.Email, client.Email),
         };
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
@@ -43,7 +40,6 @@ public class CustomAuthenticationService : ICustomAuthenticationService
 
     public string GetClientEmailFromToken(string token)
     {
-        token = _contextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
         if (token != null)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
