@@ -23,101 +23,77 @@ internal class PaymentMethodService : IPaymentMethodService
 
     public async Task AddAsync(PaymentMethodEntity paymentMethodEntity)
     {
-        try
+        if (paymentMethodEntity == null)
         {
-            if (paymentMethodEntity == null)
-            {
-                throw new Exception("There is nothing to add");
-            }
-
-            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == paymentMethodEntity.ClientId);
-
-            if (client == null)
-            {
-                throw new Exception("Client not Found");
-            }
-
-            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-            if (client.Email != checkingClientEmail)
-            {
-                throw new Exception("Unauthorized: You can only add your own paymentMethod.");
-            }
-
-            paymentMethodEntity.Details = SerializeDetails(paymentMethodEntity.Details);
-
-            _bookShopDbContext.PaymentMethods.Add(paymentMethodEntity);
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"PaymentMethod with Id {paymentMethodEntity.Id} added successfully.");
+            throw new Exception("There is nothing to add");
         }
-        catch (Exception ex)
+
+        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == paymentMethodEntity.ClientId);
+
+        if (client == null)
         {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
+            throw new Exception("Client not Found");
         }
+
+        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
+
+        if (client.Email != checkingClientEmail)
+        {
+            throw new Exception("Unauthorized: You can only add your own paymentMethod.");
+        }
+
+        paymentMethodEntity.Details = SerializeDetails(paymentMethodEntity.Details);
+
+        _bookShopDbContext.PaymentMethods.Add(paymentMethodEntity);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"PaymentMethod with Id {paymentMethodEntity.Id} added successfully.");
     }
 
     public async Task<List<PaymentMethodEntity>> GetAllAsync(long clientId)
     {
-        try
+        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
+
+        if (client == null)
         {
-            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
-
-            if (client == null)
-            {
-                throw new Exception("Client not Found");
-            }
-
-            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-            if (client.Email != checkingClientEmail)
-            {
-                throw new Exception("Unauthorized: You can only add your own paymentMethod.");
-            }
-
-            return await _bookShopDbContext.PaymentMethods.ToListAsync();
+            throw new Exception("Client not Found");
         }
-        catch (Exception ex)
+
+        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
+
+        if (client.Email != checkingClientEmail)
         {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
+            throw new Exception("Unauthorized: You can only add your own paymentMethod.");
         }
+
+        return await _bookShopDbContext.PaymentMethods.ToListAsync();
     }
 
     public async Task RemoveAsync(PaymentMethodEntity paymentMethodEntity)
     {
-        try
+        var paymentMethod = await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(p => p.Id == paymentMethodEntity.Id);
+
+        if (paymentMethod == null)
         {
-            var paymentMethod = await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(p => p.Id == paymentMethodEntity.Id);
-
-            if (paymentMethod == null)
-            {
-                throw new Exception("PaymentMethod not found");
-            }
-
-            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == paymentMethod.ClientId);
-
-            if (client == null)
-            {
-                throw new Exception("There is no matching Client");
-            }
-
-            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-            if (client.Email != checkingClientEmail)
-            {
-                throw new InvalidOperationException("Unauthorized: You can only remove your own paymentMethod.");
-            }
-
-            _bookShopDbContext.PaymentMethods.Remove(paymentMethod);
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"PaymentMethod with Id {paymentMethod.Id} removed successfully.");
+            throw new Exception("PaymentMethod not found");
         }
-        catch (Exception ex)
+
+        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == paymentMethod.ClientId);
+
+        if (client == null)
         {
-            _logger.LogError($"Error: {ex.Message}");
-            throw;
+            throw new Exception("There is no matching Client");
         }
+
+        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
+
+        if (client.Email != checkingClientEmail)
+        {
+            throw new InvalidOperationException("Unauthorized: You can only remove your own paymentMethod.");
+        }
+
+        _bookShopDbContext.PaymentMethods.Remove(paymentMethod);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"PaymentMethod with Id {paymentMethod.Id} removed successfully.");
     }
 
     public async Task UpdateAsync(PaymentMethodEntity paymentMethodEntity)
@@ -143,7 +119,7 @@ internal class PaymentMethodService : IPaymentMethodService
             throw new Exception("Unauthorized: You can not update other client paymentMethod.");
         }
 
-        var paymentMethodToUpdate =await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(c => c.Id == paymentMethodEntity.Id);
+        var paymentMethodToUpdate = await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(c => c.Id == paymentMethodEntity.Id);
 
         if (paymentMethodToUpdate == null)
         {

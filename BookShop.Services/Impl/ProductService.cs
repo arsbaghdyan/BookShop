@@ -20,118 +20,70 @@ internal class ProductService : IProductService
 
     public async Task AddAsync(ProductEntity productEntity)
     {
-        try
+        if (productEntity == null)
         {
-            if (productEntity==null)
-            {
-                throw new Exception("There is nothing to add");
-            }
-
-            productEntity.Details = SerializeDetails(productEntity.Details);
-
-            _bookShopDbContext.Products.Add(productEntity);
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"Product with Id {productEntity.Id} added successfully.");
+            throw new Exception("There is nothing to add");
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
+
+        productEntity.Details = SerializeDetails(productEntity.Details);
+
+        _bookShopDbContext.Products.Add(productEntity);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Product with Id {productEntity.Id} added successfully.");
     }
 
     public async Task ClearAsync()
     {
-        try
-        {
-            var products = await _bookShopDbContext.Products.ToListAsync();
-            _bookShopDbContext.Products.RemoveRange(products);
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation("All products cleared successfully.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
+        var products = await _bookShopDbContext.Products.ToListAsync();
+        _bookShopDbContext.Products.RemoveRange(products);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation("All products cleared successfully.");
     }
 
     public async Task<List<ProductEntity>> GetAllAsync()
     {
-        try
-        {
-            return await _bookShopDbContext.Products.ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
+        return await _bookShopDbContext.Products.ToListAsync();
     }
 
     public async Task<ProductEntity> GetByIdAsync(long productId)
     {
-        try
-        {
-            var product = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
+        var product = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
 
-            if (product == null)
-            {
-                throw new Exception($"Product not found");
-            }
-
-            return product;
-        }
-        catch (Exception ex)
+        if (product == null)
         {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
+            throw new Exception($"Product not found");
         }
+
+        return product;
     }
 
     public async Task RemoveAsync(long productId)
     {
-        try
-        {
-            var product = _bookShopDbContext.Products.FirstOrDefault(s => s.Id == productId);
+        var product = _bookShopDbContext.Products.FirstOrDefault(s => s.Id == productId);
 
-            if (product == null)
-            {
-                throw new Exception($"Product not found");
-            }
-
-            _bookShopDbContext.Products.Remove(product);
-            await _bookShopDbContext.SaveChangesAsync();
-        }
-        catch (Exception ex)
+        if (product == null)
         {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
+            throw new Exception($"Product not found");
         }
+
+        _bookShopDbContext.Products.Remove(product);
+        await _bookShopDbContext.SaveChangesAsync();
     }
 
     public async Task UpdateAsync(ProductEntity productEntity)
     {
-        try
-        {
-            var productToUpdate = await GetByIdAsync(productEntity.Id);
+        var productToUpdate = await GetByIdAsync(productEntity.Id);
 
-            productEntity.Details = SerializeDetails(productEntity.Details);
+        productEntity.Details = SerializeDetails(productEntity.Details);
 
-            productToUpdate.Name = productEntity.Name;
-            productToUpdate.Price = productEntity.Price;
-            productToUpdate.Manufacturer = productEntity.Manufacturer;
-            productToUpdate.Details = productEntity.Details;
-            productToUpdate.Count = productEntity.Count;
+        productToUpdate.Name = productEntity.Name;
+        productToUpdate.Price = productEntity.Price;
+        productToUpdate.Manufacturer = productEntity.Manufacturer;
+        productToUpdate.Details = productEntity.Details;
+        productToUpdate.Count = productEntity.Count;
 
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"Product with Id {productEntity.Id} updated successfully.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Product with Id {productEntity.Id} updated successfully.");
     }
 
     private string SerializeDetails(string details)

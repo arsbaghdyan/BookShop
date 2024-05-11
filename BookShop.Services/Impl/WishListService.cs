@@ -22,118 +22,94 @@ internal class WishListService : IWishListService
 
     public async Task CreateAsync(long clientId)
     {
-        try
+        var wishlist = await _bookShopDbContext.WishLists.FirstOrDefaultAsync(c => c.Id == clientId);
+
+        if (wishlist != null)
         {
-            var wishlist = await _bookShopDbContext.WishLists.FirstOrDefaultAsync(c => c.Id == clientId);
-
-            if (wishlist != null)
-            {
-                throw new Exception("Wishlist for client already exist");
-            }
-
-            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
-
-            if (client == null)
-            {
-                throw new Exception("Client not Found");
-            }
-
-            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-            if (client.Email != checkingClientEmail)
-            {
-                throw new Exception("Unauthorized: You can not create wishlist for other client.");
-            }
-
-            var wishlistToAdd = new WishListEntity { ClientId = clientId };
-            _bookShopDbContext.WishLists.Add(wishlistToAdd);
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"Wishlist with Id {wishlistToAdd.Id} is add for client with Id {clientId}");
+            throw new Exception("Wishlist for client already exist");
         }
-        catch (Exception ex)
+
+        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
+
+        if (client == null)
         {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
+            throw new Exception("Client not Found");
         }
+
+        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
+
+        if (client.Email != checkingClientEmail)
+        {
+            throw new Exception("Unauthorized: You can not create wishlist for other client.");
+        }
+
+        var wishlistToAdd = new WishListEntity { ClientId = clientId };
+        _bookShopDbContext.WishLists.Add(wishlistToAdd);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Wishlist with Id {wishlistToAdd.Id} is add for client with Id {clientId}");
     }
 
     public async Task<List<WishListItemEntity>> GetAllWishListItemsAsync(long wishlistId)
     {
-        try
+        var wishlist = await _bookShopDbContext.WishLists.FirstOrDefaultAsync(c => c.Id == wishlistId);
+
+        if (wishlist == null)
         {
-            var wishlist = await _bookShopDbContext.WishLists.FirstOrDefaultAsync(c => c.Id == wishlistId);
-
-            if (wishlist == null)
-            {
-                throw new Exception("Wishlist not found");
-            }
-
-            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == wishlist.ClientId);
-
-            if (client == null)
-            {
-                throw new Exception("Client not Found");
-            }
-
-            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-            if (client.Email != checkingClientEmail)
-            {
-                throw new Exception("Unauthorized: You can not create wishlist for other client.");
-            }
-
-            var listToReturn = new List<WishListItemEntity>();
-            var listItems = await _bookShopDbContext.WishListItems.Where(c => c.WishListId == wishlistId).ToListAsync();
-
-            listToReturn.AddRange(listItems);
-
-            return listToReturn;
+            throw new Exception("Wishlist not found");
         }
-        catch (Exception ex)
+
+        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == wishlist.ClientId);
+
+        if (client == null)
         {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
+            throw new Exception("Client not Found");
         }
+
+        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
+
+        if (client.Email != checkingClientEmail)
+        {
+            throw new Exception("Unauthorized: You can not create wishlist for other client.");
+        }
+
+        var listToReturn = new List<WishListItemEntity>();
+        var listItems = await _bookShopDbContext.WishListItems.Where(c => c.WishListId == wishlistId).ToListAsync();
+
+        listToReturn.AddRange(listItems);
+
+        return listToReturn;
     }
 
     public async Task ClearAsync(long wishlistId)
     {
-        try
+        var wishlist = await _bookShopDbContext.WishLists.FirstOrDefaultAsync(c => c.Id == wishlistId);
+
+        if (wishlist == null)
         {
-            var wishlist = await _bookShopDbContext.WishLists.FirstOrDefaultAsync(c => c.Id == wishlistId);
-
-            if (wishlist == null)
-            {
-                throw new Exception("Wishlist not found");
-            }
-
-            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == wishlist.ClientId);
-
-            if (client == null)
-            {
-                throw new Exception("Client not Found");
-            }
-
-            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-            if (client.Email != checkingClientEmail)
-            {
-                throw new Exception("Unauthorized: You can only clear your own cart.");
-            }
-
-            if (wishlist.WishListItems == null)
-            {
-                throw new Exception("Wishlist is Empty");
-            }
-
-            _bookShopDbContext.WishListItems.RemoveRange(wishlist.WishListItems);
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation("WishlistItems cleared successfully.");
+            throw new Exception("Wishlist not found");
         }
-        catch (Exception ex)
+
+        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == wishlist.ClientId);
+
+        if (client == null)
         {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
+            throw new Exception("Client not Found");
         }
+
+        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
+
+        if (client.Email != checkingClientEmail)
+        {
+            throw new Exception("Unauthorized: You can only clear your own cart.");
+        }
+
+        if (wishlist.WishListItems == null)
+        {
+            throw new Exception("Wishlist is Empty");
+        }
+
+        _bookShopDbContext.WishListItems.RemoveRange(wishlist.WishListItems);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation("WishlistItems cleared successfully.");
     }
 }

@@ -24,86 +24,62 @@ internal class ClientService : IClientService
 
     public async Task RegisterAsync(ClientEntity clientEntity)
     {
-        try
-        {
-            clientEntity.Password = HashPassword(clientEntity.Password);
+        clientEntity.Password = HashPassword(clientEntity.Password);
 
-            _bookShopDbContext.Clients.Add(clientEntity);
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"Client with Id {clientEntity.Id} added successfully.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
+        _bookShopDbContext.Clients.Add(clientEntity);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Client with Id {clientEntity.Id} added successfully.");
     }
 
     public async Task UpdateAsync(ClientEntity clientEntity)
     {
-        try
+        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
+
+        var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientEntity.Id);
+
+        if (clientToUpdate is null)
         {
-            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-            var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientEntity.Id);
-
-            if (clientToUpdate is null)
-            {
-                throw new InvalidOperationException("Client not found");
-            }
-
-            if (clientToUpdate.Email != checkingClientEmail)
-            {
-                throw new InvalidOperationException("Unauthorized: You can only update your own client information.");
-            }
-
-            clientToUpdate.FirstName = clientEntity.FirstName;
-            clientToUpdate.LastName = clientEntity.LastName;
-            clientToUpdate.Email = clientEntity.Email;
-            clientToUpdate.Address = clientEntity.Address;
-
-            if (!string.IsNullOrEmpty(clientEntity.Password))
-            {
-                clientToUpdate.Password = HashPassword(clientEntity.Password);
-            }
-
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"Client with Id {clientEntity.Id} modified successfully.");
+            throw new InvalidOperationException("Client not found");
         }
-        catch (Exception ex)
+
+        if (clientToUpdate.Email != checkingClientEmail)
         {
-            _logger.LogError($"Error: {ex.Message}");
-            throw;
+            throw new InvalidOperationException("Unauthorized: You can only update your own client information.");
         }
+
+        clientToUpdate.FirstName = clientEntity.FirstName;
+        clientToUpdate.LastName = clientEntity.LastName;
+        clientToUpdate.Email = clientEntity.Email;
+        clientToUpdate.Address = clientEntity.Address;
+
+        if (!string.IsNullOrEmpty(clientEntity.Password))
+        {
+            clientToUpdate.Password = HashPassword(clientEntity.Password);
+        }
+
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Client with Id {clientEntity.Id} modified successfully.");
     }
 
     public async Task RemoveAsync(ClientEntity clientEntity)
     {
-        try
+        var clientToRemove = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientEntity.Id);
+
+        if (clientToRemove is null)
         {
-            var clientToRemove = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientEntity.Id);
-
-            if (clientToRemove is null)
-            {
-                throw new Exception("There is no matching Client");
-            }
-
-            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-            if (clientToRemove.Email != checkingClientEmail)
-            {
-                throw new InvalidOperationException("Unauthorized: You can only remove your own client.");
-            }
-
-            _bookShopDbContext.Clients.Remove(clientToRemove);
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"Client with Id {clientToRemove.Id} removed successfully.");
+            throw new Exception("There is no matching Client");
         }
-        catch (Exception ex)
+
+        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
+
+        if (clientToRemove.Email != checkingClientEmail)
         {
-            _logger.LogError($"Error: {ex.Message}");
-            throw;
+            throw new InvalidOperationException("Unauthorized: You can only remove your own client.");
         }
+
+        _bookShopDbContext.Clients.Remove(clientToRemove);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Client with Id {clientToRemove.Id} removed successfully.");
     }
 
     private string HashPassword(string password)
@@ -124,21 +100,13 @@ internal class ClientService : IClientService
 
     public async Task<ClientEntity> GetByIdAsync(long clientId)
     {
-        try
-        {
-            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == clientId);
+        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == clientId);
 
-            if (client == null)
-            {
-                throw new Exception("Client not found");
-            }
-
-            return client;
-        }
-        catch (Exception ex)
+        if (client == null)
         {
-            _logger.LogError(ex, $"Error: {ex.Message}");
-            throw;
+            throw new Exception("Client not found");
         }
+
+        return client;
     }
 }
