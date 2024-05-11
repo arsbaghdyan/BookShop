@@ -68,7 +68,7 @@ internal class ClientService : IClientService
             }
 
             await _bookShopDbContext.SaveChangesAsync();
-            _logger.Log(LogLevel.Information, $"Client with Id {clientEntity.Id} modified successfully.");
+            _logger.LogInformation($"Client with Id {clientEntity.Id} modified successfully.");
         }
         catch (Exception ex)
         {
@@ -77,11 +77,11 @@ internal class ClientService : IClientService
         }
     }
 
-    public async Task RemoveAsync(long clientId)
+    public async Task RemoveAsync(ClientEntity clientEntity)
     {
         try
         {
-            var clientToRemove = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
+            var clientToRemove = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientEntity.Id);
 
             if (clientToRemove is null)
             {
@@ -97,7 +97,7 @@ internal class ClientService : IClientService
 
             _bookShopDbContext.Clients.Remove(clientToRemove);
             await _bookShopDbContext.SaveChangesAsync();
-            _logger.Log(LogLevel.Information, $"Client with Id {clientToRemove.Id} removed successfully.");
+            _logger.LogInformation($"Client with Id {clientToRemove.Id} removed successfully.");
         }
         catch (Exception ex)
         {

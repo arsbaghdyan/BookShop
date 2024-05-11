@@ -22,6 +22,11 @@ internal class ProductService : IProductService
     {
         try
         {
+            if (productEntity==null)
+            {
+                throw new Exception("There is nothing to add");
+            }
+
             productEntity.Details = SerializeDetails(productEntity.Details);
 
             _bookShopDbContext.Products.Add(productEntity);
@@ -51,11 +56,11 @@ internal class ProductService : IProductService
         }
     }
 
-    public Task<List<ProductEntity>> GetAllAsync()
+    public async Task<List<ProductEntity>> GetAllAsync()
     {
         try
         {
-            return _bookShopDbContext.Products.ToListAsync();
+            return await _bookShopDbContext.Products.ToListAsync();
         }
         catch (Exception ex)
         {
@@ -89,10 +94,12 @@ internal class ProductService : IProductService
         try
         {
             var product = _bookShopDbContext.Products.FirstOrDefault(s => s.Id == productId);
+
             if (product == null)
             {
                 throw new Exception($"Product not found");
             }
+
             _bookShopDbContext.Products.Remove(product);
             await _bookShopDbContext.SaveChangesAsync();
         }
