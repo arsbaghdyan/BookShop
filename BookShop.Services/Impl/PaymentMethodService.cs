@@ -13,15 +13,12 @@ internal class PaymentMethodService : IPaymentMethodService
 {
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<PaymentMethodService> _logger;
-    private readonly ICustomAuthenticationService _customAuthenticationService;
     private readonly IMapper _mapper;
 
-    public PaymentMethodService(BookShopDbContext bookShopDbContext,
-        ILogger<PaymentMethodService> logger, ICustomAuthenticationService customAuthenticationService, IMapper mapper)
+    public PaymentMethodService(BookShopDbContext bookShopDbContext, ILogger<PaymentMethodService> logger, IMapper mapper)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
-        _customAuthenticationService = customAuthenticationService;
         _mapper = mapper;
     }
 
@@ -30,20 +27,6 @@ internal class PaymentMethodService : IPaymentMethodService
         if (paymentMethod == null)
         {
             throw new Exception("There is nothing to add");
-        }
-
-        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == paymentMethod.ClientId);
-
-        if (client == null)
-        {
-            throw new Exception("Client not Found");
-        }
-
-        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-        if (client.Email != checkingClientEmail)
-        {
-            throw new Exception("Unauthorized: You can only add your own paymentMethod.");
         }
 
         paymentMethod.Details = SerializeDetails(paymentMethod.Details);
@@ -76,20 +59,6 @@ internal class PaymentMethodService : IPaymentMethodService
         if (paymentMethod == null)
         {
             throw new Exception("PaymentMethod not found");
-        }
-
-        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == paymentMethod.ClientId);
-
-        if (client == null)
-        {
-            throw new Exception("There is no matching Client");
-        }
-
-        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-        if (client.Email != checkingClientEmail)
-        {
-            throw new InvalidOperationException("Unauthorized: You can only remove your own paymentMethod.");
         }
 
         _bookShopDbContext.PaymentMethods.Remove(paymentMethod);

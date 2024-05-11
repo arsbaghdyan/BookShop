@@ -12,15 +12,12 @@ internal class CartService : ICartService
 {
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<CartService> _logger;
-    private readonly ICustomAuthenticationService _customAuthenticationService;
     private readonly IMapper _mapper;
 
-    public CartService(BookShopDbContext bookShopDbContext, ILogger<CartService> logger,
-        ICustomAuthenticationService customAuthenticationService, IMapper mapper)
+    public CartService(BookShopDbContext bookShopDbContext, ILogger<CartService> logger, IMapper mapper)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
-        _customAuthenticationService = customAuthenticationService;
         _mapper = mapper;
     }
 

@@ -15,17 +15,15 @@ internal class ClientService : IClientService
 {
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<ClientService> _logger;
-    private readonly ICustomAuthenticationService _customAuthenticationService;
     private readonly IMapper _mapper;
     private readonly ICartService _cartService;
     private readonly IWishListService _wishListService;
 
     public ClientService(BookShopDbContext bookShopDbContext, ILogger<ClientService> logger,
-        ICustomAuthenticationService customAuthenticationService, IMapper mapper, ICartService cartService, IWishListService wishListService)
+                         IMapper mapper, ICartService cartService, IWishListService wishListService)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
-        _customAuthenticationService = customAuthenticationService;
         _mapper = mapper;
         _cartService = cartService;
         _wishListService = wishListService;
@@ -48,18 +46,12 @@ internal class ClientService : IClientService
 
     public async Task UpdateAsync(ClientUpdateVm client)
     {
-        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
 
         var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == client.Id);
 
         if (clientToUpdate is null)
         {
             throw new InvalidOperationException("Client not found");
-        }
-
-        if (clientToUpdate.Email != checkingClientEmail)
-        {
-            throw new InvalidOperationException("Unauthorized: You can only update your own client information.");
         }
 
         clientToUpdate.FirstName = client.FirstName;
@@ -83,13 +75,6 @@ internal class ClientService : IClientService
         if (clientToRemove is null)
         {
             throw new Exception("There is no matching Client");
-        }
-
-        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-        if (clientToRemove.Email != checkingClientEmail)
-        {
-            throw new InvalidOperationException("Unauthorized: You can only remove your own client.");
         }
 
         _bookShopDbContext.Clients.Remove(clientToRemove);

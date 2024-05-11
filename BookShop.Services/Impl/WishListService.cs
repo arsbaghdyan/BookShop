@@ -12,15 +12,12 @@ internal class WishListService : IWishListService
 {
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<WishListService> _logger;
-    private readonly ICustomAuthenticationService _customAuthenticationService;
     private readonly IMapper _mapper;
 
-    public WishListService(BookShopDbContext bookShopDbContext,
-        ILogger<WishListService> logger, ICustomAuthenticationService customAuthenticationService, IMapper mapper)
+    public WishListService(BookShopDbContext bookShopDbContext, ILogger<WishListService> logger, IMapper mapper)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
-        _customAuthenticationService = customAuthenticationService;
         _mapper = mapper;
     }
 
