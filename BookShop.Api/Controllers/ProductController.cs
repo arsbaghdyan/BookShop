@@ -41,7 +41,7 @@ public class ProductController : ControllerBase
         return Ok();
     }
 
-    [HttpDelete("{id}")]
+    [HttpDelete("{productId}")]
     public async Task<ActionResult> RemoveProduct(long productId)
     {
         await _productService.RemoveAsync(productId);
@@ -59,10 +59,10 @@ public class ProductController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ProductGetVm>> GetProduct(long id)
+    [HttpGet("{productId}")]
+    public async Task<ActionResult<ProductGetVm>> GetProduct(long productId)
     {
-        var product = await _productService.GetByIdAsync(id);
+        var product = await _productService.GetByIdAsync(productId);
 
         return Ok(product);
     }

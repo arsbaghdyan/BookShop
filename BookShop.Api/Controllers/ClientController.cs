@@ -18,7 +18,7 @@ public class ClientController : ControllerBase
     }
 
     [AllowAnonymous]
-    [HttpPost]
+    [HttpPost("Registration")]
     public async Task<ActionResult<ClientRegisterVm>> RegisterClient(ClientRegisterVm clientModel)
     {
         await _clientService.RegisterAsync(clientModel);
@@ -41,4 +41,5 @@ public class ClientController : ControllerBase
 
         return Ok();
     }
+
 }
