@@ -17,14 +17,18 @@ internal class ClientService : IClientService
     private readonly ILogger<ClientService> _logger;
     private readonly ICustomAuthenticationService _customAuthenticationService;
     private readonly IMapper _mapper;
+    private readonly ICartService _cartService;
+    private readonly IWishListService _wishListService;
 
     public ClientService(BookShopDbContext bookShopDbContext, ILogger<ClientService> logger,
-        ICustomAuthenticationService customAuthenticationService, IMapper mapper)
+        ICustomAuthenticationService customAuthenticationService, IMapper mapper, ICartService cartService, IWishListService wishListService)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
         _customAuthenticationService = customAuthenticationService;
         _mapper = mapper;
+        _cartService = cartService;
+        _wishListService = wishListService;
     }
 
     public async Task RegisterAsync(ClientRegisterVm client)
@@ -35,6 +39,10 @@ internal class ClientService : IClientService
 
         _bookShopDbContext.Clients.Add(clientToAdd);
         await _bookShopDbContext.SaveChangesAsync();
+
+        await _wishListService.CreateAsync(clientToAdd.Id);
+        await _cartService.CreateAsync(clientToAdd.Id);
+
         _logger.LogInformation($"Client with Id {clientToAdd.Id} added successfully.");
     }
 

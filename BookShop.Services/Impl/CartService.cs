@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BookShop.Data;
+using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.EntityFrameworkCore;
@@ -27,14 +28,15 @@ internal class CartService : ICartService
     {
         var cart = await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.ClientId == clientId);
 
-        if (cart == null)
+        if (cart != null)
         {
-            throw new Exception("Cart not found");
+            _logger.LogInformation($"Cart with Id {cart.Id} is add for client with Id {clientId}");
         }
 
-        _bookShopDbContext.Carts.Add(cart);
+        var newCart = new CartEntity { ClientId = clientId };
+        _bookShopDbContext.Carts.Add(newCart);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Cart with Id {cart.Id} is add for client with Id {clientId}");
+        _logger.LogInformation($"Cart with Id {newCart.Id} is add for client with Id {clientId}");
     }
 
     public async Task<List<CartItemGetVm>> GetAllCartItemsAsync(long cartId)

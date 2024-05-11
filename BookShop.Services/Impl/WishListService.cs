@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using BookShop.Services.Models.CartItemModels;
 using AutoMapper;
+using BookShop.Data.Entities;
 
 namespace BookShop.Services.Impl;
 
@@ -27,14 +28,15 @@ internal class WishListService : IWishListService
     {
         var wishlist = await _bookShopDbContext.WishLists.FirstOrDefaultAsync(c => c.ClientId == clientId);
 
-        if (wishlist == null)
+        if (wishlist != null)
         {
-            throw new Exception("Wishlist not found");
+            _logger.LogInformation($"Wishlist with Id {wishlist.Id} is add for client with Id {clientId}");
         }
 
-        _bookShopDbContext.WishLists.Add(wishlist);
+        var newWishlist = new WishListEntity { ClientId = clientId };
+        _bookShopDbContext.WishLists.Add(newWishlist);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Wishlist with Id {wishlist.Id} is add for client with Id {clientId}");
+        _logger.LogInformation($"Wishlist with Id {newWishlist.Id} is add for client with Id {clientId}");
     }
 
     public async Task<List<WishListItemGetVm>> GetAllWishListItemsAsync(long wishlistId)
