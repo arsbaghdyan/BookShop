@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using BookShop.Data.Entities;
-using BookShop.Services.Abstractions;
+﻿using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,19 +11,16 @@ namespace BookShop.Api.Controllers;
 public class PaymentMethodController : ControllerBase
 {
     private readonly IPaymentMethodService _paymentMethodService;
-    private readonly IMapper _mapper;
 
-    public PaymentMethodController(IPaymentMethodService paymentMethodService, IMapper mapper)
+    public PaymentMethodController(IPaymentMethodService paymentMethodService)
     {
         _paymentMethodService = paymentMethodService;
-        _mapper = mapper;
     }
 
     [HttpPost]
-    public async Task<ActionResult<PaymentMethodEntity>> AddPaymentMethod(PaymentMethodAddVm paymentMethodAddModel)
+    public async Task<ActionResult<PaymentMethodAddVm>> AddPaymentMethod(PaymentMethodAddVm paymentMethodAddModel)
     {
-        var paymentMethod = _mapper.Map<PaymentMethodEntity>(paymentMethodAddModel);
-        await _paymentMethodService.AddAsync(paymentMethod);
+        await _paymentMethodService.AddAsync(paymentMethodAddModel);
 
         return Ok();
     }
@@ -34,21 +29,14 @@ public class PaymentMethodController : ControllerBase
     public async Task<ActionResult<List<PaymentMethodGetVm>>> GetAllPaymentMethods(long clientId)
     {
         var paymentMethods = await _paymentMethodService.GetAllAsync(clientId);
-        var paymentMethodList = new List<PaymentMethodGetVm>();
-        foreach (var paymentMethod in paymentMethods)
-        {
-            var paymentMethodOutput = _mapper.Map<PaymentMethodGetVm>(paymentMethod);
-            paymentMethodList.Add(paymentMethodOutput);
-        }
 
-        return Ok(paymentMethodList);
+        return Ok(paymentMethods);
     }
 
     [HttpDelete]
-    public async Task<ActionResult<PaymentMethodEntity>> RemovePaymentMethod(PaymentMethodDeleteModel paymentMethodDeleteModel)
+    public async Task<ActionResult> RemovePaymentMethod(long clientId)
     {
-        var paymentMethod = _mapper.Map<PaymentMethodEntity>(paymentMethodDeleteModel);
-        await _paymentMethodService.RemoveAsync(paymentMethod);
+        await _paymentMethodService.RemoveAsync(clientId);
 
         return Ok();
     }

@@ -1,6 +1,8 @@
-﻿using BookShop.Data;
+﻿using AutoMapper;
+using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Models.CartItemModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -11,25 +13,29 @@ internal class ProductService : IProductService
 {
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<ProductService> _logger;
+    private readonly IMapper _mapper;
 
-    public ProductService(BookShopDbContext bookShopDbContext, ILogger<ProductService> logger)
+    public ProductService(BookShopDbContext bookShopDbContext, ILogger<ProductService> logger, IMapper mapper)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
+        _mapper = mapper;
     }
 
-    public async Task AddAsync(ProductEntity productEntity)
+    public async Task AddAsync(ProductAddVm product)
     {
-        if (productEntity == null)
+        if (product == null)
         {
             throw new Exception("There is nothing to add");
         }
 
-        productEntity.Details = SerializeDetails(productEntity.Details);
+        product.Details = SerializeDetails(product.Details);
 
-        _bookShopDbContext.Products.Add(productEntity);
+        var productToAdd = _mapper.Map<ProductEntity>(product);
+
+        _bookShopDbContext.Products.Add(productToAdd);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Product with Id {productEntity.Id} added successfully.");
+        _logger.LogInformation($"Product with Id {productToAdd.Id} added successfully.");
     }
 
     public async Task ClearAsync()
@@ -40,12 +46,16 @@ internal class ProductService : IProductService
         _logger.LogInformation("All products cleared successfully.");
     }
 
-    public async Task<List<ProductEntity>> GetAllAsync()
+    public async Task<List<ProductGetVm>> GetAllAsync(long productId)
     {
-        return await _bookShopDbContext.Products.ToListAsync();
+        var products = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
+
+        var productsToGet = _mapper.Map<List<ProductGetVm>>(products);
+
+        return productsToGet;
     }
 
-    public async Task<ProductEntity> GetByIdAsync(long productId)
+    public async Task<ProductGetVm> GetByIdAsync(long productId)
     {
         var product = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
 
@@ -54,7 +64,9 @@ internal class ProductService : IProductService
             throw new Exception($"Product not found");
         }
 
-        return product;
+        var productsToGet = _mapper.Map<ProductGetVm>(product);
+
+        return productsToGet;
     }
 
     public async Task RemoveAsync(long productId)
@@ -70,20 +82,20 @@ internal class ProductService : IProductService
         await _bookShopDbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(ProductEntity productEntity)
+    public async Task UpdateAsync(ProductUpdateVm product)
     {
-        var productToUpdate = await GetByIdAsync(productEntity.Id);
+        var productToUpdate = await GetByIdAsync(product.Id);
 
-        productEntity.Details = SerializeDetails(productEntity.Details);
+        product.Details = SerializeDetails(product.Details);
 
-        productToUpdate.Name = productEntity.Name;
-        productToUpdate.Price = productEntity.Price;
-        productToUpdate.Manufacturer = productEntity.Manufacturer;
-        productToUpdate.Details = productEntity.Details;
-        productToUpdate.Count = productEntity.Count;
+        productToUpdate.Name = product.Name;
+        productToUpdate.Price = product.Price;
+        productToUpdate.Manufacturer = product.Manufacturer;
+        productToUpdate.Details = product.Details;
+        productToUpdate.Count = product.Count;
 
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Product with Id {productEntity.Id} updated successfully.");
+        _logger.LogInformation($"Product with Id {product.Id} updated successfully.");
     }
 
     private string SerializeDetails(string details)

@@ -1,6 +1,8 @@
-﻿using BookShop.Data;
+﻿using AutoMapper;
+using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Models.CartItemModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -12,23 +14,25 @@ internal class PaymentMethodService : IPaymentMethodService
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<PaymentMethodService> _logger;
     private readonly ICustomAuthenticationService _customAuthenticationService;
+    private readonly IMapper _mapper;
 
     public PaymentMethodService(BookShopDbContext bookShopDbContext,
-        ILogger<PaymentMethodService> logger, ICustomAuthenticationService customAuthenticationService = null)
+        ILogger<PaymentMethodService> logger, ICustomAuthenticationService customAuthenticationService, IMapper mapper)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
         _customAuthenticationService = customAuthenticationService;
+        _mapper = mapper;
     }
 
-    public async Task AddAsync(PaymentMethodEntity paymentMethodEntity)
+    public async Task AddAsync(PaymentMethodAddVm paymentMethod)
     {
-        if (paymentMethodEntity == null)
+        if (paymentMethod == null)
         {
             throw new Exception("There is nothing to add");
         }
 
-        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == paymentMethodEntity.ClientId);
+        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == paymentMethod.ClientId);
 
         if (client == null)
         {
@@ -42,14 +46,16 @@ internal class PaymentMethodService : IPaymentMethodService
             throw new Exception("Unauthorized: You can only add your own paymentMethod.");
         }
 
-        paymentMethodEntity.Details = SerializeDetails(paymentMethodEntity.Details);
+        paymentMethod.Details = SerializeDetails(paymentMethod.Details);
 
-        _bookShopDbContext.PaymentMethods.Add(paymentMethodEntity);
+        var paymentMethodToAdd = _mapper.Map<PaymentMethodEntity>(paymentMethod);
+
+        _bookShopDbContext.PaymentMethods.Add(paymentMethodToAdd);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"PaymentMethod with Id {paymentMethodEntity.Id} added successfully.");
+        _logger.LogInformation($"PaymentMethod with Id {paymentMethodToAdd.Id} added successfully.");
     }
 
-    public async Task<List<PaymentMethodEntity>> GetAllAsync(long clientId)
+    public async Task<List<PaymentMethodGetVm>> GetAllAsync(long clientId)
     {
         var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
 
@@ -58,19 +64,14 @@ internal class PaymentMethodService : IPaymentMethodService
             throw new Exception("Client not Found");
         }
 
-        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
+        var paymentMethods = await _bookShopDbContext.PaymentMethods.Where(pm => pm.ClientId == clientId).ToListAsync();
 
-        if (client.Email != checkingClientEmail)
-        {
-            throw new Exception("Unauthorized: You can only add your own paymentMethod.");
-        }
-
-        return await _bookShopDbContext.PaymentMethods.ToListAsync();
+        return _mapper.Map<List<PaymentMethodGetVm>>(paymentMethods);
     }
 
-    public async Task RemoveAsync(PaymentMethodEntity paymentMethodEntity)
+    public async Task RemoveAsync(long paymentMethodId)
     {
-        var paymentMethod = await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(p => p.Id == paymentMethodEntity.Id);
+        var paymentMethod = await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(p => p.Id == paymentMethodId);
 
         if (paymentMethod == null)
         {
@@ -94,40 +95,6 @@ internal class PaymentMethodService : IPaymentMethodService
         _bookShopDbContext.PaymentMethods.Remove(paymentMethod);
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"PaymentMethod with Id {paymentMethod.Id} removed successfully.");
-    }
-
-    public async Task UpdateAsync(PaymentMethodEntity paymentMethodEntity)
-    {
-        var paymentMethod = await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(c => c.Id == paymentMethodEntity.Id);
-
-        if (paymentMethod == null)
-        {
-            throw new Exception("PaymentMethod not found");
-        }
-
-        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == paymentMethod.Id);
-
-        if (client == null)
-        {
-            throw new Exception("PaymentMethod not Found");
-        }
-
-        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-        if (client.Email != checkingClientEmail)
-        {
-            throw new Exception("Unauthorized: You can not update other client paymentMethod.");
-        }
-
-        var paymentMethodToUpdate = await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(c => c.Id == paymentMethodEntity.Id);
-
-        if (paymentMethodToUpdate == null)
-        {
-            throw new Exception("PaymentMethod not found");
-        }
-
-        await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"CartItem with Id {paymentMethodEntity.Id} removed from Cart with Id {paymentMethod.Id} ");
     }
 
     private string SerializeDetails(string details)

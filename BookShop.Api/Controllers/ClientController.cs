@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using BookShop.Data.Entities;
-using BookShop.Services.Abstractions;
+﻿using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,39 +10,34 @@ namespace BookShop.Api.Controllers;
 public class ClientController : ControllerBase
 {
     private readonly IClientService _clientService;
-    private readonly IMapper _mapper;
 
-    public ClientController(IClientService clientService, IMapper mapper)
+    public ClientController(IClientService clientService)
     {
         _clientService = clientService;
-        _mapper = mapper;
     }
 
     [HttpPost]
-    public async Task<ActionResult<ClientEntity>> RegisterClient(ClientRegisterVm clientModel)
+    public async Task<ActionResult<ClientRegisterVm>> RegisterClient(ClientRegisterVm clientModel)
     {
-        var client = _mapper.Map<ClientEntity>(clientModel);
-        await _clientService.RegisterAsync(client);
+        await _clientService.RegisterAsync(clientModel);
 
         return Ok();
     }
 
     [Authorize]
     [HttpDelete]
-    public async Task<ActionResult<ClientEntity>> RemoveClient(ClientDeleteModel clientDeleteModel)
+    public async Task<ActionResult> RemoveClient(long clientId)
     {
-        var client = _mapper.Map<ClientEntity>(clientDeleteModel);
-        await _clientService.RemoveAsync(client);
+        await _clientService.RemoveAsync(clientId);
 
         return Ok();
     }
 
     [Authorize]
     [HttpPut]
-    public async Task<ActionResult<ClientEntity>> UpdateClient(ClientUpdateVm clientModel)
+    public async Task<ActionResult<ClientUpdateVm>> UpdateClient(ClientUpdateVm clientModel)
     {
-        var client = _mapper.Map<ClientEntity>(clientModel);
-        await _clientService.UpdateAsync(client);
+        await _clientService.UpdateAsync(clientModel);
 
         return Ok();
     }

@@ -6,7 +6,7 @@ public interface IProductService
 {
     Task AddAsync(ProductAddVm productEntity);
     Task RemoveAsync(long productId);
-    Task<List<ProductGetVm>> GetAllAsync();
+    Task<List<ProductGetVm>> GetAllAsync(long productId);
     Task<ProductGetVm> GetByIdAsync(long productId);
     Task UpdateAsync(ProductUpdateVm productEntity);
     Task ClearAsync();

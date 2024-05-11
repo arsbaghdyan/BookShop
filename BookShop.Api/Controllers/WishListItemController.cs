@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using BookShop.Data.Entities;
+﻿using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Authorization;
@@ -13,28 +12,24 @@ namespace BookShop.Api.Controllers;
 public class WishListItemController : ControllerBase
 {
     private readonly IWishListItemService _wishlistItemService;
-    private readonly IMapper _mapper;
 
-    public WishListItemController(IWishListItemService wishlistItemService, IMapper mapper)
+    public WishListItemController(IWishListItemService wishlistItemService)
     {
         _wishlistItemService = wishlistItemService;
-        _mapper = mapper;
     }
 
     [HttpPost]
-    public async Task<ActionResult<WishListItemEntity>> AddItem(WishListItemAddVm wishListItemAddModel)
+    public async Task<ActionResult<WishListItemAddVm>> AddItem(WishListItemAddVm wishListItemAddModel)
     {
-        var wishlistItemToAdd = _mapper.Map<WishListItemEntity>(wishListItemAddModel);
-        await _wishlistItemService.AddAsync(wishlistItemToAdd);
+        await _wishlistItemService.AddAsync(wishListItemAddModel);
 
         return Ok();
     }
 
     [HttpDelete]
-    public async Task<ActionResult<WishListItemEntity>> RemoveItem(WishListItemDeleteModel wishListItemDeleteModel)
+    public async Task<ActionResult> RemoveItem(long wishlistItemId)
     {
-        var wishlistItemToRemove = _mapper.Map<WishListItemEntity>(wishListItemDeleteModel);
-        await _wishlistItemService.RemoveAsync(wishlistItemToRemove);
+        await _wishlistItemService.RemoveAsync(wishlistItemId);
 
         return Ok();
     }

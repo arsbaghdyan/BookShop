@@ -3,6 +3,8 @@ using BookShop.Data;
 using BookShop.Services.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using BookShop.Services.Models.CartItemModels;
+using AutoMapper;
 
 namespace BookShop.Services.Impl;
 
@@ -10,84 +12,36 @@ internal class CartItemService : ICartItemService
 {
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<CartItemService> _logger;
-    private readonly ICustomAuthenticationService _customAuthenticationService;
+    private readonly IMapper _mapper;
 
-    public CartItemService(BookShopDbContext bookShopDbContext, ILogger<CartItemService> logger,
-        ICustomAuthenticationService customAuthenticationService)
+    public CartItemService(BookShopDbContext bookShopDbContext, ILogger<CartItemService> logger, IMapper mapper)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
-        _customAuthenticationService = customAuthenticationService;
+        _mapper = mapper;
     }
 
-    public async Task AddAsync(CartItemEntity cartItem)
+    public async Task AddAsync(CartItemAddVm cartItem)
     {
         if (cartItem == null)
         {
             throw new Exception("There is nothing to add");
-        }
-
-        var cart = await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.Id == cartItem.CartId);
-
-        if (cart == null)
-        {
-            throw new Exception("Cart not found");
-        }
-
-        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == cart.ClientId);
-
-        if (client == null)
-        {
-            throw new Exception("Client not Found");
-        }
-
-        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-        if (client.Email != checkingClientEmail)
-        {
-            throw new Exception("Unauthorized: You can only add your own cart.");
-        }
-
-        if (cart.CartItems == null)
-        {
-            cart.CartItems = new List<CartItemEntity>();
         }
 
         cartItem.Price = cartItem.Price * cartItem.Count;
-        _bookShopDbContext.CartItems.Add(cartItem);
+
+        var cartItemToAdd = _mapper.Map<CartItemEntity>(cartItem);
+
+        _bookShopDbContext.CartItems.Add(cartItemToAdd);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Cart with Id {cartItem.Id} added succesfully.");
+        _logger.LogInformation($"Cart with Id {cartItemToAdd.Id} added succesfully.");
     }
 
-    public async Task RemoveAsync(CartItemEntity cartItem)
+    public async Task RemoveAsync(long cartItemId)
     {
+        var cartItem = await _bookShopDbContext.CartItems.FirstOrDefaultAsync(c => c.Id == cartItemId);
+
         if (cartItem == null)
-        {
-            throw new Exception("There is nothing to add");
-        }
-
-        var cart = await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.Id == cartItem.CartId);
-
-        if (cart == null)
-        {
-            throw new Exception("Cart not found");
-        }
-
-        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == cart.ClientId);
-
-        if (client == null)
-        {
-            throw new Exception("Client not Found");
-        }
-
-        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-        if (client.Email != checkingClientEmail)
-        {
-            throw new Exception("Unauthorized: You can only remove your own cart.");
-        }
-
-        if (cart.CartItems == null)
         {
             throw new Exception("Cart is Empty");
         }
@@ -97,46 +51,26 @@ internal class CartItemService : ICartItemService
         _logger.LogInformation($"Cart with Id {cartItem.Id} remove succesfully.");
     }
 
-    public async Task UpdateAsync(CartItemEntity cartItemEntity)
+    public async Task UpdateAsync(CartItemUpdateVm cartItem)
     {
-        if (cartItemEntity == null)
+        if (cartItem == null)
         {
             throw new Exception("CartItem not exist");
         }
 
-        var cart = await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.Id == cartItemEntity.CartId);
-
-        if (cart == null)
-        {
-            throw new Exception("Cart not found");
-        }
-
-        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == cart.Id);
-
-        if (client == null)
-        {
-            throw new Exception("Client not Found");
-        }
-
-        var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-        if (client.Email != checkingClientEmail)
-        {
-            throw new Exception("Unauthorized: You can not update other client cart.");
-        }
-
-        var cartItemToUpdate = _bookShopDbContext.CartItems.FirstOrDefault(c => c.Id == cartItemEntity.Id);
+        var cartItemToUpdate = _bookShopDbContext.CartItems.FirstOrDefault(c => c.Id == cartItem.Id);
 
         if (cartItemToUpdate == null)
         {
             throw new Exception("CartItem not found");
         }
 
-        cartItemToUpdate.Count = cartItemEntity.Count;
-        cartItemToUpdate.Price = cartItemEntity.Price * cartItemEntity.Count;
+        cartItemToUpdate.Count = cartItem.Count;
+        cartItemToUpdate.Price = cartItem.Price * cartItem.Count;
+
+        cartItemToUpdate = _mapper.Map<CartItemEntity>(cartItem);
 
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"CartItem with Id {cartItemEntity.Id} removed from Cart with Id {cart.Id} ");
-
+        _logger.LogInformation($"CartItem with Id {cartItem.Id} removed from Cart with Id {cartItemToUpdate.Id} ");
     }
 }

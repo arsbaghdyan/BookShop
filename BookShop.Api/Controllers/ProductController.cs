@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using BookShop.Data.Entities;
+﻿using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Authorization;
@@ -12,37 +11,33 @@ namespace BookShop.Api.Controllers;
 public class ProductController : ControllerBase
 {
     private readonly IProductService _productService;
-    private readonly IMapper _mapper;
 
-    public ProductController(IProductService productService, IMapper mapper)
+    public ProductController(IProductService productService)
     {
         _productService = productService;
-        _mapper = mapper;
     }
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<ProductEntity>> AddProduct(ProductAddVm productAddModel)
+    public async Task<ActionResult<ProductAddVm>> AddProduct(ProductAddVm productAddModel)
     {
-        var productEntity = _mapper.Map<ProductEntity>(productAddModel);
-        await _productService.AddAsync(productEntity);
+        await _productService.AddAsync(productAddModel);
 
         return Ok();
     }
 
     [Authorize]
     [HttpPut]
-    public async Task<ActionResult<ProductEntity>> UpdateProduct(ProductUpdateVm productUpdateModel)
+    public async Task<ActionResult<ProductUpdateVm>> UpdateProduct(ProductUpdateVm productUpdateModel)
     {
-        var productEntity = _mapper.Map<ProductEntity>(productUpdateModel);
-        await _productService.UpdateAsync(productEntity);
+        await _productService.UpdateAsync(productUpdateModel);
 
         return Ok();
     }
 
     [Authorize]
     [HttpDelete]
-    public async Task<ActionResult<ProductEntity>> ClearProducts()
+    public async Task<ActionResult> ClearProducts()
     {
         await _productService.ClearAsync();
 
@@ -51,33 +46,26 @@ public class ProductController : ControllerBase
 
     [Authorize]
     [HttpDelete("{id}")]
-    public async Task<ActionResult<ProductEntity>> RemoveProduct(long id)
+    public async Task<ActionResult> RemoveProduct(long productId)
     {
-        await _productService.RemoveAsync(id);
+        await _productService.RemoveAsync(productId);
 
         return Ok();
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ProductGetVm>>> GetAllProducts()
+    public async Task<ActionResult<List<ProductGetVm>>> GetAllProducts(long productId)
     {
-        var products = await _productService.GetAllAsync();
-        var productList = new List<ProductGetVm>();
-        foreach (var product in productList)
-        {
-            var productOutput = _mapper.Map<ProductGetVm>(productList);
-            productList.Add(productOutput);
-        }
+        var products = await _productService.GetAllAsync(productId);
 
-        return Ok(productList);
+        return Ok(products);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<ProductGetVm>> GetProduct(long id)
     {
         var product = await _productService.GetByIdAsync(id);
-        var productOutput = _mapper.Map<ProductGetVm>(product);
 
-        return Ok(productOutput);
+        return Ok(product);
     }
 }

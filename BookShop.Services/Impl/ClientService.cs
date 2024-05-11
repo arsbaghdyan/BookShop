@@ -1,6 +1,9 @@
-﻿using BookShop.Data;
+﻿using AutoMapper;
+using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Models.CartItemModels;
+using BookShop.Services.Models.ClientModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Security.Cryptography;
@@ -13,29 +16,33 @@ internal class ClientService : IClientService
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<ClientService> _logger;
     private readonly ICustomAuthenticationService _customAuthenticationService;
+    private readonly IMapper _mapper;
 
     public ClientService(BookShopDbContext bookShopDbContext, ILogger<ClientService> logger,
-        ICustomAuthenticationService customAuthenticationService)
+        ICustomAuthenticationService customAuthenticationService, IMapper mapper)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
         _customAuthenticationService = customAuthenticationService;
+        _mapper = mapper;
     }
 
-    public async Task RegisterAsync(ClientEntity clientEntity)
+    public async Task RegisterAsync(ClientRegisterVm client)
     {
-        clientEntity.Password = HashPassword(clientEntity.Password);
+        client.Password = HashPassword(client.Password);
 
-        _bookShopDbContext.Clients.Add(clientEntity);
+        var clientToAdd = _mapper.Map<ClientEntity>(client);
+
+        _bookShopDbContext.Clients.Add(clientToAdd);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Client with Id {clientEntity.Id} added successfully.");
+        _logger.LogInformation($"Client with Id {clientToAdd.Id} added successfully.");
     }
 
-    public async Task UpdateAsync(ClientEntity clientEntity)
+    public async Task UpdateAsync(ClientUpdateVm client)
     {
         var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
 
-        var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientEntity.Id);
+        var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == client.Id);
 
         if (clientToUpdate is null)
         {
@@ -47,23 +54,23 @@ internal class ClientService : IClientService
             throw new InvalidOperationException("Unauthorized: You can only update your own client information.");
         }
 
-        clientToUpdate.FirstName = clientEntity.FirstName;
-        clientToUpdate.LastName = clientEntity.LastName;
-        clientToUpdate.Email = clientEntity.Email;
-        clientToUpdate.Address = clientEntity.Address;
+        clientToUpdate.FirstName = client.FirstName;
+        clientToUpdate.LastName = client.LastName;
+        clientToUpdate.Email = client.Email;
+        clientToUpdate.Address = client.Address;
 
-        if (!string.IsNullOrEmpty(clientEntity.Password))
+        if (!string.IsNullOrEmpty(client.Password))
         {
-            clientToUpdate.Password = HashPassword(clientEntity.Password);
+            clientToUpdate.Password = HashPassword(client.Password);
         }
 
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Client with Id {clientEntity.Id} modified successfully.");
+        _logger.LogInformation($"Client with Id {client.Id} modified successfully.");
     }
 
-    public async Task RemoveAsync(ClientEntity clientEntity)
+    public async Task RemoveAsync(long clientId)
     {
-        var clientToRemove = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientEntity.Id);
+        var clientToRemove = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
 
         if (clientToRemove is null)
         {
@@ -98,7 +105,7 @@ internal class ClientService : IClientService
         }
     }
 
-    public async Task<ClientEntity> GetByIdAsync(long clientId)
+    public async Task<ClientGetVm> GetByIdAsync(long clientId)
     {
         var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == clientId);
 
@@ -107,6 +114,8 @@ internal class ClientService : IClientService
             throw new Exception("Client not found");
         }
 
-        return client;
+        var getClient = _mapper.Map<ClientGetVm>(client);
+
+        return getClient;
     }
 }
