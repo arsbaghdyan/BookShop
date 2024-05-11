@@ -22,7 +22,7 @@ public class PaymentMethodController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<PaymentMethodEntity>> AddPaymentMethod(PaymentMethodAddModel paymentMethodAddModel)
+    public async Task<ActionResult<PaymentMethodEntity>> AddPaymentMethod(PaymentMethodAddVm paymentMethodAddModel)
     {
         var paymentMethod = _mapper.Map<PaymentMethodEntity>(paymentMethodAddModel);
         await _paymentMethodService.AddAsync(paymentMethod);
@@ -31,13 +31,13 @@ public class PaymentMethodController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<PaymentMethodGetModel>>> GetAllPaymentMethods(long clientId)
+    public async Task<ActionResult<List<PaymentMethodGetVm>>> GetAllPaymentMethods(long clientId)
     {
         var paymentMethods = await _paymentMethodService.GetAllAsync(clientId);
-        var paymentMethodList = new List<PaymentMethodGetModel>();
+        var paymentMethodList = new List<PaymentMethodGetVm>();
         foreach (var paymentMethod in paymentMethods)
         {
-            var paymentMethodOutput = _mapper.Map<PaymentMethodGetModel>(paymentMethod);
+            var paymentMethodOutput = _mapper.Map<PaymentMethodGetVm>(paymentMethod);
             paymentMethodList.Add(paymentMethodOutput);
         }
 

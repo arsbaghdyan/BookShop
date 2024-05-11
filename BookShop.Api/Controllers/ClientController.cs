@@ -21,7 +21,7 @@ public class ClientController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ClientEntity>> RegisterClient(ClientRegisterModel clientModel)
+    public async Task<ActionResult<ClientEntity>> RegisterClient(ClientRegisterVm clientModel)
     {
         var client = _mapper.Map<ClientEntity>(clientModel);
         await _clientService.RegisterAsync(client);
@@ -41,7 +41,7 @@ public class ClientController : ControllerBase
 
     [Authorize]
     [HttpPut]
-    public async Task<ActionResult<ClientEntity>> UpdateClient(ClientUpdateModel clientModel)
+    public async Task<ActionResult<ClientEntity>> UpdateClient(ClientUpdateVm clientModel)
     {
         var client = _mapper.Map<ClientEntity>(clientModel);
         await _clientService.UpdateAsync(client);

@@ -31,13 +31,13 @@ public class CartController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<CartItemGetModel>>> GetCartItems(long id)
+    public async Task<ActionResult<List<CartItemGetVm>>> GetCartItems(long id)
     {
         var cartItems = await _cartService.GetAllCartItemsAsync(id);
-        var cartItemsOutput = new List<CartItemGetModel>();
+        var cartItemsOutput = new List<CartItemGetVm>();
         foreach (var cartItem in cartItems)
         {
-            var cartItemOutput = _mapper.Map<CartItemGetModel>(cartItem);
+            var cartItemOutput = _mapper.Map<CartItemGetVm>(cartItem);
             cartItemsOutput.Add(cartItemOutput);
         }
 

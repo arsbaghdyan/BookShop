@@ -22,7 +22,7 @@ public class WishListItemController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<WishListItemEntity>> AddItem(WishListItemAddModel wishListItemAddModel)
+    public async Task<ActionResult<WishListItemEntity>> AddItem(WishListItemAddVm wishListItemAddModel)
     {
         var wishlistItemToAdd = _mapper.Map<WishListItemEntity>(wishListItemAddModel);
         await _wishlistItemService.AddAsync(wishlistItemToAdd);

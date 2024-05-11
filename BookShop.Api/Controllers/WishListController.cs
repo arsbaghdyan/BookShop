@@ -31,13 +31,13 @@ public class WishListController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<WishListItemGetModel>>> GetWishlistItems(long id)
+    public async Task<ActionResult<List<WishListItemGetVm>>> GetWishlistItems(long id)
     {
         var wishlistItems = await _wishlistService.GetAllWishListItemsAsync(id);
-        var wishlistItemsOutput = new List<WishListItemGetModel>();
+        var wishlistItemsOutput = new List<WishListItemGetVm>();
         foreach (var wishlistItem in wishlistItems)
         {
-            var wishlistItemOutput = _mapper.Map<WishListItemGetModel>(wishlistItem);
+            var wishlistItemOutput = _mapper.Map<WishListItemGetVm>(wishlistItem);
             wishlistItemsOutput.Add(wishlistItemOutput);
         }
 

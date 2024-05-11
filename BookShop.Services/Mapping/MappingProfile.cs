@@ -8,30 +8,22 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<ClientRegisterModel, ClientEntity>();
-        CreateMap<ClientUpdateModel, ClientEntity>();
-        CreateMap<ClientLoginModel, ClientEntity>();
-        CreateMap<ClientDeleteModel, ClientEntity>();
+        CreateMap<ClientRegisterVm, ClientEntity>();
+        CreateMap<ClientUpdateVm, ClientEntity>();
+        CreateMap<ClientLoginVm, ClientEntity>();
 
-        CreateMap<ProductAddModel, ProductEntity>();
-        CreateMap<ProductUpdateModel, ProductEntity>();
-        CreateMap<ProductEntity, ProductGetModel>();
+        CreateMap<ProductAddVm, ProductEntity>();
+        CreateMap<ProductUpdateVm, ProductEntity>();
+        CreateMap<ProductEntity, ProductGetVm>();
 
-        CreateMap<CartCreateModel, CartEntity>();
+        CreateMap<CartItemEntity, CartItemGetVm>();
+        CreateMap<CartItemAddVm, CartItemEntity>();
+        CreateMap<CartItemUpdateVm, CartItemEntity>();
 
-        CreateMap<CartItemEntity, CartItemGetModel>();
-        CreateMap<CartItemAddModel, CartItemEntity>();
-        CreateMap<CartItemDeleteModel, CartItemEntity>();
-        CreateMap<CartItemUpdateModel, CartItemEntity>();
+        CreateMap<WishListItemEntity, WishListItemGetVm>();
+        CreateMap<WishListItemAddVm, WishListItemEntity>();
 
-        CreateMap<WishListCreateModel, WishListEntity>();
-
-        CreateMap<WishListItemEntity, WishListItemGetModel>();
-        CreateMap<WishListItemAddModel, WishListItemEntity>();
-        CreateMap<WishListItemDeleteModel, WishListItemEntity>();
-
-        CreateMap<PaymentMethodAddModel, PaymentMethodEntity>();
-        CreateMap<PaymentMethodGetModel, PaymentMethodEntity>();
-        CreateMap<PaymentMethodDeleteModel, PaymentMethodEntity>();
+        CreateMap<PaymentMethodAddVm, PaymentMethodEntity>();
+        CreateMap<PaymentMethodGetVm, PaymentMethodEntity>();
     }
 }

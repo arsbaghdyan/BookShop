@@ -22,7 +22,7 @@ public class CartItemController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<CartItemEntity>> AddItem(CartItemAddModel cartItemAddModel)
+    public async Task<ActionResult<CartItemEntity>> AddItem(CartItemAddVm cartItemAddModel)
     {
         var cartItemToAdd = _mapper.Map<CartItemEntity>(cartItemAddModel);
         await _cartItemService.AddAsync(cartItemToAdd);
@@ -40,7 +40,7 @@ public class CartItemController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult<CartItemEntity>> UpdateItem(CartItemUpdateModel cartItemUpdateModel)
+    public async Task<ActionResult<CartItemEntity>> UpdateItem(CartItemUpdateVm cartItemUpdateModel)
     {
         var cartItemToUpdate = _mapper.Map<CartItemEntity>(cartItemUpdateModel);
         await _cartItemService.UpdateAsync(cartItemToUpdate);

@@ -17,7 +17,7 @@ public class AuthenticationController : ControllerBase
 
     [HttpPost]
     [Route("login")]
-    public async Task<ActionResult> Login(ClientLoginModel model)
+    public async Task<ActionResult> Login(ClientLoginVm model)
     {
         var clientEntity = await _authenticationService.AuthenticateAsync(model.Email, model.Password);
         if (clientEntity != null)

@@ -22,7 +22,7 @@ public class ProductController : ControllerBase
 
     [Authorize]
     [HttpPost]
-    public async Task<ActionResult<ProductEntity>> AddProduct(ProductAddModel productAddModel)
+    public async Task<ActionResult<ProductEntity>> AddProduct(ProductAddVm productAddModel)
     {
         var productEntity = _mapper.Map<ProductEntity>(productAddModel);
         await _productService.AddAsync(productEntity);
@@ -32,7 +32,7 @@ public class ProductController : ControllerBase
 
     [Authorize]
     [HttpPut]
-    public async Task<ActionResult<ProductEntity>> UpdateProduct(ProductUpdateModel productUpdateModel)
+    public async Task<ActionResult<ProductEntity>> UpdateProduct(ProductUpdateVm productUpdateModel)
     {
         var productEntity = _mapper.Map<ProductEntity>(productUpdateModel);
         await _productService.UpdateAsync(productEntity);
@@ -59,13 +59,13 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<ProductGetModel>>> GetAllProducts()
+    public async Task<ActionResult<List<ProductGetVm>>> GetAllProducts()
     {
         var products = await _productService.GetAllAsync();
-        var productList = new List<ProductGetModel>();
+        var productList = new List<ProductGetVm>();
         foreach (var product in productList)
         {
-            var productOutput = _mapper.Map<ProductGetModel>(productList);
+            var productOutput = _mapper.Map<ProductGetVm>(productList);
             productList.Add(productOutput);
         }
 
@@ -73,10 +73,10 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<ProductGetModel>> GetProduct(long id)
+    public async Task<ActionResult<ProductGetVm>> GetProduct(long id)
     {
         var product = await _productService.GetByIdAsync(id);
-        var productOutput = _mapper.Map<ProductGetModel>(product);
+        var productOutput = _mapper.Map<ProductGetVm>(product);
 
         return Ok(productOutput);
     }

@@ -1,6 +1,6 @@
 ﻿namespace BookShop.Services.Models.CartItemModels;
 
-public class CartItemAddModel
+public class CartItemAddVm
 {
     public long ProductId { get; set; }
     public long CartId { get; set; }

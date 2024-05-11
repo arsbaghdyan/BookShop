@@ -1,6 +1,6 @@
 ﻿namespace BookShop.Services.Models.CartItemModels;
 
-public class ProductUpdateModel
+public class ProductUpdateVm
 {
     public long Id { get; set; }
     public string Name { get; set; }
