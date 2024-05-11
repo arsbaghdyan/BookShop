@@ -13,7 +13,7 @@ namespace BookShop.Api.Middlewares
 
         public async Task Invoke(HttpContext context, ICustomAuthenticationService authService)
         {
-            var token = context.Request.Headers["Authorization"].FirstOrDefault();
+            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
             if (token != null)
             {
                 var clientEmail = authService.GetClientEmailFromToken(token);
