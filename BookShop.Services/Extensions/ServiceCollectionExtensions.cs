@@ -8,15 +8,15 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddAllServices(this IServiceCollection services)
     {
-        services.AddTransient<IClientService, ClientService>();
-        services.AddTransient<IProductService, ProductService>();
-        services.AddTransient<ICustomAuthenticationService, CustomAuthenticationService>();
-        services.AddTransient<ICartService, CartService>();
-        services.AddTransient<ICartItemService, CartItemService>();
-        services.AddTransient<IWishListService, WishListService>();
-        services.AddTransient<IWishListItemService, WishListItemService>();
-        services.AddTransient<IPaymentMethodService, PaymentMethodService>();
-        services.AddTransient<IPaymentService, PaymentService>();
+        services.AddScoped<IClientService, ClientService>();
+        services.AddScoped<IProductService, ProductService>();
+        services.AddScoped<ICustomAuthenticationService, CustomAuthenticationService>();
+        services.AddScoped<ICartService, CartService>();
+        services.AddScoped<ICartItemService, CartItemService>();
+        services.AddScoped<IWishListService, WishListService>();
+        services.AddScoped<IWishListItemService, WishListItemService>();
+        services.AddScoped<IPaymentMethodService, PaymentMethodService>();
+        services.AddScoped<IPaymentService, PaymentService>();
 
         return services;
     }

@@ -1,5 +1,5 @@
-﻿using BookShop.Api.Models.ClientModels;
-using BookShop.Services.Abstractions;
+﻿using BookShop.Services.Abstractions;
+using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;

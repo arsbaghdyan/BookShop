@@ -100,7 +100,7 @@ internal class WishListService : IWishListService
     {
         try
         {
-            var wishlist = await _bookShopDbContext.WishLists.FirstOrDefaultAsync(c => c.Id == cartId);
+            var wishlist = await _bookShopDbContext.WishLists.FirstOrDefaultAsync(c => c.Id == wishlistId);
 
             if (wishlist == null)
             {

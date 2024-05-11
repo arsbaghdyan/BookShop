@@ -1,6 +1,7 @@
 ﻿using BookShop.Data.Enums;
 
-namespace BookShop.Api.Models.PaymentMethodModels;
+namespace BookShop.Services.Models.CartItemModels;
+
 
 public class PaymentMethodAddModel
 {

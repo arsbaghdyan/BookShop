@@ -1,4 +1,5 @@
-﻿namespace BookShop.Api.Models.ClientModels;
+﻿namespace BookShop.Services.Models.CartItemModels;
+
 
 public class ClientLoginModel
 {

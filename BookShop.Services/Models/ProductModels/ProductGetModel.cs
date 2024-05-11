@@ -1,8 +1,6 @@
-﻿using BookShop.Data.Abstractions;
+﻿namespace BookShop.Services.Models.CartItemModels;
 
-namespace BookShop.Api.Models.ProductModels;
-
-public class ProductUpdateModel : IIdentifiable
+public class ProductGetModel
 {
     public long Id { get; set; }
     public string Name { get; set; }

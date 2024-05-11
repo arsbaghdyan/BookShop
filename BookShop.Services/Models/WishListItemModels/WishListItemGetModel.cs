@@ -1,4 +1,4 @@
-﻿namespace BookShop.Api.Models.WishListItemModels;
+﻿namespace BookShop.Services.Models.CartItemModels;
 
 public class WishListItemGetModel
 {

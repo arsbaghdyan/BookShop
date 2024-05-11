@@ -1,9 +1,8 @@
-﻿using BookShop.Data.Abstractions;
-using BookShop.Data.Enums;
+﻿using BookShop.Data.Enums;
 
-namespace BookShop.Api.Models.PaymentMethodModels;
+namespace BookShop.Services.Models.CartItemModels;
 
-public class PaymentMethodGetModel : IIdentifiable
+public class PaymentMethodGetModel
 {
     public long Id { get; set; }
     public long ClientId { get; set; }

@@ -143,18 +143,15 @@ internal class PaymentMethodService : IPaymentMethodService
             throw new Exception("Unauthorized: You can not update other client paymentMethod.");
         }
 
-        var paymentMethodToUpdate =await _bookShopDbContext.CartItems.FirstOrDefault(c => c.Id == cartItemEntity.Id);
+        var paymentMethodToUpdate =await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(c => c.Id == paymentMethodEntity.Id);
 
         if (paymentMethodToUpdate == null)
         {
             throw new Exception("PaymentMethod not found");
         }
 
-        paymentMethodToUpdate. = cartItemEntity.Count;
-        paymentMethodToUpdate.Price = cartItemEntity.Price * cartItemEntity.Count;
-
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"CartItem with Id {cartItemEntity.Id} removed from Cart with Id {paymentMethod.Id} ");
+        _logger.LogInformation($"CartItem with Id {paymentMethodEntity.Id} removed from Cart with Id {paymentMethod.Id} ");
     }
 
     private string SerializeDetails(string details)

@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using BookShop.Api.Models.PaymentMethodModels;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

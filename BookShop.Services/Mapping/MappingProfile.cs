@@ -1,14 +1,8 @@
 ﻿using AutoMapper;
-using BookShop.Api.Models.CartItemModels;
-using BookShop.Api.Models.CartModel;
-using BookShop.Api.Models.ClientModels;
-using BookShop.Api.Models.PaymentMethodModels;
-using BookShop.Api.Models.ProductModels;
-using BookShop.Api.Models.WishListItemModels;
-using BookShop.Api.Models.WishListModels;
 using BookShop.Data.Entities;
+using BookShop.Services.Models.CartItemModels;
 
-namespace BookShop.Api.Mapping;
+namespace BookShop.Services.Mapping;
 
 public class MappingProfile : Profile
 {

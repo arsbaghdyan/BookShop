@@ -1,4 +1,4 @@
-﻿namespace BookShop.Api.Models.ProductModels;
+﻿namespace BookShop.Services.Models.CartItemModels;
 
 public class ProductAddModel
 {
