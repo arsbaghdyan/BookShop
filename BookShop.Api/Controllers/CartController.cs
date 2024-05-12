@@ -18,7 +18,7 @@ public class CartController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<CartItemGetVm>>> GetCartItems(long id)
+    public async Task<ActionResult<List<CartItemModel>>> GetCartItems(long id)
     {
         var cartItems = await _cartService.GetAllCartItemsAsync(id);
 

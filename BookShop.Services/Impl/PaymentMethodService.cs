@@ -22,7 +22,7 @@ internal class PaymentMethodService : IPaymentMethodService
         _mapper = mapper;
     }
 
-    public async Task AddAsync(PaymentMethodAddVm paymentMethod)
+    public async Task AddAsync(PaymentMethodAddModel paymentMethod)
     {
         if (paymentMethod == null)
         {
@@ -38,7 +38,7 @@ internal class PaymentMethodService : IPaymentMethodService
         _logger.LogInformation($"PaymentMethod with Id {paymentMethodToAdd.Id} added successfully.");
     }
 
-    public async Task<List<PaymentMethodGetVm>> GetAllAsync(long clientId)
+    public async Task<List<PaymentMethodModel>> GetAllAsync(long clientId)
     {
         var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
 
@@ -49,7 +49,7 @@ internal class PaymentMethodService : IPaymentMethodService
 
         var paymentMethods = await _bookShopDbContext.PaymentMethods.Where(pm => pm.ClientId == clientId).ToListAsync();
 
-        return _mapper.Map<List<PaymentMethodGetVm>>(paymentMethods);
+        return _mapper.Map<List<PaymentMethodModel>>(paymentMethods);
     }
 
     public async Task RemoveAsync(long paymentMethodId)

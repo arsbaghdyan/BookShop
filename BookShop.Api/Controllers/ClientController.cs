@@ -19,7 +19,7 @@ public class ClientController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost("Registration")]
-    public async Task<ActionResult<ClientRegisterVm>> RegisterClient(ClientRegisterVm clientModel)
+    public async Task<ActionResult<ClientRegisterModel>> RegisterClient(ClientRegisterModel clientModel)
     {
         await _clientService.RegisterAsync(clientModel);
 
@@ -35,7 +35,7 @@ public class ClientController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult<ClientUpdateVm>> UpdateClient(ClientUpdateVm clientModel)
+    public async Task<ActionResult<ClientUpdateModel>> UpdateClient(ClientUpdateModel clientModel)
     {
         await _clientService.UpdateAsync(clientModel);
 

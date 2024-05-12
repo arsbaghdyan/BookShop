@@ -21,7 +21,7 @@ internal class WishListItemService : IWishListItemService
         _mapper = mapper;
     }
 
-    public async Task AddAsync(WishListItemAddVm wishListItem)
+    public async Task AddAsync(WishListItemAddModel wishListItem)
     {
         if (wishListItem == null)
         {

@@ -21,7 +21,7 @@ internal class CartItemService : ICartItemService
         _mapper = mapper;
     }
 
-    public async Task AddAsync(CartItemAddVm cartItem)
+    public async Task AddAsync(CartItemAddModel cartItem)
     {
         if (cartItem == null)
         {
@@ -51,7 +51,7 @@ internal class CartItemService : ICartItemService
         _logger.LogInformation($"Cart with Id {cartItem.Id} remove succesfully.");
     }
 
-    public async Task UpdateAsync(CartItemUpdateVm cartItem)
+    public async Task UpdateAsync(CartItemUpdateModel cartItem)
     {
         if (cartItem == null)
         {

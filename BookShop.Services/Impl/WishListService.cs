@@ -36,7 +36,7 @@ internal class WishListService : IWishListService
         _logger.LogInformation($"Wishlist with Id {newWishlist.Id} is add for client with Id {clientId}");
     }
 
-    public async Task<List<WishListItemGetVm>> GetAllWishListItemsAsync(long wishlistId)
+    public async Task<List<WishListItemModel>> GetAllWishListItemsAsync(long wishlistId)
     {
         var wishlist = await _bookShopDbContext.WishLists.Include(c => c.WishListItems).FirstOrDefaultAsync(c => c.Id == wishlistId);
 
@@ -45,7 +45,7 @@ internal class WishListService : IWishListService
             throw new ArgumentException("Wishlist not found");
         }
 
-        var wishlistItems = _mapper.Map<List<WishListItemGetVm>>(wishlist.WishListItems);
+        var wishlistItems = _mapper.Map<List<WishListItemModel>>(wishlist.WishListItems);
 
         return wishlistItems;
     }

@@ -1,6 +1,6 @@
 ﻿namespace BookShop.Services.Models.CartItemModels;
 
-public class WishListItemGetVm
+public class WishListItemModel
 {
     public long Id { get; set; }
     public long ProductId { get; set; }

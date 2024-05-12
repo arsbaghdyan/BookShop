@@ -36,7 +36,7 @@ internal class CartService : ICartService
         _logger.LogInformation($"Cart with Id {newCart.Id} is add for client with Id {clientId}");
     }
 
-    public async Task<List<CartItemGetVm>> GetAllCartItemsAsync(long cartId)
+    public async Task<List<CartItemModel>> GetAllCartItemsAsync(long cartId)
     {
         var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.Id == cartId);
 
@@ -45,7 +45,7 @@ internal class CartService : ICartService
             throw new ArgumentException("Cart not found");
         }
 
-        var cartItems = _mapper.Map<List<CartItemGetVm>>(cart.CartItems);
+        var cartItems = _mapper.Map<List<CartItemModel>>(cart.CartItems);
 
         return cartItems;
     }

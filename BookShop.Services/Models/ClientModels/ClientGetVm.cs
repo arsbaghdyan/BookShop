@@ -1,6 +1,6 @@
 ﻿namespace BookShop.Services.Models.ClientModels;
 
-public class ClientGetVm
+public class ClientModel
 {
     public long Id { get; set; }
     public string FirstName { get; set; }

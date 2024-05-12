@@ -18,7 +18,7 @@ public class WishListItemController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<WishListItemAddVm>> AddItem(WishListItemAddVm wishListItemAddModel)
+    public async Task<ActionResult<WishListItemAddModel>> AddItem(WishListItemAddModel wishListItemAddModel)
     {
         await _wishlistItemService.AddAsync(wishListItemAddModel);
 

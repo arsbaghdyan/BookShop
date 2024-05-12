@@ -2,7 +2,7 @@
 
 namespace BookShop.Services.Models.CartItemModels;
 
-public class PaymentMethodGetVm
+public class PaymentMethodModel
 {
     public long Id { get; set; }
     public long ClientId { get; set; }

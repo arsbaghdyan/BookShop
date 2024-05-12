@@ -18,7 +18,7 @@ public class WishListController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<WishListItemGetVm>>> GetWishlistItems(long wishListItemId)
+    public async Task<ActionResult<List<WishListItemModel>>> GetWishlistItems(long wishListItemId)
     {
         var wishlistItems = await _wishlistService.GetAllWishListItemsAsync(wishListItemId);
 

@@ -29,7 +29,7 @@ internal class ClientService : IClientService
         _wishListService = wishListService;
     }
 
-    public async Task RegisterAsync(ClientRegisterVm client)
+    public async Task RegisterAsync(ClientRegisterModel client)
     {
         client.Password = HashPassword(client.Password);
 
@@ -44,7 +44,7 @@ internal class ClientService : IClientService
         _logger.LogInformation($"Client with Id {clientToAdd.Id} added successfully.");
     }
 
-    public async Task UpdateAsync(ClientUpdateVm client)
+    public async Task UpdateAsync(ClientUpdateModel client)
     {
 
         var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == client.Id);
@@ -82,24 +82,38 @@ internal class ClientService : IClientService
         _logger.LogInformation($"Client with Id {clientToRemove.Id} removed successfully.");
     }
 
+    public async Task<ClientModel?> GetByIdAsync(long clientId)
+    {
+        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == clientId);
+
+        var getClient = _mapper.Map<ClientModel?>(client);
+
+        return getClient;
+    }
+
+    public async Task<ClientModel?> GetByEmailAndPasswordAsync(
+        string email,
+        string password)
+    {
+        var client = await _bookShopDbContext.Clients
+            .FirstOrDefaultAsync(p => p.Email == email);
+
+        if (client != null)
+        {
+            var hashedPassword = HashPassword(password);
+            if (client.Password == hashedPassword)
+            {
+                return _mapper.Map<ClientModel?>(client);
+            }
+        }
+
+        return null;
+    }
+
     private string HashPassword(string password)
     {
         var passwordBytes = Encoding.UTF8.GetBytes(password);
         var passwordHash = SHA256.HashData(passwordBytes);
         return Convert.ToHexString(passwordHash);
-    }
-
-    public async Task<ClientGetVm> GetByIdAsync(long clientId)
-    {
-        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == clientId);
-
-        if (client == null)
-        {
-            throw new Exception("Client not found");
-        }
-
-        var getClient = _mapper.Map<ClientGetVm>(client);
-
-        return getClient;
     }
 }

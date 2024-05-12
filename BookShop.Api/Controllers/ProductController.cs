@@ -18,7 +18,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ProductAddVm>> AddProduct(ProductAddVm productAddModel)
+    public async Task<ActionResult<ProductAddModel>> AddProduct(ProductAddModel productAddModel)
     {
         await _productService.AddAsync(productAddModel);
 
@@ -26,7 +26,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult<ProductUpdateVm>> UpdateProduct(ProductUpdateVm productUpdateModel)
+    public async Task<ActionResult<ProductUpdateModel>> UpdateProduct(ProductUpdateModel productUpdateModel)
     {
         await _productService.UpdateAsync(productUpdateModel);
 
@@ -51,7 +51,7 @@ public class ProductController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<ActionResult<List<ProductGetVm>>> GetAllProducts(long productId)
+    public async Task<ActionResult<List<ProductModel>>> GetAllProducts(long productId)
     {
         var products = await _productService.GetAllAsync(productId);
 
@@ -60,7 +60,7 @@ public class ProductController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet("{productId}")]
-    public async Task<ActionResult<ProductGetVm>> GetProduct(long productId)
+    public async Task<ActionResult<ProductModel>> GetProduct(long productId)
     {
         var product = await _productService.GetByIdAsync(productId);
 

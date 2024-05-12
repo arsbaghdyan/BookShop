@@ -22,7 +22,7 @@ internal class ProductService : IProductService
         _mapper = mapper;
     }
 
-    public async Task AddAsync(ProductAddVm product)
+    public async Task AddAsync(ProductAddModel product)
     {
         if (product == null)
         {
@@ -46,16 +46,16 @@ internal class ProductService : IProductService
         _logger.LogInformation("All products cleared successfully.");
     }
 
-    public async Task<List<ProductGetVm>> GetAllAsync(long productId)
+    public async Task<List<ProductModel>> GetAllAsync(long productId)
     {
         var products = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
 
-        var productsToGet = _mapper.Map<List<ProductGetVm>>(products);
+        var productsToGet = _mapper.Map<List<ProductModel>>(products);
 
         return productsToGet;
     }
 
-    public async Task<ProductGetVm> GetByIdAsync(long productId)
+    public async Task<ProductModel> GetByIdAsync(long productId)
     {
         var product = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
 
@@ -64,7 +64,7 @@ internal class ProductService : IProductService
             throw new Exception($"Product not found");
         }
 
-        var productsToGet = _mapper.Map<ProductGetVm>(product);
+        var productsToGet = _mapper.Map<ProductModel>(product);
 
         return productsToGet;
     }
@@ -82,7 +82,7 @@ internal class ProductService : IProductService
         await _bookShopDbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(ProductUpdateVm product)
+    public async Task UpdateAsync(ProductUpdateModel product)
     {
         var productToUpdate = await GetByIdAsync(product.Id);
 

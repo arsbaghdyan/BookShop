@@ -9,20 +9,20 @@ var builder = WebApplication.CreateBuilder(args);
 
 var dbOption = builder.Configuration.ConfigureDbOptions();
 var jwtOption = builder.Configuration.ConfigureJwtOptions();
-
-builder.Services.AddHostedService<DatabaseMigrationService>();
 builder.Services.AddSingleton(dbOption);
 builder.Services.AddSingleton(jwtOption);
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAllServices();
+builder.Services.AddHostedService<DatabaseMigrationService>();
 builder.Services.AddBookShopDbContext(dbOption);
-builder.Services.AddTransient<GlobalExceptionHandler>();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.SwaggerConfiguration();
 builder.Services.JwtConfiguration(jwtOption);
-builder.Services.AddHttpContextAccessor();
+builder.Services.AddGlobalExceptionHandler();
+builder.Services.AddClientContextMiddleware();
 
 var app = builder.Build();
 
@@ -34,11 +34,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<GlobalExceptionHandler>();
 
-app.UseMiddleware<JwtMiddleware>();
-
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<ClientContextMiddleware>();
 
 app.MapControllers();
 

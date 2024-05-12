@@ -18,7 +18,7 @@ public class CartItemController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<CartItemAddVm>> AddItem(CartItemAddVm cartItemAddModel)
+    public async Task<ActionResult<CartItemAddModel>> AddItem(CartItemAddModel cartItemAddModel)
     {
         await _cartItemService.AddAsync(cartItemAddModel);
 
@@ -34,7 +34,7 @@ public class CartItemController : ControllerBase
     }
 
     [HttpPut]
-    public async Task<ActionResult<CartItemUpdateVm>> UpdateItem(CartItemUpdateVm cartItemUpdateModel)
+    public async Task<ActionResult<CartItemUpdateModel>> UpdateItem(CartItemUpdateModel cartItemUpdateModel)
     {
         await _cartItemService.UpdateAsync(cartItemUpdateModel);
 

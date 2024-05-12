@@ -18,7 +18,7 @@ public class PaymentMethodController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<PaymentMethodAddVm>> AddPaymentMethod(PaymentMethodAddVm paymentMethodAddModel)
+    public async Task<ActionResult<PaymentMethodAddModel>> AddPaymentMethod(PaymentMethodAddModel paymentMethodAddModel)
     {
         await _paymentMethodService.AddAsync(paymentMethodAddModel);
 
@@ -26,7 +26,7 @@ public class PaymentMethodController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<PaymentMethodGetVm>>> GetAllPaymentMethods(long clientId)
+    public async Task<ActionResult<List<PaymentMethodModel>>> GetAllPaymentMethods(long clientId)
     {
         var paymentMethods = await _paymentMethodService.GetAllAsync(clientId);
 
