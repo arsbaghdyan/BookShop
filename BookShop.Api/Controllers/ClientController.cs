@@ -21,6 +21,7 @@ public class ClientController : ControllerBase
 
     [ExcludeFromClientContextMiddleware]
     [HttpPost("Registration")]
+    [AllowAnonymous]
     public async Task<ActionResult<ClientModel>> RegisterClient(ClientRegisterModel clientModel)
     {
         var client = await _clientService.RegisterAsync(clientModel);

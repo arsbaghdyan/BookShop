@@ -29,11 +29,6 @@ internal class CartService : ICartService
 
         var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.Id == clientId);
 
-        if (cart == null )
-        {
-            throw new ArgumentException("Client not found");
-        }
-
         var cartItems = _mapper.Map<List<CartItemModel>>(cart.CartItems);
 
         return cartItems;
@@ -44,11 +39,6 @@ internal class CartService : ICartService
         var clientId = _clientContextReader.GetClientContextId();
 
         var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.Id == clientId);
-
-        if (cart == null)
-        {
-            throw new ArgumentException("Cart not found");
-        }
 
         _bookShopDbContext.CartItems.RemoveRange(cart.CartItems);
         await _bookShopDbContext.SaveChangesAsync();

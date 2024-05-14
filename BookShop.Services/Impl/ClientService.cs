@@ -28,14 +28,14 @@ internal class ClientService : IClientService
         _clientContextReader = clientContextReader;
     }
 
-    public async Task<ClientModel> RegisterAsync(ClientRegisterModel client)
+    public async Task<ClientModel> RegisterAsync(ClientRegisterModel clientRegisterModel)
     {
         using (var transaction = _bookShopDbContext.Database.BeginTransaction())
         {
             try
             {
-                client.Password = HashPassword(client.Password);
-                var clientToAdd = _mapper.Map<ClientEntity>(client);
+                var clientToAdd = _mapper.Map<ClientEntity>(clientRegisterModel);
+                clientToAdd.Password = HashPassword(clientRegisterModel.Password);
 
                 _bookShopDbContext.Clients.Add(clientToAdd);
                 await _bookShopDbContext.SaveChangesAsync();
@@ -46,8 +46,8 @@ internal class ClientService : IClientService
                 var newWishlist = new WishListEntity { ClientId = clientToAdd.Id };
                 _bookShopDbContext.WishLists.Add(newWishlist);
 
-                _logger.LogInformation($"Client with Id {clientToAdd.Id} added successfully.");
                 await _bookShopDbContext.SaveChangesAsync();
+                _logger.LogInformation($"Client with Id {clientToAdd.Id} added successfully.");
 
                 var clientModel = _mapper.Map<ClientModel>(clientToAdd);
 
@@ -57,7 +57,6 @@ internal class ClientService : IClientService
             catch (Exception ex)
             {
                 transaction.Rollback();
-
                 throw;
             }
         }
@@ -68,11 +67,6 @@ internal class ClientService : IClientService
         var clientId = _clientContextReader.GetClientContextId();
 
         var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
-
-        if (clientToUpdate is null)
-        {
-            throw new InvalidOperationException("Client not found");
-        }
 
         clientToUpdate.FirstName = client.FirstName;
         clientToUpdate.LastName = client.LastName;
@@ -97,11 +91,6 @@ internal class ClientService : IClientService
         var clientId = _clientContextReader.GetClientContextId();
 
         var clientToRemove = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
-
-        if (clientToRemove is null)
-        {
-            throw new Exception("There is no matching Client");
-        }
 
         _bookShopDbContext.Clients.Remove(clientToRemove);
         await _bookShopDbContext.SaveChangesAsync();

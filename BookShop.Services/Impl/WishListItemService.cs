@@ -28,32 +28,27 @@ internal class WishListItemService : IWishListItemService
     {
         var clientId = _clientContextReader.GetClientContextId();
 
-        var wishListToAdd = _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
+        var wishList = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
 
         var wishlistItemToAdd = _mapper.Map<WishListItemEntity>(wishListItem);
 
+        wishlistItemToAdd.WishListId = wishList.Id;
+
         _bookShopDbContext.WishListItems.Add(wishlistItemToAdd);
-
-        wishlistItemToAdd.Id = wishListToAdd.Id;
-
+        wishList.WishListItems.Add(wishlistItemToAdd);
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Wishlist with Id {wishlistItemToAdd.Id} added succesfully.");
 
-        var wishList = _mapper.Map<WishListItemModel>(wishListToAdd);
+        var wishListItemModel = _mapper.Map<WishListItemModel>(wishlistItemToAdd);
 
-        return wishList;
+        return wishListItemModel;
     }
 
     public async Task RemoveAsync(long wishlistItemId)
     {
         var clientId = _clientContextReader.GetClientContextId();
 
-        var wishlist = await _bookShopDbContext.WishLists.Include(w=>w.WishListItems).FirstOrDefaultAsync(w=>w.ClientId== clientId);
-
-        if (wishlist == null)
-        {
-            throw new Exception("Wishlist not found");
-        }
+        var wishlist = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
 
         var wishListEntity = wishlist.WishListItems.FirstOrDefault(w => w.Id == wishlistItemId);
 

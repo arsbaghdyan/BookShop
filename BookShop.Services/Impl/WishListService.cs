@@ -29,14 +29,15 @@ internal class WishListService : IWishListService
 
         var wishlist = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
 
-        if (wishlist == null)
+        var wishlistItemModels = new List<WishListItemModel>();
+
+        foreach (var wishlistItem in wishlist.WishListItems)
         {
-            throw new ArgumentException("Wishlist not found");
+            var wishlistItemModel = _mapper.Map<WishListItemModel>(wishlistItem);
+            wishlistItemModels.Add(wishlistItemModel);
         }
 
-        var wishlistItems = _mapper.Map<List<WishListItemModel>>(wishlist.WishListItems);
-
-        return wishlistItems;
+        return wishlistItemModels;
     }
 
     public async Task ClearAsync()
@@ -45,13 +46,9 @@ internal class WishListService : IWishListService
 
         var wishlist = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
 
-        if (wishlist == null)
-        {
-            throw new ArgumentException("WishList not found");
-        }
-
         _bookShopDbContext.WishListItems.RemoveRange(wishlist.WishListItems);
+        wishlist.WishListItems.Clear();
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation("Cart items cleared successfully.");
+        _logger.LogInformation("WishList items cleared successfully.");
     }
 }

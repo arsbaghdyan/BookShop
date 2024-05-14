@@ -77,11 +77,6 @@ internal class PaymentMethodService : IPaymentMethodService
 
         var paymentMethod = await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(p => p.Id == paymentMethodId && p.ClientId == clientId);
 
-        if (paymentMethod == null)
-        {
-            throw new Exception("PaymentMethod not found");
-        }
-
         _bookShopDbContext.PaymentMethods.Remove(paymentMethod);
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"PaymentMethod with Id {paymentMethod.Id} removed successfully.");

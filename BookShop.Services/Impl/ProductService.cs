@@ -55,11 +55,6 @@ internal class ProductService : IProductService
     {
         var product = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
 
-        if (product == null)
-        {
-            throw new Exception($"Product not found");
-        }
-
         var productsToGet = _mapper.Map<ProductModel>(product);
 
         return productsToGet;
@@ -68,11 +63,6 @@ internal class ProductService : IProductService
     public async Task RemoveAsync(long productId)
     {
         var product = _bookShopDbContext.Products.FirstOrDefault(s => s.Id == productId);
-
-        if (product == null)
-        {
-            throw new Exception($"Product not found");
-        }
 
         _bookShopDbContext.Products.Remove(product);
         await _bookShopDbContext.SaveChangesAsync();

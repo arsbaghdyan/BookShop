@@ -30,11 +30,6 @@ internal class CartItemService : ICartItemService
 
         var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
 
-        if (cart == null)
-        {
-            throw new Exception("Cart not founf");
-        }
-
         var cartItemToAdd = _mapper.Map<CartItemEntity>(cartItem);
 
         cartItemToAdd.Id = cart.Id;
@@ -56,11 +51,6 @@ internal class CartItemService : ICartItemService
 
         var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
 
-        if (cart == null)
-        {
-            throw new Exception("Wishlist not found");
-        }
-
         var cartEntity = cart.CartItems.FirstOrDefault(c => c.Id == cartItemId);
 
         _bookShopDbContext.CartItems.Remove(cartEntity);
@@ -74,17 +64,7 @@ internal class CartItemService : ICartItemService
 
         var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
 
-        if (cart == null)
-        {
-            throw new Exception("Cart not found");
-        }
-
         var cartEntity = cart.CartItems.FirstOrDefault(c => c.Id == cartItem.Id);
-
-        if (cartEntity == null)
-        {
-            throw new Exception("CartItem not found");
-        }
 
         cartEntity.Count = cartItem.Count;
         cartEntity.Price = cartItem.Price * cartItem.Count;
