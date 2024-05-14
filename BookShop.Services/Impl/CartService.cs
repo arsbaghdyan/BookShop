@@ -29,9 +29,15 @@ internal class CartService : ICartService
 
         var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.Id == clientId);
 
-        var cartItems = _mapper.Map<List<CartItemModel>>(cart.CartItems);
+        var cartItemModels = new List<CartItemModel>();
 
-        return cartItems;
+        foreach (var cartItem in cart.CartItems)
+        {
+            var cartItemModel = _mapper.Map<CartItemModel>(cartItem);
+            cartItemModels.Add(cartItemModel);
+        }
+
+        return cartItemModels;
     }
 
     public async Task ClearAsync()
