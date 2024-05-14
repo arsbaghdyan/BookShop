@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BookShop.Common.ClientService;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
@@ -16,38 +17,57 @@ internal class ClientService : IClientService
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<ClientService> _logger;
     private readonly IMapper _mapper;
-    private readonly ICartService _cartService;
-    private readonly IWishListService _wishListService;
+    private readonly ClientContextReader _clientContextReader;
 
     public ClientService(BookShopDbContext bookShopDbContext, ILogger<ClientService> logger,
-                         IMapper mapper, ICartService cartService, IWishListService wishListService)
+                         IMapper mapper, ClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
         _mapper = mapper;
-        _cartService = cartService;
-        _wishListService = wishListService;
+        _clientContextReader = clientContextReader;
     }
 
-    public async Task RegisterAsync(ClientRegisterModel client)
+    public async Task<ClientModel> RegisterAsync(ClientRegisterModel client)
     {
-        client.Password = HashPassword(client.Password);
+        using (var transaction = _bookShopDbContext.Database.BeginTransaction())
+        {
+            try
+            {
+                client.Password = HashPassword(client.Password);
+                var clientToAdd = _mapper.Map<ClientEntity>(client);
 
-        var clientToAdd = _mapper.Map<ClientEntity>(client);
+                _bookShopDbContext.Clients.Add(clientToAdd);
+                await _bookShopDbContext.SaveChangesAsync();
 
-        _bookShopDbContext.Clients.Add(clientToAdd);
-        await _bookShopDbContext.SaveChangesAsync();
+                var newCart = new CartEntity { ClientId = clientToAdd.Id };
+                _bookShopDbContext.Carts.Add(newCart);
 
-        await _wishListService.CreateAsync(clientToAdd.Id);
-        await _cartService.CreateAsync(clientToAdd.Id);
+                var newWishlist = new WishListEntity { ClientId = clientToAdd.Id };
+                _bookShopDbContext.WishLists.Add(newWishlist);
 
-        _logger.LogInformation($"Client with Id {clientToAdd.Id} added successfully.");
+                _logger.LogInformation($"Client with Id {clientToAdd.Id} added successfully.");
+                await _bookShopDbContext.SaveChangesAsync();
+
+                var clientModel = _mapper.Map<ClientModel>(clientToAdd);
+
+                transaction.Commit();
+                return clientModel;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+
+                throw;
+            }
+        }
     }
 
-    public async Task UpdateAsync(ClientUpdateModel client)
+    public async Task<ClientModel> UpdateAsync(ClientUpdateModel client)
     {
+        var clientId = _clientContextReader.GetClientContextId();
 
-        var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == client.Id);
+        var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
 
         if (clientToUpdate is null)
         {
@@ -65,11 +85,17 @@ internal class ClientService : IClientService
         }
 
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Client with Id {client.Id} modified successfully.");
+        _logger.LogInformation($"Client with Id {clientId} modified successfully.");
+
+        var clientModel = _mapper.Map<ClientModel>(clientToUpdate);
+
+        return clientModel;
     }
 
-    public async Task RemoveAsync(long clientId)
+    public async Task RemoveAsync()
     {
+        var clientId = _clientContextReader.GetClientContextId();
+
         var clientToRemove = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
 
         if (clientToRemove is null)
@@ -82,8 +108,10 @@ internal class ClientService : IClientService
         _logger.LogInformation($"Client with Id {clientToRemove.Id} removed successfully.");
     }
 
-    public async Task<ClientModel?> GetByIdAsync(long clientId)
+    public async Task<ClientModel?> GetClientAsync()
     {
+        var clientId = _clientContextReader.GetClientContextId();
+
         var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == clientId);
 
         var getClient = _mapper.Map<ClientModel?>(client);

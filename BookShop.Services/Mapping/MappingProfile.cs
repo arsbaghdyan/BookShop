@@ -25,8 +25,5 @@ public class MappingProfile : Profile
 
         CreateMap<WishListItemEntity, WishListItemModel>();
         CreateMap<WishListItemAddModel, WishListItemEntity>();
-
-        CreateMap<PaymentMethodAddModel, PaymentMethodEntity>();
-        CreateMap<PaymentMethodModel, PaymentMethodEntity>();
     }
 }

@@ -1,10 +1,12 @@
-﻿using BookShop.Services.Abstractions;
+﻿using BookShop.Api.Attributes;
+using BookShop.Services.Abstractions;
 using BookShop.Services.Models;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
+[ExcludeFromClientContextMiddleware]
 [ApiController]
 [Route("[controller]")]
 public class AuthenticationController : ControllerBase

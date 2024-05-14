@@ -18,25 +18,25 @@ public class PaymentMethodController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<PaymentMethodAddModel>> AddPaymentMethod(PaymentMethodAddModel paymentMethodAddModel)
+    public async Task<ActionResult<PaymentMethodModel>> AddPaymentMethod(PaymentMethodAddModel paymentMethodAddModel)
     {
-        await _paymentMethodService.AddAsync(paymentMethodAddModel);
+        var paymentMethod = await _paymentMethodService.AddAsync(paymentMethodAddModel);
 
-        return Ok();
+        return Ok(paymentMethod);
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<PaymentMethodModel>>> GetAllPaymentMethods(long clientId)
+    public async Task<ActionResult<List<PaymentMethodModel>>> GetAllPaymentMethods()
     {
-        var paymentMethods = await _paymentMethodService.GetAllAsync(clientId);
+        var paymentMethods = await _paymentMethodService.GetAllAsync();
 
         return Ok(paymentMethods);
     }
 
     [HttpDelete]
-    public async Task<ActionResult> RemovePaymentMethod(long clientId)
+    public async Task<IActionResult> RemovePaymentMethod(long paymentMethodId)
     {
-        await _paymentMethodService.RemoveAsync(clientId);
+        await _paymentMethodService.RemoveAsync(paymentMethodId);
 
         return Ok();
     }

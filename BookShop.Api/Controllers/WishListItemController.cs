@@ -18,15 +18,15 @@ public class WishListItemController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<WishListItemAddModel>> AddItem(WishListItemAddModel wishListItemAddModel)
+    public async Task<ActionResult<WishListItemModel>> AddItem(WishListItemAddModel wishListItemAddModel)
     {
-        await _wishlistItemService.AddAsync(wishListItemAddModel);
+        var wishlist=await _wishlistItemService.AddAsync(wishListItemAddModel);
 
-        return Ok();
+        return Ok(wishlist);
     }
 
     [HttpDelete]
-    public async Task<ActionResult> RemoveItem(long wishlistItemId)
+    public async Task<IActionResult> RemoveItem(long wishlistItemId)
     {
         await _wishlistItemService.RemoveAsync(wishlistItemId);
 

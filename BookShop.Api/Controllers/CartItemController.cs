@@ -18,26 +18,26 @@ public class CartItemController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<CartItemAddModel>> AddItem(CartItemAddModel cartItemAddModel)
+    public async Task<ActionResult<CartItemModel>> AddItem(CartItemAddModel cartItemAddModel)
     {
-        await _cartItemService.AddAsync(cartItemAddModel);
+        var cart = await _cartItemService.AddAsync(cartItemAddModel);
 
-        return Ok();
+        return Ok(cart);
     }
 
     [HttpDelete]
-    public async Task<ActionResult> RemoveItem(long cartId)
+    public async Task<IActionResult> RemoveItem(long cartItemId)
     {
-        await _cartItemService.RemoveAsync(cartId);
+        await _cartItemService.RemoveAsync(cartItemId);
 
         return Ok();
     }
 
     [HttpPut]
-    public async Task<ActionResult<CartItemUpdateModel>> UpdateItem(CartItemUpdateModel cartItemUpdateModel)
+    public async Task<ActionResult<CartItemModel>> UpdateItem(CartItemUpdateModel cartItemUpdateModel)
     {
-        await _cartItemService.UpdateAsync(cartItemUpdateModel);
+        var cart = await _cartItemService.UpdateAsync(cartItemUpdateModel);
 
-        return Ok();
+        return Ok(cart);
     }
 }

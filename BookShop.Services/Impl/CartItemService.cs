@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using BookShop.Services.Models.CartItemModels;
 using AutoMapper;
+using BookShop.Common.ClientService;
 
 namespace BookShop.Services.Impl;
 
@@ -13,64 +14,88 @@ internal class CartItemService : ICartItemService
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<CartItemService> _logger;
     private readonly IMapper _mapper;
+    private readonly ClientContextReader _clientContextReader;
 
-    public CartItemService(BookShopDbContext bookShopDbContext, ILogger<CartItemService> logger, IMapper mapper)
+    public CartItemService(BookShopDbContext bookShopDbContext, ILogger<CartItemService> logger, IMapper mapper, ClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
         _mapper = mapper;
+        _clientContextReader = clientContextReader;
     }
 
-    public async Task AddAsync(CartItemAddModel cartItem)
+    public async Task<CartItemModel> AddAsync(CartItemAddModel cartItem)
     {
-        if (cartItem == null)
+        var clientId = _clientContextReader.GetClientContextId();
+
+        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
+
+        if (cart == null)
         {
-            throw new Exception("There is nothing to add");
+            throw new Exception("Cart not founf");
         }
 
-        cartItem.Price = cartItem.Price * cartItem.Count;
-
         var cartItemToAdd = _mapper.Map<CartItemEntity>(cartItem);
+
+        cartItemToAdd.Id = cart.Id;
+
+        cartItem.Price *= cartItem.Count;
 
         _bookShopDbContext.CartItems.Add(cartItemToAdd);
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Cart with Id {cartItemToAdd.Id} added succesfully.");
+
+        var cartItemModel = _mapper.Map<CartItemModel>(cartItemToAdd);
+
+        return cartItemModel;
     }
 
     public async Task RemoveAsync(long cartItemId)
     {
-        var cartItem = await _bookShopDbContext.CartItems.FirstOrDefaultAsync(c => c.Id == cartItemId);
+        var clientId = _clientContextReader.GetClientContextId();
 
-        if (cartItem == null)
+        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
+
+        if (cart == null)
         {
-            throw new Exception("Cart is Empty");
+            throw new Exception("Wishlist not found");
         }
 
-        _bookShopDbContext.CartItems.Remove(cartItem);
+        var cartEntity = cart.CartItems.FirstOrDefault(c => c.Id == cartItemId);
+
+        _bookShopDbContext.CartItems.Remove(cartEntity);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Cart with Id {cartItem.Id} remove succesfully.");
+        _logger.LogInformation($"Cart with Id {cartEntity.Id} remove succesfully.");
     }
 
-    public async Task UpdateAsync(CartItemUpdateModel cartItem)
+    public async Task<CartItemModel> UpdateAsync(CartItemUpdateModel cartItem)
     {
-        if (cartItem == null)
+        var clientId = _clientContextReader.GetClientContextId();
+
+        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
+
+        if (cart == null)
         {
-            throw new Exception("CartItem not exist");
+            throw new Exception("Cart not found");
         }
 
-        var cartItemToUpdate = _bookShopDbContext.CartItems.FirstOrDefault(c => c.Id == cartItem.Id);
+        var cartEntity = cart.CartItems.FirstOrDefault(c => c.Id == cartItem.Id);
 
-        if (cartItemToUpdate == null)
+        if (cartEntity == null)
         {
             throw new Exception("CartItem not found");
         }
 
-        cartItemToUpdate.Count = cartItem.Count;
-        cartItemToUpdate.Price = cartItem.Price * cartItem.Count;
+        cartEntity.Count = cartItem.Count;
+        cartEntity.Price = cartItem.Price * cartItem.Count;
 
-        cartItemToUpdate = _mapper.Map<CartItemEntity>(cartItem);
+        cartEntity = _mapper.Map<CartItemEntity>(cartItem);
 
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"CartItem with Id {cartItem.Id} removed from Cart with Id {cartItemToUpdate.Id} ");
+        _logger.LogInformation($"CartItem with Id {cartItem.Id} removed successfully");
+
+        var cartItemModel = _mapper.Map<CartItemModel>(cart);
+
+        return cartItemModel;
     }
 }
