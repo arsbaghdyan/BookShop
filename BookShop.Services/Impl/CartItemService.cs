@@ -5,7 +5,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using BookShop.Services.Models.CartItemModels;
 using AutoMapper;
-using BookShop.Common.ClientService;
+using BookShop.Common.ClientService.Impl;
+using BookShop.Common.ClientService.Abstractions;
 
 namespace BookShop.Services.Impl;
 
@@ -14,7 +15,7 @@ internal class CartItemService : ICartItemService
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<CartItemService> _logger;
     private readonly IMapper _mapper;
-    private readonly ClientContextReader _clientContextReader;
+    private readonly IClientContextReader _clientContextReader;
 
     public CartItemService(BookShopDbContext bookShopDbContext, ILogger<CartItemService> logger, IMapper mapper, ClientContextReader clientContextReader)
     {

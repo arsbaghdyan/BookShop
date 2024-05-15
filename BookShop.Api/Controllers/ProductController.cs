@@ -1,5 +1,4 @@
-﻿using BookShop.Api.Attributes;
-using BookShop.Services.Abstractions;
+﻿using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -50,7 +49,7 @@ public class ProductController : ControllerBase
         return Ok();
     }
 
-    [ExcludeFromClientContextMiddleware]
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<List<ProductModel>>> GetAllProducts()
     {
@@ -59,7 +58,7 @@ public class ProductController : ControllerBase
         return Ok(products);
     }
 
-    [ExcludeFromClientContextMiddleware]
+    [AllowAnonymous]
     [HttpGet("{productId}")]
     public async Task<ActionResult<ProductModel>> GetProduct(long productId)
     {

@@ -1,4 +1,4 @@
-﻿namespace BookShop.Common.ClientService;
+﻿namespace BookShop.Common.ClientService.Impl;
 
 public class ClientContext
 {

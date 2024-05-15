@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
-using BookShop.Common.ClientService;
+using BookShop.Common.ClientService.Abstractions;
+using BookShop.Common.ClientService.Impl;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
@@ -17,7 +18,7 @@ internal class ClientService : IClientService
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<ClientService> _logger;
     private readonly IMapper _mapper;
-    private readonly ClientContextReader _clientContextReader;
+    private readonly IClientContextReader _clientContextReader;
 
     public ClientService(BookShopDbContext bookShopDbContext, ILogger<ClientService> logger,
                          IMapper mapper, ClientContextReader clientContextReader)

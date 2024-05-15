@@ -1,12 +1,12 @@
-﻿using BookShop.Api.Attributes;
-using BookShop.Services.Abstractions;
+﻿using BookShop.Services.Abstractions;
 using BookShop.Services.Models;
 using BookShop.Services.Models.CartItemModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
-[ExcludeFromClientContextMiddleware]
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class AuthenticationController : ControllerBase
@@ -21,6 +21,7 @@ public class AuthenticationController : ControllerBase
         _clientService = clientService;
     }
 
+    [AllowAnonymous]
     [HttpPost]
     [Route("login")]
     public async Task<ActionResult<TokenModel>> Login(ClientLoginModel model)

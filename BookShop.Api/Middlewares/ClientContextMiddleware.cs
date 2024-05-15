@@ -1,5 +1,4 @@
-﻿using BookShop.Api.Attributes;
-using BookShop.Common.ClientService;
+﻿using BookShop.Common.ClientService.Impl;
 using BookShop.Common.Consts;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -7,18 +6,18 @@ namespace BookShop.Api.Middlewares;
 
 public class ClientContextMiddleware : IMiddleware
 {
-    private readonly ClientContextAccessor _clientContextAccessor;
+    private readonly ClientContextWriter _clientContextAccessor;
 
-    public ClientContextMiddleware(ClientContextAccessor clientContextAccessor)
+    public ClientContextMiddleware(ClientContextWriter clientContextAccessor)
     {
         _clientContextAccessor = clientContextAccessor;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        var excludeClientContexValidation = context.GetEndpoint()?.Metadata.GetMetadata<ExcludeFromClientContextMiddleware>() != null;
+        var isAutetnicated = context.User.Identity?.IsAuthenticated;
 
-        if (!excludeClientContexValidation)
+        if (isAutetnicated == true)
         {
             var tokenHeader = context.Request.Headers["Authorization"].ToString();
 

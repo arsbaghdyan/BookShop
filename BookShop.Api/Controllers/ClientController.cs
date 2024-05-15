@@ -1,5 +1,4 @@
-﻿using BookShop.Api.Attributes;
-using BookShop.Services.Abstractions;
+﻿using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.ClientModels;
 using Microsoft.AspNetCore.Authorization;
@@ -19,7 +18,6 @@ public class ClientController : ControllerBase
         _clientService = clientService;
     }
 
-    [ExcludeFromClientContextMiddleware]
     [HttpPost("Registration")]
     [AllowAnonymous]
     public async Task<ActionResult<ClientModel>> RegisterClient(ClientRegisterModel clientModel)
@@ -44,5 +42,4 @@ public class ClientController : ControllerBase
 
         return Ok(client);
     }
-
 }

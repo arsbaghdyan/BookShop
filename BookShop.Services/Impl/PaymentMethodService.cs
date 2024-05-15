@@ -1,5 +1,5 @@
-﻿using AutoMapper;
-using BookShop.Common.ClientService;
+﻿using BookShop.Common.ClientService.Abstractions;
+using BookShop.Common.ClientService.Impl;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Data.Models;
@@ -15,7 +15,7 @@ internal class PaymentMethodService : IPaymentMethodService
 {
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<PaymentMethodService> _logger;
-    private readonly ClientContextReader _clientContextReader;
+    private readonly IClientContextReader _clientContextReader;
 
     public PaymentMethodService(BookShopDbContext bookShopDbContext, ILogger<PaymentMethodService> logger, ClientContextReader clientContextReader)
     {
