@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using BookShop.Data.Entities;
+﻿using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Authorization;
@@ -13,12 +12,10 @@ namespace BookShop.Api.Controllers;
 public class CartItemController : ControllerBase
 {
     private readonly ICartItemService _cartItemService;
-    private readonly IMapper _mapper;
 
-    public CartItemController(ICartItemService cartItemService, IMapper mapper)
+    public CartItemController(ICartItemService cartItemService)
     {
         _cartItemService = cartItemService;
-        _mapper = mapper;
     }
 
     [HttpPost]

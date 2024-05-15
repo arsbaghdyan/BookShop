@@ -17,7 +17,7 @@ internal class PaymentMethodService : IPaymentMethodService
     private readonly ILogger<PaymentMethodService> _logger;
     private readonly IClientContextReader _clientContextReader;
 
-    public PaymentMethodService(BookShopDbContext bookShopDbContext, ILogger<PaymentMethodService> logger, ClientContextReader clientContextReader)
+    public PaymentMethodService(BookShopDbContext bookShopDbContext, ILogger<PaymentMethodService> logger, IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;

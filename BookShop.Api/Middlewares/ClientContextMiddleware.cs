@@ -1,4 +1,4 @@
-﻿using BookShop.Common.ClientService.Impl;
+﻿using BookShop.Common.ClientService.Abstractions;
 using BookShop.Common.Consts;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -6,18 +6,18 @@ namespace BookShop.Api.Middlewares;
 
 public class ClientContextMiddleware : IMiddleware
 {
-    private readonly ClientContextWriter _clientContextAccessor;
+    private readonly IClientContextWriter _clientContextWriter;
 
-    public ClientContextMiddleware(ClientContextWriter clientContextAccessor)
+    public ClientContextMiddleware(IClientContextWriter clientContextWriter)
     {
-        _clientContextAccessor = clientContextAccessor;
+        _clientContextWriter = clientContextWriter;
     }
 
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        var isAutetnicated = context.User.Identity?.IsAuthenticated;
+        var isAuthenticated = context.User.Identity?.IsAuthenticated;
 
-        if (isAutetnicated == true)
+        if (isAuthenticated == true)
         {
             var tokenHeader = context.Request.Headers["Authorization"].ToString();
 
@@ -25,7 +25,6 @@ public class ClientContextMiddleware : IMiddleware
             {
                 throw new Exception("Token is missing");
             }
-
             var token = tokenHeader.Replace("Bearer ", string.Empty);
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -35,15 +34,15 @@ public class ClientContextMiddleware : IMiddleware
 
             if (clientIdClaim == null)
             {
-                throw new Exception("ClientId is missing");
+                throw new Exception("clientId is missing");
             }
 
             if (!long.TryParse(clientIdClaim.Value, out long clientId))
             {
-                throw new Exception("Unknown ClientId");
+                throw new Exception("Unknown clientId");
             }
 
-            _clientContextAccessor.SetClientContextId(clientId);
+            _clientContextWriter.SetClientContextId(clientId);
         }
 
         await next(context);

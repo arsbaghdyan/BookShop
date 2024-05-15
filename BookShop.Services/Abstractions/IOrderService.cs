@@ -4,6 +4,7 @@ namespace BookShop.Services.Abstractions;
 
 public interface IOrderService
 {
-    Task<OrderModel> AddOrder(OrderAddModel orderAddModel);
-
+    Task<OrderModel> AddOrderAsync(OrderAddModel orderAddModel);
+    Task RemoveAsync(long orderId);
+    Task ClearAsync();
 }

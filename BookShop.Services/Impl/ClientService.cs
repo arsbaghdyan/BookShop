@@ -21,7 +21,7 @@ internal class ClientService : IClientService
     private readonly IClientContextReader _clientContextReader;
 
     public ClientService(BookShopDbContext bookShopDbContext, ILogger<ClientService> logger,
-                         IMapper mapper, ClientContextReader clientContextReader)
+                         IMapper mapper, IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;

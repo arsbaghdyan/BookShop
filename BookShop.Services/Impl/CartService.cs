@@ -16,7 +16,7 @@ internal class CartService : ICartService
     private readonly IMapper _mapper;
     private readonly IClientContextReader _clientContextReader;
 
-    public CartService(BookShopDbContext bookShopDbContext, ILogger<CartService> logger, IMapper mapper, ClientContextReader clientContextReader)
+    public CartService(BookShopDbContext bookShopDbContext, ILogger<CartService> logger, IMapper mapper, IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;

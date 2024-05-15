@@ -16,13 +16,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAllServices();
+builder.Services.AddDatabaseMigrationService();
 builder.Services.AddBookShopDbContext(dbOption);
+builder.Services.AddJwtConfiguration(jwtOption);
+builder.Services.AddSwaggerConfiguration();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddGlobalExceptionHandler();
 builder.Services.AddClientContextMiddleware();
-builder.Services.AddDatabaseMigrationService();
-builder.Services.AddAutoMapper(typeof(MappingProfile));
-builder.Services.AddSwaggerConfiguration();
-builder.Services.AddJwtConfiguration(jwtOption);
 builder.Services.AddClientContext();
 
 var app = builder.Build();
@@ -37,7 +37,11 @@ app.UseMiddleware<GlobalExceptionHandler>();
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+
 app.UseAuthorization();
+
+app.UseMiddleware<ClientContextMiddleware>();
 
 app.MapControllers();
 

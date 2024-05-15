@@ -17,7 +17,7 @@ internal class CartItemService : ICartItemService
     private readonly IMapper _mapper;
     private readonly IClientContextReader _clientContextReader;
 
-    public CartItemService(BookShopDbContext bookShopDbContext, ILogger<CartItemService> logger, IMapper mapper, ClientContextReader clientContextReader)
+    public CartItemService(BookShopDbContext bookShopDbContext, ILogger<CartItemService> logger, IMapper mapper, IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;

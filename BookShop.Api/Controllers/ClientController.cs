@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using BookShop.Data.Entities;
+﻿using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Authorization;
@@ -12,12 +11,10 @@ namespace BookShop.Api.Controllers;
 public class ClientController : ControllerBase
 {
     private readonly IClientService _clientService;
-    private readonly IMapper _mapper;
 
-    public ClientController(IClientService clientService, IMapper mapper)
+    public ClientController(IClientService clientService)
     {
         _clientService = clientService;
-        _mapper = mapper;
     }
 
     [HttpPost]

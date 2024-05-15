@@ -17,7 +17,7 @@ internal class WishListItemService : IWishListItemService
     private readonly IMapper _mapper;
     private readonly IClientContextReader _clientContextReader;
 
-    public WishListItemService(BookShopDbContext bookShopDbContext, ILogger<WishListItemService> logger, IMapper mapper, ClientContextReader clientContextReader)
+    public WishListItemService(BookShopDbContext bookShopDbContext, ILogger<WishListItemService> logger, IMapper mapper, IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;

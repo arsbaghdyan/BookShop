@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BookShop.Common\BookShop.Common.csproj" />
+    <ProjectReference Include="..\BookShop.Data\BookShop.Data.csproj" />
     <ProjectReference Include="..\BookShop.Services\BookShop.Services.csproj" />
   </ItemGroup>
 
