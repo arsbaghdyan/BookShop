@@ -4,10 +4,10 @@ namespace BookShop.Services.Abstractions;
 
 public interface IProductService
 {
-    Task AddAsync(ProductAddVm productEntity);
+    Task<ProductModel> AddAsync(ProductAddModel productEntity);
     Task RemoveAsync(long productId);
-    Task<List<ProductGetVm>> GetAllAsync(long productId);
-    Task<ProductGetVm> GetByIdAsync(long productId);
-    Task UpdateAsync(ProductUpdateVm productEntity);
+    Task<List<ProductModel>> GetAllAsync();
+    Task<ProductModel> GetByIdAsync(long productId);
+    Task<ProductModel> UpdateAsync(ProductUpdateModel productEntity);
     Task ClearAsync();
 }

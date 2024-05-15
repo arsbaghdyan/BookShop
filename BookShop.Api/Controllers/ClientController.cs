@@ -1,5 +1,6 @@
 ﻿using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
+using BookShop.Services.Models.ClientModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,29 +18,28 @@ public class ClientController : ControllerBase
         _clientService = clientService;
     }
 
-    [AllowAnonymous]
     [HttpPost("Registration")]
-    public async Task<ActionResult<ClientRegisterVm>> RegisterClient(ClientRegisterVm clientModel)
+    [AllowAnonymous]
+    public async Task<ActionResult<ClientModel>> RegisterClient(ClientRegisterModel clientModel)
     {
-        await _clientService.RegisterAsync(clientModel);
+        var client = await _clientService.RegisterAsync(clientModel);
 
-        return Ok();
+        return Ok(client);
     }
 
     [HttpDelete]
-    public async Task<ActionResult> RemoveClient(long clientId)
+    public async Task<ActionResult> RemoveClient()
     {
-        await _clientService.RemoveAsync(clientId);
+        await _clientService.RemoveAsync();
 
         return Ok();
     }
 
     [HttpPut]
-    public async Task<ActionResult<ClientUpdateVm>> UpdateClient(ClientUpdateVm clientModel)
+    public async Task<ActionResult<ClientModel>> UpdateClient(ClientUpdateModel clientModel)
     {
-        await _clientService.UpdateAsync(clientModel);
+        var client = await _clientService.UpdateAsync(clientModel);
 
-        return Ok();
+        return Ok(client);
     }
-
 }

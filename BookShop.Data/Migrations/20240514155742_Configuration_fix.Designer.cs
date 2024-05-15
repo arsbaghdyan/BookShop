@@ -3,6 +3,7 @@ using System;
 using BookShop.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookShop.Data.Migrations
 {
     [DbContext(typeof(BookShopDbContext))]
-    partial class BookShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240514155742_Configuration_fix")]
+    partial class Configuration_fix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -232,6 +235,9 @@ namespace BookShop.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long?>("CartItemEntityId")
+                        .HasColumnType("bigint");
+
                     b.Property<int>("Count")
                         .HasColumnType("integer");
 
@@ -251,6 +257,8 @@ namespace BookShop.Data.Migrations
                         .HasColumnType("numeric");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CartItemEntityId");
 
                     b.ToTable("Products");
                 });
@@ -295,7 +303,8 @@ namespace BookShop.Data.Migrations
 
                     b.HasIndex("ClientEntityId");
 
-                    b.HasIndex("ProductId");
+                    b.HasIndex("ProductId")
+                        .IsUnique();
 
                     b.HasIndex("WishListId", "ProductId")
                         .IsUnique();
@@ -323,7 +332,7 @@ namespace BookShop.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("BookShop.Data.Entities.ProductEntity", "ProductEntity")
-                        .WithMany("CartItemEntity")
+                        .WithMany()
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -401,6 +410,15 @@ namespace BookShop.Data.Migrations
                     b.Navigation("ClientEntity");
                 });
 
+            modelBuilder.Entity("BookShop.Data.Entities.ProductEntity", b =>
+                {
+                    b.HasOne("BookShop.Data.Entities.CartItemEntity", "CartItemEntity")
+                        .WithMany()
+                        .HasForeignKey("CartItemEntityId");
+
+                    b.Navigation("CartItemEntity");
+                });
+
             modelBuilder.Entity("BookShop.Data.Entities.WishListEntity", b =>
                 {
                     b.HasOne("BookShop.Data.Entities.ClientEntity", "ClientEntity")
@@ -419,8 +437,8 @@ namespace BookShop.Data.Migrations
                         .HasForeignKey("ClientEntityId");
 
                     b.HasOne("BookShop.Data.Entities.ProductEntity", "ProductEntity")
-                        .WithMany("WishListItemEntity")
-                        .HasForeignKey("ProductId")
+                        .WithOne("WishListItemEntity")
+                        .HasForeignKey("BookShop.Data.Entities.WishListItemEntity", "ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -472,8 +490,6 @@ namespace BookShop.Data.Migrations
 
             modelBuilder.Entity("BookShop.Data.Entities.ProductEntity", b =>
                 {
-                    b.Navigation("CartItemEntity");
-
                     b.Navigation("Orders");
 
                     b.Navigation("WishListItemEntity");

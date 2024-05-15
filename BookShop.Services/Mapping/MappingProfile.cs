@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BookShop.Data.Entities;
 using BookShop.Services.Models.CartItemModels;
+using BookShop.Services.Models.ClientModels;
 
 namespace BookShop.Services.Mapping;
 
@@ -8,22 +9,21 @@ public class MappingProfile : Profile
 {
     public MappingProfile()
     {
-        CreateMap<ClientRegisterVm, ClientEntity>();
-        CreateMap<ClientUpdateVm, ClientEntity>();
-        CreateMap<ClientLoginVm, ClientEntity>();
+        CreateMap<ClientRegisterModel, ClientEntity>();
+        CreateMap<ClientUpdateModel, ClientEntity>();
+        CreateMap<ClientLoginModel, ClientEntity>();
 
-        CreateMap<ProductAddVm, ProductEntity>();
-        CreateMap<ProductUpdateVm, ProductEntity>();
-        CreateMap<ProductEntity, ProductGetVm>();
+        CreateMap<ClientEntity, ClientModel>();
 
-        CreateMap<CartItemEntity, CartItemGetVm>();
-        CreateMap<CartItemAddVm, CartItemEntity>();
-        CreateMap<CartItemUpdateVm, CartItemEntity>();
+        CreateMap<ProductAddModel, ProductEntity>();
+        CreateMap<ProductUpdateModel, ProductEntity>();
+        CreateMap<ProductEntity, ProductModel>();
 
-        CreateMap<WishListItemEntity, WishListItemGetVm>();
-        CreateMap<WishListItemAddVm, WishListItemEntity>();
+        CreateMap<CartItemEntity, CartItemModel>();
+        CreateMap<CartItemAddModel, CartItemEntity>();
+        CreateMap<CartItemUpdateModel, CartItemEntity>();
 
-        CreateMap<PaymentMethodAddVm, PaymentMethodEntity>();
-        CreateMap<PaymentMethodGetVm, PaymentMethodEntity>();
+        CreateMap<WishListItemEntity, WishListItemModel>();
+        CreateMap<WishListItemAddModel, WishListItemEntity>();
     }
 }

@@ -1,11 +1,11 @@
 ﻿using BookShop.Data.Enums;
+using BookShop.Data.Models;
 
 namespace BookShop.Services.Models.CartItemModels;
 
-
-public class PaymentMethodAddVm
+public class PaymentMethodModel
 {
-    public long ClientId { get; set; }
+    public long Id { get; set; }
     public PaymentMethod PaymentMethod { get; set; }
-    public string Details { get; set; }
+    public CardDetails? Details { get; set; }
 }

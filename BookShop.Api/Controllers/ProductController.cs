@@ -18,23 +18,23 @@ public class ProductController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<ProductAddVm>> AddProduct(ProductAddVm productAddModel)
+    public async Task<ActionResult<ProductModel>> AddProduct(ProductAddModel productAddModel)
     {
-        await _productService.AddAsync(productAddModel);
+        var product = await _productService.AddAsync(productAddModel);
 
-        return Ok();
+        return Ok(product);
     }
 
     [HttpPut]
-    public async Task<ActionResult<ProductUpdateVm>> UpdateProduct(ProductUpdateVm productUpdateModel)
+    public async Task<ActionResult<ProductModel>> UpdateProduct(ProductUpdateModel productUpdateModel)
     {
-        await _productService.UpdateAsync(productUpdateModel);
+        var product = await _productService.UpdateAsync(productUpdateModel);
 
-        return Ok();
+        return Ok(product);
     }
 
     [HttpDelete]
-    public async Task<ActionResult> ClearProducts()
+    public async Task<IActionResult> ClearProducts()
     {
         await _productService.ClearAsync();
 
@@ -42,7 +42,7 @@ public class ProductController : ControllerBase
     }
 
     [HttpDelete("{productId}")]
-    public async Task<ActionResult> RemoveProduct(long productId)
+    public async Task<IActionResult> RemoveProduct(long productId)
     {
         await _productService.RemoveAsync(productId);
 
@@ -51,16 +51,16 @@ public class ProductController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<ActionResult<List<ProductGetVm>>> GetAllProducts(long productId)
+    public async Task<ActionResult<List<ProductModel>>> GetAllProducts()
     {
-        var products = await _productService.GetAllAsync(productId);
+        var products = await _productService.GetAllAsync();
 
         return Ok(products);
     }
 
     [AllowAnonymous]
     [HttpGet("{productId}")]
-    public async Task<ActionResult<ProductGetVm>> GetProduct(long productId)
+    public async Task<ActionResult<ProductModel>> GetProduct(long productId)
     {
         var product = await _productService.GetByIdAsync(productId);
 

@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using BookShop.Common.ClientService.Abstractions;
+using BookShop.Common.ClientService.Impl;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
@@ -16,43 +18,56 @@ internal class ClientService : IClientService
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<ClientService> _logger;
     private readonly IMapper _mapper;
-    private readonly ICartService _cartService;
-    private readonly IWishListService _wishListService;
+    private readonly IClientContextReader _clientContextReader;
 
     public ClientService(BookShopDbContext bookShopDbContext, ILogger<ClientService> logger,
-                         IMapper mapper, ICartService cartService, IWishListService wishListService)
+                         IMapper mapper, ClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
         _mapper = mapper;
-        _cartService = cartService;
-        _wishListService = wishListService;
+        _clientContextReader = clientContextReader;
     }
 
-    public async Task RegisterAsync(ClientRegisterVm client)
+    public async Task<ClientModel> RegisterAsync(ClientRegisterModel clientRegisterModel)
     {
-        client.Password = HashPassword(client.Password);
-
-        var clientToAdd = _mapper.Map<ClientEntity>(client);
-
-        _bookShopDbContext.Clients.Add(clientToAdd);
-        await _bookShopDbContext.SaveChangesAsync();
-
-        await _wishListService.CreateAsync(clientToAdd.Id);
-        await _cartService.CreateAsync(clientToAdd.Id);
-
-        _logger.LogInformation($"Client with Id {clientToAdd.Id} added successfully.");
-    }
-
-    public async Task UpdateAsync(ClientUpdateVm client)
-    {
-
-        var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == client.Id);
-
-        if (clientToUpdate is null)
+        using (var transaction = _bookShopDbContext.Database.BeginTransaction())
         {
-            throw new InvalidOperationException("Client not found");
+            try
+            {
+                var clientToAdd = _mapper.Map<ClientEntity>(clientRegisterModel);
+                clientToAdd.Password = HashPassword(clientRegisterModel.Password);
+
+                _bookShopDbContext.Clients.Add(clientToAdd);
+                await _bookShopDbContext.SaveChangesAsync();
+
+                var newCart = new CartEntity { ClientId = clientToAdd.Id };
+                _bookShopDbContext.Carts.Add(newCart);
+
+                var newWishlist = new WishListEntity { ClientId = clientToAdd.Id };
+                _bookShopDbContext.WishLists.Add(newWishlist);
+
+                await _bookShopDbContext.SaveChangesAsync();
+                _logger.LogInformation($"Client with Id {clientToAdd.Id} added successfully.");
+
+                var clientModel = _mapper.Map<ClientModel>(clientToAdd);
+
+                transaction.Commit();
+                return clientModel;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
+    }
+
+    public async Task<ClientModel> UpdateAsync(ClientUpdateModel client)
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+
+        var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
 
         clientToUpdate.FirstName = client.FirstName;
         clientToUpdate.LastName = client.LastName;
@@ -65,21 +80,52 @@ internal class ClientService : IClientService
         }
 
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Client with Id {client.Id} modified successfully.");
+        _logger.LogInformation($"Client with Id {clientId} modified successfully.");
+
+        var clientModel = _mapper.Map<ClientModel>(clientToUpdate);
+
+        return clientModel;
     }
 
-    public async Task RemoveAsync(long clientId)
+    public async Task RemoveAsync()
     {
-        var clientToRemove = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
+        var clientId = _clientContextReader.GetClientContextId();
 
-        if (clientToRemove is null)
-        {
-            throw new Exception("There is no matching Client");
-        }
+        var clientToRemove = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
 
         _bookShopDbContext.Clients.Remove(clientToRemove);
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Client with Id {clientToRemove.Id} removed successfully.");
+    }
+
+    public async Task<ClientModel?> GetClientAsync()
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+
+        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == clientId);
+
+        var getClient = _mapper.Map<ClientModel?>(client);
+
+        return getClient;
+    }
+
+    public async Task<ClientModel?> GetByEmailAndPasswordAsync(
+        string email,
+        string password)
+    {
+        var client = await _bookShopDbContext.Clients
+            .FirstOrDefaultAsync(p => p.Email == email);
+
+        if (client != null)
+        {
+            var hashedPassword = HashPassword(password);
+            if (client.Password == hashedPassword)
+            {
+                return _mapper.Map<ClientModel?>(client);
+            }
+        }
+
+        return null;
     }
 
     private string HashPassword(string password)
@@ -87,19 +133,5 @@ internal class ClientService : IClientService
         var passwordBytes = Encoding.UTF8.GetBytes(password);
         var passwordHash = SHA256.HashData(passwordBytes);
         return Convert.ToHexString(passwordHash);
-    }
-
-    public async Task<ClientGetVm> GetByIdAsync(long clientId)
-    {
-        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == clientId);
-
-        if (client == null)
-        {
-            throw new Exception("Client not found");
-        }
-
-        var getClient = _mapper.Map<ClientGetVm>(client);
-
-        return getClient;
     }
 }

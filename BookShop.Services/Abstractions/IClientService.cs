@@ -5,8 +5,9 @@ namespace BookShop.Services.Abstractions;
 
 public interface IClientService
 {
-    Task RegisterAsync(ClientRegisterVm clientEntity);
-    Task UpdateAsync(ClientUpdateVm clientEntity);
-    Task RemoveAsync(long clientId);
-    Task<ClientGetVm> GetByIdAsync(long clientId);
+    Task<ClientModel> RegisterAsync(ClientRegisterModel clientEntity);
+    Task<ClientModel> UpdateAsync(ClientUpdateModel clientEntity);
+    Task RemoveAsync();
+    Task<ClientModel?> GetClientAsync();
+    Task<ClientModel?> GetByEmailAndPasswordAsync(string email, string password);
 }

@@ -1,6 +1,6 @@
 ﻿namespace BookShop.Services.Models.CartItemModels;
 
-public class ClientRegisterVm
+public class ClientRegisterModel
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
+using BookShop.Common.ClientService.Abstractions;
+using BookShop.Common.ClientService.Impl;
 using BookShop.Data;
-using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.EntityFrameworkCore;
@@ -13,54 +14,41 @@ internal class CartService : ICartService
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<CartService> _logger;
     private readonly IMapper _mapper;
+    private readonly IClientContextReader _clientContextReader;
 
-    public CartService(BookShopDbContext bookShopDbContext, ILogger<CartService> logger, IMapper mapper)
+    public CartService(BookShopDbContext bookShopDbContext, ILogger<CartService> logger, IMapper mapper, ClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
         _mapper = mapper;
+        _clientContextReader = clientContextReader;
     }
 
-    public async Task CreateAsync(long clientId)
+    public async Task<List<CartItemModel>> GetAllCartItemsAsync()
     {
-        var cart = await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.ClientId == clientId);
+        var clientId = _clientContextReader.GetClientContextId();
 
-        if (cart != null)
+        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.Id == clientId);
+
+        var cartItemModels = new List<CartItemModel>();
+
+        foreach (var cartItem in cart.CartItems)
         {
-            _logger.LogInformation($"Cart with Id {cart.Id} is add for client with Id {clientId}");
+            var cartItemModel = _mapper.Map<CartItemModel>(cartItem);
+            cartItemModels.Add(cartItemModel);
         }
 
-        var newCart = new CartEntity { ClientId = clientId };
-        _bookShopDbContext.Carts.Add(newCart);
-        await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Cart with Id {newCart.Id} is add for client with Id {clientId}");
+        return cartItemModels;
     }
 
-    public async Task<List<CartItemGetVm>> GetAllCartItemsAsync(long cartId)
+    public async Task ClearAsync()
     {
-        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.Id == cartId);
+        var clientId = _clientContextReader.GetClientContextId();
 
-        if (cart == null)
-        {
-            throw new ArgumentException("Cart not found");
-        }
-
-        var cartItems = _mapper.Map<List<CartItemGetVm>>(cart.CartItems);
-
-        return cartItems;
-    }
-
-    public async Task ClearAsync(long cartId)
-    {
-        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.Id == cartId);
-
-        if (cart == null)
-        {
-            throw new ArgumentException("Cart not found");
-        }
+        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.Id == clientId);
 
         _bookShopDbContext.CartItems.RemoveRange(cart.CartItems);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation("Cart items cleared successfully.");
+        _logger.LogInformation("CartItems cleared successfully.");
     }
 }

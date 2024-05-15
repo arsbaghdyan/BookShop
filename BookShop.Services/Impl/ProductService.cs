@@ -5,7 +5,6 @@ using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace BookShop.Services.Impl;
 
@@ -22,20 +21,17 @@ internal class ProductService : IProductService
         _mapper = mapper;
     }
 
-    public async Task AddAsync(ProductAddVm product)
+    public async Task<ProductModel> AddAsync(ProductAddModel product)
     {
-        if (product == null)
-        {
-            throw new Exception("There is nothing to add");
-        }
-
-        product.Details = SerializeDetails(product.Details);
-
         var productToAdd = _mapper.Map<ProductEntity>(product);
 
         _bookShopDbContext.Products.Add(productToAdd);
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Product with Id {productToAdd.Id} added successfully.");
+
+        var productModel = _mapper.Map<ProductModel>(productToAdd);
+
+        return productModel;
     }
 
     public async Task ClearAsync()
@@ -46,25 +42,20 @@ internal class ProductService : IProductService
         _logger.LogInformation("All products cleared successfully.");
     }
 
-    public async Task<List<ProductGetVm>> GetAllAsync(long productId)
+    public async Task<List<ProductModel>> GetAllAsync()
     {
-        var products = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
+        var products = await _bookShopDbContext.Products.ToListAsync();
 
-        var productsToGet = _mapper.Map<List<ProductGetVm>>(products);
+        var productsToGet = _mapper.Map<List<ProductModel>>(products);
 
         return productsToGet;
     }
 
-    public async Task<ProductGetVm> GetByIdAsync(long productId)
+    public async Task<ProductModel> GetByIdAsync(long productId)
     {
         var product = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
 
-        if (product == null)
-        {
-            throw new Exception($"Product not found");
-        }
-
-        var productsToGet = _mapper.Map<ProductGetVm>(product);
+        var productsToGet = _mapper.Map<ProductModel>(product);
 
         return productsToGet;
     }
@@ -73,20 +64,13 @@ internal class ProductService : IProductService
     {
         var product = _bookShopDbContext.Products.FirstOrDefault(s => s.Id == productId);
 
-        if (product == null)
-        {
-            throw new Exception($"Product not found");
-        }
-
         _bookShopDbContext.Products.Remove(product);
         await _bookShopDbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(ProductUpdateVm product)
+    public async Task<ProductModel> UpdateAsync(ProductUpdateModel product)
     {
         var productToUpdate = await GetByIdAsync(product.Id);
-
-        product.Details = SerializeDetails(product.Details);
 
         productToUpdate.Name = product.Name;
         productToUpdate.Price = product.Price;
@@ -96,10 +80,9 @@ internal class ProductService : IProductService
 
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Product with Id {product.Id} updated successfully.");
-    }
 
-    private string SerializeDetails(string details)
-    {
-        return JsonConvert.SerializeObject(details);
+        var productModel = _mapper.Map<ProductModel>(productToUpdate);
+
+        return productModel;
     }
 }

@@ -4,7 +4,7 @@ namespace BookShop.Services.Abstractions;
 
 public interface ICartItemService
 {
-    Task AddAsync(CartItemAddVm cartItem);
-    Task RemoveAsync(long cartId);
-    Task UpdateAsync(CartItemUpdateVm cartItem);
+    Task<CartItemModel> AddAsync(CartItemAddModel cartItem);
+    Task RemoveAsync(long cartItemId);
+    Task<CartItemModel> UpdateAsync(CartItemUpdateModel cartItem);
 }

@@ -1,6 +1,8 @@
-﻿using AutoMapper;
+﻿using BookShop.Common.ClientService.Abstractions;
+using BookShop.Common.ClientService.Impl;
 using BookShop.Data;
 using BookShop.Data.Entities;
+using BookShop.Data.Models;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.EntityFrameworkCore;
@@ -13,61 +15,70 @@ internal class PaymentMethodService : IPaymentMethodService
 {
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<PaymentMethodService> _logger;
-    private readonly IMapper _mapper;
+    private readonly IClientContextReader _clientContextReader;
 
-    public PaymentMethodService(BookShopDbContext bookShopDbContext, ILogger<PaymentMethodService> logger, IMapper mapper)
+    public PaymentMethodService(BookShopDbContext bookShopDbContext, ILogger<PaymentMethodService> logger, ClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
-        _mapper = mapper;
+        _clientContextReader = clientContextReader;
     }
 
-    public async Task AddAsync(PaymentMethodAddVm paymentMethod)
+    public async Task<PaymentMethodModel> AddAsync(PaymentMethodAddModel paymentMethodAddModel)
     {
-        if (paymentMethod == null)
+        var clientId = _clientContextReader.GetClientContextId();
+
+        var paymentMethod = new PaymentMethodEntity
         {
-            throw new Exception("There is nothing to add");
-        }
+            ClientId = clientId,
+            PaymentMethod = paymentMethodAddModel.PaymentMethod,
+            Details = JsonConvert.SerializeObject(paymentMethodAddModel.Details)
+        };
 
-        paymentMethod.Details = SerializeDetails(paymentMethod.Details);
-
-        var paymentMethodToAdd = _mapper.Map<PaymentMethodEntity>(paymentMethod);
-
-        _bookShopDbContext.PaymentMethods.Add(paymentMethodToAdd);
+        _bookShopDbContext.PaymentMethods.Add(paymentMethod);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"PaymentMethod with Id {paymentMethodToAdd.Id} added successfully.");
+        _logger.LogInformation($"PaymentMethod with Id {paymentMethod.Id} added successfully.");
+
+        var paymentMethodModel = new PaymentMethodModel
+        {
+            Id = paymentMethod.Id,
+            PaymentMethod = paymentMethodAddModel.PaymentMethod,
+            Details = JsonConvert.DeserializeObject<CardDetails>(paymentMethod.Details)
+        };
+
+        return paymentMethodModel;
     }
 
-    public async Task<List<PaymentMethodGetVm>> GetAllAsync(long clientId)
+    public async Task<List<PaymentMethodModel>> GetAllAsync()
     {
-        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
+        var clientId = _clientContextReader.GetClientContextId();
 
-        if (client == null)
+        var paymentMethodsDb = await _bookShopDbContext.PaymentMethods.Where(pm => pm.ClientId == clientId).ToListAsync();
+
+        var paymentMethods = new List<PaymentMethodModel>();
+
+        foreach (var paymentMethod in paymentMethodsDb)
         {
-            throw new Exception("Client not Found");
+            var paymentMethodModel = new PaymentMethodModel
+            {
+                Id = paymentMethod.Id,
+                PaymentMethod = paymentMethod.PaymentMethod,
+                Details = JsonConvert.DeserializeObject<CardDetails>(paymentMethod.Details)
+            };
+            paymentMethods.Add(paymentMethodModel);
         }
 
-        var paymentMethods = await _bookShopDbContext.PaymentMethods.Where(pm => pm.ClientId == clientId).ToListAsync();
-
-        return _mapper.Map<List<PaymentMethodGetVm>>(paymentMethods);
+        return paymentMethods;
     }
 
     public async Task RemoveAsync(long paymentMethodId)
     {
-        var paymentMethod = await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(p => p.Id == paymentMethodId);
+        var clientId = _clientContextReader.GetClientContextId();
 
-        if (paymentMethod == null)
-        {
-            throw new Exception("PaymentMethod not found");
-        }
+        var paymentMethod = await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(p => p.Id == paymentMethodId && p.ClientId == clientId);
 
         _bookShopDbContext.PaymentMethods.Remove(paymentMethod);
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"PaymentMethod with Id {paymentMethod.Id} removed successfully.");
-    }
-
-    private string SerializeDetails(string details)
-    {
-        return JsonConvert.SerializeObject(details);
     }
 }
