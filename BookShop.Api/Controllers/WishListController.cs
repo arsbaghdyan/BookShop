@@ -26,7 +26,7 @@ public class WishListController : ControllerBase
     }
 
     [HttpDelete]
-    public async Task<IActionResult> ClearAllWishListItems()
+    public async Task<IActionResult> ClearAllItems()
     {
         await _wishlistService.ClearAsync();
 

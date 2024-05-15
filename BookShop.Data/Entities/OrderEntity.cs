@@ -8,7 +8,7 @@ public class OrderEntity : IIdentifiable
     public long ClientId { get; set; }
     public long ProductId { get; set; }
     public int Count { get; set; }
-    public decimal Price { get; set; }
+    public decimal Amount { get; set; }
     public InvoiceEntity? InvoiceEntity { get; set; }
     public ProductEntity? ProductEntity { get; set; }
     public ClientEntity? ClientEntity { get; set; }
