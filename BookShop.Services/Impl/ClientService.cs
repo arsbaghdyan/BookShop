@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BookShop.Common.ClientService.Abstractions;
-using BookShop.Common.ClientService.Impl;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;

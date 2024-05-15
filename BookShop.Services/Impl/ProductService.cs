@@ -21,15 +21,37 @@ internal class ProductService : IProductService
         _mapper = mapper;
     }
 
-    public async Task<ProductModel> AddAsync(ProductAddModel product)
+    public async Task<ProductModel> AddAsync(ProductAddModel productAddModel)
     {
-        var productToAdd = _mapper.Map<ProductEntity>(product);
+        if (productAddModel.Count <= 0)
+        {
+            throw new Exception("Product count can't be less than 0");
+        }
 
-        _bookShopDbContext.Products.Add(productToAdd);
+        var productCheck = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Manufacturer == productAddModel.Manufacturer
+        && p.Details == p.Details && p.Name == productAddModel.Name && p.Price == productAddModel.Price);
+
+        var product = new ProductEntity();
+
+        var productModel = new ProductModel();
+        if (productCheck != null)
+        {
+            productCheck.Count += productAddModel.Count;
+            await _bookShopDbContext.SaveChangesAsync();
+
+            _logger.LogInformation($"Product with Id {productCheck.Id} added successfully");
+
+            productModel = _mapper.Map<ProductModel>(productCheck);
+
+            return productModel;
+        }
+        product = _mapper.Map<ProductEntity>(productAddModel);
+        _bookShopDbContext.Products.Add(product);
+
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Product with Id {productToAdd.Id} added successfully.");
+        _logger.LogInformation($"Product with Id {product.Id} added successfully");
 
-        var productModel = _mapper.Map<ProductModel>(productToAdd);
+        productModel = _mapper.Map<ProductModel>(product);
 
         return productModel;
     }
@@ -70,6 +92,11 @@ internal class ProductService : IProductService
 
     public async Task<ProductModel> UpdateAsync(ProductUpdateModel product)
     {
+        if (product.Count <= 0)
+        {
+            throw new Exception("Product count can't be less than 0");
+        }
+
         var productToUpdate = await GetByIdAsync(product.Id);
 
         productToUpdate.Name = product.Name;

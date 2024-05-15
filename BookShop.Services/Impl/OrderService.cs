@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
+using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.OrderModel;
 using Microsoft.EntityFrameworkCore;
@@ -27,22 +28,59 @@ internal class OrderService : IOrderService
     {
         var clientId = _clientContextReader.GetClientContextId();
 
-        var order = await _bookShopDbContext.Orders.FirstOrDefaultAsync(o => o.ClientId == clientId);
+        var order = await _bookShopDbContext.Orders.FirstOrDefaultAsync(o => o.ClientId == clientId && o.ProductId == orderAddModel.ProductId);
 
         var product = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == orderAddModel.ProductId);
 
-        //var orderToAdd = _mapper.Map<OrderModel>();
+        var orderModel = new OrderModel();
 
-        return default;
+        if (order != null)
+        {
+            order.Count += orderAddModel.Count;
+            order.Amount = product.Price * order.Count;
+
+            await _bookShopDbContext.SaveChangesAsync();
+
+            _logger.LogInformation($"Order with Id{order.Id} added successefully for client with id {clientId}");
+
+            orderModel = _mapper.Map<OrderModel>(order);
+        }
+
+        var orderToAdd = _mapper.Map<OrderEntity>(orderAddModel);
+
+        orderToAdd.Amount = product.Price * orderToAdd.Count;
+        orderToAdd.ClientId = clientId;
+
+        _bookShopDbContext.Add(orderToAdd);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Order with Id{order.Id} added successefully for client with id {clientId}");
+
+        orderModel = _mapper.Map<OrderModel>(orderToAdd);
+
+        return orderModel;
     }
 
-    public Task ClearAsync()
+    public async Task ClearAsync()
     {
-        throw new NotImplementedException();
+        var clientId = _clientContextReader.GetClientContextId();
+
+        var orders = await _bookShopDbContext.Orders.Where(o => o.ClientId == clientId).ToListAsync();
+
+        _bookShopDbContext.Orders.RemoveRange(orders);
+        await _bookShopDbContext.SaveChangesAsync();
+
+        _logger.LogInformation($"Orders cleared successfully for client with Id {clientId}");
     }
 
-    public Task RemoveAsync(long orderId)
+    public async Task RemoveAsync(long orderId)
     {
-        throw new NotImplementedException();
+        var clientId = _clientContextReader.GetClientContextId();
+
+        var order = await _bookShopDbContext.Orders.FirstOrDefaultAsync(o => o.ClientId == clientId && o.Id == orderId);
+
+        _bookShopDbContext.Orders.Remove(order);
+        await _bookShopDbContext.SaveChangesAsync();
+
+        _logger.LogInformation($"Order with Id{order.Id} remove for client with Id {clientId}");
     }
 }

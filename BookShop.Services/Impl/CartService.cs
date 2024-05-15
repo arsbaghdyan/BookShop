@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BookShop.Common.ClientService.Abstractions;
-using BookShop.Common.ClientService.Impl;
 using BookShop.Data;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
@@ -28,7 +27,7 @@ internal class CartService : ICartService
     {
         var clientId = _clientContextReader.GetClientContextId();
 
-        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.Id == clientId);
+        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
 
         var cartItemModels = new List<CartItemModel>();
 
@@ -45,10 +44,10 @@ internal class CartService : ICartService
     {
         var clientId = _clientContextReader.GetClientContextId();
 
-        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.Id == clientId);
+        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
 
         _bookShopDbContext.CartItems.RemoveRange(cart.CartItems);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation("CartItems cleared successfully.");
+        _logger.LogInformation($"CartItems cleared successfully for client with id {clientId}.");
     }
 }

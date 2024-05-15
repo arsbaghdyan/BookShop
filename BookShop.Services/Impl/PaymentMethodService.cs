@@ -1,5 +1,4 @@
 ﻿using BookShop.Common.ClientService.Abstractions;
-using BookShop.Common.ClientService.Impl;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Data.Models;
@@ -37,7 +36,7 @@ internal class PaymentMethodService : IPaymentMethodService
 
         _bookShopDbContext.PaymentMethods.Add(paymentMethod);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"PaymentMethod with Id {paymentMethod.Id} added successfully.");
+        _logger.LogInformation($"PaymentMethod with Id {paymentMethod.Id} added successfully for client with id {clientId}.");
 
         var paymentMethodModel = new PaymentMethodModel
         {
@@ -79,6 +78,6 @@ internal class PaymentMethodService : IPaymentMethodService
 
         _bookShopDbContext.PaymentMethods.Remove(paymentMethod);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"PaymentMethod with Id {paymentMethod.Id} removed successfully.");
+        _logger.LogInformation($"PaymentMethod with Id {paymentMethod.Id} removed successfully for client with id {clientId}.");
     }
 }

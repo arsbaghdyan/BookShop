@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper;
 using BookShop.Services.Models.CartItemModels;
-using BookShop.Common.ClientService.Impl;
 using BookShop.Common.ClientService.Abstractions;
 
 namespace BookShop.Services.Impl;
@@ -36,9 +35,8 @@ internal class WishListItemService : IWishListItemService
         wishlistItemToAdd.WishListId = wishList.Id;
 
         _bookShopDbContext.WishListItems.Add(wishlistItemToAdd);
-        wishList.WishListItems.Add(wishlistItemToAdd);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Wishlist with Id {wishlistItemToAdd.Id} added succesfully.");
+        _logger.LogInformation($"Wishlist with Id {wishlistItemToAdd.Id} added succesfully for client with id {clientId}.");
 
         var wishListItemModel = _mapper.Map<WishListItemModel>(wishlistItemToAdd);
 
@@ -55,6 +53,6 @@ internal class WishListItemService : IWishListItemService
 
         _bookShopDbContext.WishListItems.Remove(wishListEntity);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Wishlist with Id {wishlist.Id} remove succesfully.");
+        _logger.LogInformation($"Wishlist with Id {wishlist.Id} remove succesfully for client with id {clientId}.");
     }
 }
