@@ -1,8 +1,5 @@
-﻿using AutoMapper;
-using BookShop.Api.Models.CartModel;
-using BookShop.Api.Models.WishListItemModels;
-using BookShop.Data.Entities;
-using BookShop.Services.Abstractions;
+﻿using BookShop.Services.Abstractions;
+using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,34 +11,25 @@ namespace BookShop.Api.Controllers;
 public class WishListController : ControllerBase
 {
     private readonly IWishListService _wishlistService;
-    private readonly IMapper _mapper;
 
-    public WishListController(IWishListService wishlistService, IMapper mapper)
+    public WishListController(IWishListService wishlistService)
     {
         _wishlistService = wishlistService;
-        _mapper = mapper;
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<WishListEntity>> Create(CartCreateModel cartCreateModel)
-    {
-        var cart = _mapper.Map<CartEntity>(cartCreateModel);
-        await _wishlistService.CreateAsync(cart.ClientId);
-
-        return Ok();
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<WishListItemGetModel>>> GetWishlistItems(long id)
+    public async Task<ActionResult<List<WishListItemModel>>> GetWishlistItems()
     {
-        var wishlistItems = await _wishlistService.GetAllWishListItemsAsync(id);
-        var wishlistItemsOutput = new List<WishListItemGetModel>();
-        foreach (var wishlistItem in wishlistItems)
-        {
-            var wishlistItemOutput = _mapper.Map<WishListItemGetModel>(wishlistItem);
-            wishlistItemsOutput.Add(wishlistItemOutput);
-        }
+        var wishlistItems = await _wishlistService.GetAllWishListItemsAsync();
 
-        return Ok(wishlistItemsOutput);
+        return Ok(wishlistItems);
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> ClearAllWishListItems()
+    {
+        await _wishlistService.ClearAsync();
+
+        return Ok();
     }
 }

@@ -1,10 +1,10 @@
-﻿using BookShop.Data.Entities;
+﻿using BookShop.Services.Models.CartItemModels;
 
 namespace BookShop.Services.Abstractions;
 
 public interface IPaymentMethodService
 {
-    Task AddAsync(PaymentMethodEntity paymentMethodEntity);
-    Task RemoveAsync(PaymentMethodEntity paymentMethodEntity);
-    Task<List<PaymentMethodEntity>> GetAllAsync(long clientId);
+    Task<PaymentMethodModel> AddAsync(PaymentMethodAddModel paymentMethodEntity);
+    Task RemoveAsync(long paymentMethodId);
+    Task<List<PaymentMethodModel>> GetAllAsync();
 }

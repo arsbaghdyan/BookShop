@@ -1,13 +1,10 @@
-﻿using BookShop.Data;
-using BookShop.Data.Entities;
+﻿using BookShop.Common.Consts;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Models.ClientModels;
 using BookShop.Services.Options;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace BookShop.Services.Impl;
@@ -15,21 +12,18 @@ namespace BookShop.Services.Impl;
 public class CustomAuthenticationService : ICustomAuthenticationService
 {
     private readonly JwtOptions _jwtOptions;
-    private readonly BookShopDbContext _dbContext;
-    private readonly IHttpContextAccessor _contextAccessor;
 
-    public CustomAuthenticationService(JwtOptions jwtOptions, BookShopDbContext dbContext, IHttpContextAccessor contextAccessor)
+    public CustomAuthenticationService(JwtOptions jwtOptions)
     {
         _jwtOptions = jwtOptions;
-        _dbContext = dbContext;
-        _contextAccessor = contextAccessor;
     }
 
-    public string GenerateToken(ClientEntity clientEntity)
+    public string GenerateToken(ClientModel client)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Email, clientEntity.Email),
+            new Claim(BookShopClaims.Id, client.Id.ToString()),
+            new Claim(ClaimTypes.Email, client.Email)
         };
 
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
@@ -44,52 +38,5 @@ public class CustomAuthenticationService : ICustomAuthenticationService
         );
 
         return new JwtSecurityTokenHandler().WriteToken(token);
-    }
-    public async Task<ClientEntity> AuthenticateAsync(string email, string password)
-    {
-        var client = await _dbContext.Clients.FirstOrDefaultAsync(c => c.Email == email);
-
-        if (client == null || !VerifyPasswordHash(password, client.Password))
-        {
-            return null;
-        }
-
-        return client;
-    }
-
-    public string GetClientEmailFromToken()
-    {
-        var token = _contextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
-        if (token != null)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_jwtOptions.Key);
-
-            tokenHandler.ValidateToken(token, new TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                ValidateIssuer = false,
-                ValidateAudience = false,
-                ClockSkew = TimeSpan.Zero
-            }, out SecurityToken validatedToken);
-
-            var jwtToken = (JwtSecurityToken)validatedToken;
-            var clientEmail = jwtToken.Claims.First(x => x.Type == ClaimTypes.Email).Value;
-
-            return clientEmail;
-        }
-        throw new InvalidOperationException("Token not found.");
-    }
-
-    private bool VerifyPasswordHash(string password, string storedHash)
-    {
-        using (SHA256 sha256 = SHA256.Create())
-        {
-            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            var hashedPassword = BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
-
-            return string.Equals(hashedPassword, storedHash);
-        }
     }
 }

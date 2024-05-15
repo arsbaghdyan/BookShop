@@ -1,10 +1,8 @@
-﻿using BookShop.Data.Entities;
+﻿using BookShop.Services.Models.ClientModels;
 
 namespace BookShop.Services.Abstractions;
 
 public interface ICustomAuthenticationService
 {
-    string GenerateToken(ClientEntity clientEntity);
-    Task<ClientEntity> AuthenticateAsync(string email, string password);
-    string GetClientEmailFromToken();
+    string GenerateToken(ClientModel client);
 }

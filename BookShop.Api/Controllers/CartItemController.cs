@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using BookShop.Api.Models.CartItemModels;
-using BookShop.Data.Entities;
-using BookShop.Services.Abstractions;
+﻿using BookShop.Services.Abstractions;
+using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,38 +11,33 @@ namespace BookShop.Api.Controllers;
 public class CartItemController : ControllerBase
 {
     private readonly ICartItemService _cartItemService;
-    private readonly IMapper _mapper;
 
-    public CartItemController(ICartItemService cartItemService, IMapper mapper)
+    public CartItemController(ICartItemService cartItemService)
     {
         _cartItemService = cartItemService;
-        _mapper = mapper;
     }
 
     [HttpPost]
-    public async Task<ActionResult<CartItemEntity>> AddItem(CartItemAddModel cartItemAddModel)
+    public async Task<ActionResult<CartItemModel>> AddItem(CartItemAddModel cartItemAddModel)
     {
-        var cartItemToAdd = _mapper.Map<CartItemEntity>(cartItemAddModel);
-        await _cartItemService.AddAsync(cartItemToAdd);
+        var cart = await _cartItemService.AddAsync(cartItemAddModel);
 
-        return Ok();
+        return Ok(cart);
     }
 
     [HttpDelete]
-    public async Task<ActionResult<CartItemEntity>> RemoveItem(CartItemDeleteModel cartItemDeleteModel)
+    public async Task<IActionResult> RemoveItem(long cartItemId)
     {
-        var cartItemToRemove = _mapper.Map<CartItemEntity>(cartItemDeleteModel);
-        await _cartItemService.RemoveAsync(cartItemToRemove);
+        await _cartItemService.RemoveAsync(cartItemId);
 
         return Ok();
     }
 
     [HttpPut]
-    public async Task<ActionResult<CartItemEntity>> UpdateItem(CartItemUpdateModel cartItemUpdateModel)
+    public async Task<ActionResult<CartItemModel>> UpdateItem(CartItemUpdateModel cartItemUpdateModel)
     {
-        var cartItemToUpdate = _mapper.Map<CartItemEntity>(cartItemUpdateModel);
-        await _cartItemService.UpdateAsync(cartItemToUpdate);
+        var cart = await _cartItemService.UpdateAsync(cartItemUpdateModel);
 
-        return Ok();
+        return Ok(cart);
     }
 }

@@ -1,11 +1,13 @@
-﻿using BookShop.Data.Entities;
+﻿using BookShop.Services.Models.CartItemModels;
+using BookShop.Services.Models.ClientModels;
 
 namespace BookShop.Services.Abstractions;
 
 public interface IClientService
 {
-    Task RegisterAsync(ClientEntity clientEntity);
-    Task UpdateAsync(ClientEntity clientEntity);
-    Task RemoveAsync(ClientEntity clientEntity);
-    Task<ClientEntity> GetByIdAsync(long clientId);
+    Task<ClientModel> RegisterAsync(ClientRegisterModel clientEntity);
+    Task<ClientModel> UpdateAsync(ClientUpdateModel clientEntity);
+    Task RemoveAsync();
+    Task<ClientModel?> GetClientAsync();
+    Task<ClientModel?> GetByEmailAndPasswordAsync(string email, string password);
 }

@@ -1,8 +1,5 @@
-﻿using AutoMapper;
-using BookShop.Api.Models.CartItemModels;
-using BookShop.Api.Models.CartModel;
-using BookShop.Data.Entities;
-using BookShop.Services.Abstractions;
+﻿using BookShop.Services.Abstractions;
+using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,34 +11,25 @@ namespace BookShop.Api.Controllers;
 public class CartController : ControllerBase
 {
     private readonly ICartService _cartService;
-    private readonly IMapper _mapper;
 
-    public CartController(ICartService cartService, IMapper mapper)
+    public CartController(ICartService cartService)
     {
         _cartService = cartService;
-        _mapper = mapper;
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<CartEntity>> Create(CartCreateModel cartCreateModel)
-    {
-        var cart = _mapper.Map<CartEntity>(cartCreateModel);
-        await _cartService.CreateAsync(cart.ClientId);
-
-        return Ok();
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<CartItemGetModel>>> GetCartItems(long id)
+    public async Task<ActionResult<List<CartItemModel>>> GetCartItems()
     {
-        var cartItems = await _cartService.GetAllCartItemsAsync(id);
-        var cartItemsOutput = new List<CartItemGetModel>();
-        foreach (var cartItem in cartItems)
-        {
-            var cartItemOutput = _mapper.Map<CartItemGetModel>(cartItem);
-            cartItemsOutput.Add(cartItemOutput);
-        }
+        var cartItems = await _cartService.GetAllCartItemsAsync();
 
-        return Ok(cartItemsOutput);
+        return Ok(cartItems);
+    }
+
+    [HttpDelete]
+    public async Task<IActionResult> ClearAllItems()
+    {
+        await _cartService.ClearAsync();
+
+        return Ok();
     }
 }

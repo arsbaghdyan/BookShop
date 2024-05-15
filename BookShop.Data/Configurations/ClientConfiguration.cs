@@ -27,6 +27,6 @@ public class ClientConfiguration : IEntityTypeConfiguration<ClientEntity>
 
         builder.HasOne(w => w.WishListEntity)
                .WithOne(c => c.ClientEntity)
-               .HasForeignKey<WishListEntity>(w => w.Id);
+               .HasForeignKey<WishListEntity>(w => w.ClientId);
     }
 }

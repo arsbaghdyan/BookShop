@@ -1,9 +1,10 @@
-﻿using BookShop.Data;
+﻿using AutoMapper;
+using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Models.CartItemModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 
 namespace BookShop.Services.Impl;
 
@@ -11,131 +12,77 @@ internal class ProductService : IProductService
 {
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<ProductService> _logger;
+    private readonly IMapper _mapper;
 
-    public ProductService(BookShopDbContext bookShopDbContext, ILogger<ProductService> logger)
+    public ProductService(BookShopDbContext bookShopDbContext, ILogger<ProductService> logger, IMapper mapper)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
+        _mapper = mapper;
     }
 
-    public async Task AddAsync(ProductEntity productEntity)
+    public async Task<ProductModel> AddAsync(ProductAddModel product)
     {
-        try
-        {
-            if (productEntity==null)
-            {
-                throw new Exception("There is nothing to add");
-            }
+        var productToAdd = _mapper.Map<ProductEntity>(product);
 
-            productEntity.Details = SerializeDetails(productEntity.Details);
+        _bookShopDbContext.Products.Add(productToAdd);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Product with Id {productToAdd.Id} added successfully.");
 
-            _bookShopDbContext.Products.Add(productEntity);
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"Product with Id {productEntity.Id} added successfully.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
+        var productModel = _mapper.Map<ProductModel>(productToAdd);
+
+        return productModel;
     }
 
     public async Task ClearAsync()
     {
-        try
-        {
-            var products = await _bookShopDbContext.Products.ToListAsync();
-            _bookShopDbContext.Products.RemoveRange(products);
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation("All products cleared successfully.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
+        var products = await _bookShopDbContext.Products.ToListAsync();
+        _bookShopDbContext.Products.RemoveRange(products);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation("All products cleared successfully.");
     }
 
-    public async Task<List<ProductEntity>> GetAllAsync()
+    public async Task<List<ProductModel>> GetAllAsync()
     {
-        try
-        {
-            return await _bookShopDbContext.Products.ToListAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
+        var products = await _bookShopDbContext.Products.ToListAsync();
+
+        var productsToGet = _mapper.Map<List<ProductModel>>(products);
+
+        return productsToGet;
     }
 
-    public async Task<ProductEntity> GetByIdAsync(long productId)
+    public async Task<ProductModel> GetByIdAsync(long productId)
     {
-        try
-        {
-            var product = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
+        var product = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
 
-            if (product == null)
-            {
-                throw new Exception($"Product not found");
-            }
+        var productsToGet = _mapper.Map<ProductModel>(product);
 
-            return product;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
+        return productsToGet;
     }
 
     public async Task RemoveAsync(long productId)
     {
-        try
-        {
-            var product = _bookShopDbContext.Products.FirstOrDefault(s => s.Id == productId);
+        var product = _bookShopDbContext.Products.FirstOrDefault(s => s.Id == productId);
 
-            if (product == null)
-            {
-                throw new Exception($"Product not found");
-            }
-
-            _bookShopDbContext.Products.Remove(product);
-            await _bookShopDbContext.SaveChangesAsync();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
+        _bookShopDbContext.Products.Remove(product);
+        await _bookShopDbContext.SaveChangesAsync();
     }
 
-    public async Task UpdateAsync(ProductEntity productEntity)
+    public async Task<ProductModel> UpdateAsync(ProductUpdateModel product)
     {
-        try
-        {
-            var productToUpdate = await GetByIdAsync(productEntity.Id);
+        var productToUpdate = await GetByIdAsync(product.Id);
 
-            productEntity.Details = SerializeDetails(productEntity.Details);
+        productToUpdate.Name = product.Name;
+        productToUpdate.Price = product.Price;
+        productToUpdate.Manufacturer = product.Manufacturer;
+        productToUpdate.Details = product.Details;
+        productToUpdate.Count = product.Count;
 
-            productToUpdate.Name = productEntity.Name;
-            productToUpdate.Price = productEntity.Price;
-            productToUpdate.Manufacturer = productEntity.Manufacturer;
-            productToUpdate.Details = productEntity.Details;
-            productToUpdate.Count = productEntity.Count;
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Product with Id {product.Id} updated successfully.");
 
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"Product with Id {productEntity.Id} updated successfully.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
-    }
+        var productModel = _mapper.Map<ProductModel>(productToUpdate);
 
-    private string SerializeDetails(string details)
-    {
-        return JsonConvert.SerializeObject(details);
+        return productModel;
     }
 }

@@ -11,7 +11,9 @@ public class CartItemConfiguration : IEntityTypeConfiguration<CartItemEntity>
         builder.HasKey(ci => ci.Id);
 
         builder.HasOne(ci => ci.ProductEntity)
-               .WithMany()
+               .WithMany(p=>p.CartItemEntity)
                .HasForeignKey(ci => ci.ProductId);
+
+        builder.HasIndex(w => new { w.CartId, w.ProductId }).IsUnique();
     }
 }

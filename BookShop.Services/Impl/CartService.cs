@@ -1,6 +1,9 @@
-﻿using BookShop.Data;
-using BookShop.Data.Entities;
+﻿using AutoMapper;
+using BookShop.Common.ClientService.Abstractions;
+using BookShop.Common.ClientService.Impl;
+using BookShop.Data;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Models.CartItemModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -10,129 +13,42 @@ internal class CartService : ICartService
 {
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<CartService> _logger;
-    private readonly ICustomAuthenticationService _customAuthenticationService;
+    private readonly IMapper _mapper;
+    private readonly IClientContextReader _clientContextReader;
 
-    public CartService(BookShopDbContext bookShopDbContext, ILogger<CartService> logger, ICustomAuthenticationService customAuthenticationService)
+    public CartService(BookShopDbContext bookShopDbContext, ILogger<CartService> logger, IMapper mapper, ClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
-        _customAuthenticationService = customAuthenticationService;
+        _mapper = mapper;
+        _clientContextReader = clientContextReader;
     }
 
-    public async Task CreateAsync(long clientId)
+    public async Task<List<CartItemModel>> GetAllCartItemsAsync()
     {
-        try
+        var clientId = _clientContextReader.GetClientContextId();
+
+        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.Id == clientId);
+
+        var cartItemModels = new List<CartItemModel>();
+
+        foreach (var cartItem in cart.CartItems)
         {
-            var cart = await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.Id == clientId);
-
-            if (cart != null)
-            {
-                throw new Exception("Cart for client already exist");
-            }
-
-            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
-
-            if (client == null)
-            {
-                throw new Exception("Client not Found");
-            }
-
-            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-            if (client.Email != checkingClientEmail)
-            {
-                throw new Exception("Unauthorized: You can not create cart for other client.");
-            }
-
-            var cartToAdd = new CartEntity { ClientId = clientId };
-            _bookShopDbContext.Carts.Add(cartToAdd);
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"Cart with Id {cartToAdd.Id} is add for client with Id {clientId}");
+            var cartItemModel = _mapper.Map<CartItemModel>(cartItem);
+            cartItemModels.Add(cartItemModel);
         }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
+
+        return cartItemModels;
     }
 
-    public async Task<List<CartItemEntity>> GetAllCartItemsAsync(long cartId)
+    public async Task ClearAsync()
     {
-        try
-        {
-            var cart = await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.Id == cartId);
+        var clientId = _clientContextReader.GetClientContextId();
 
-            if (cart == null)
-            {
-                throw new Exception("Cart not found");
-            }
+        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.Id == clientId);
 
-            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == cart.ClientId);
-
-            if (client == null)
-            {
-                throw new Exception("Client not Found");
-            }
-
-            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-            if (client.Email != checkingClientEmail)
-            {
-                throw new Exception("Unauthorized: You can not create cart for other client.");
-            }
-
-            var listToReturn = new List<CartItemEntity>();
-            var listItems = await _bookShopDbContext.CartItems.Where(c => c.CartId == cartId).ToListAsync();
-
-            listToReturn.AddRange(listItems);
-
-            return listToReturn;
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
-    }
-
-    public async Task ClearAsync(long cartId)
-    {
-        try
-        {
-            var cart = await _bookShopDbContext.Carts.FirstOrDefaultAsync(c => c.Id == cartId);
-
-            if (cart == null)
-            {
-                throw new Exception("Cart not found");
-            }
-
-            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == cart.ClientId);
-
-            if (client == null)
-            {
-                throw new Exception("Client not Found");
-            }
-
-            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-            if (client.Email != checkingClientEmail)
-            {
-                throw new Exception("Unauthorized: You can only clear your own cart.");
-            }
-
-            if (cart.CartItems == null)
-            {
-                throw new Exception("Cart is Empty");
-            }
-
-            _bookShopDbContext.CartItems.RemoveRange(cart.CartItems);
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation("CartItem cleared successfully.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
+        _bookShopDbContext.CartItems.RemoveRange(cart.CartItems);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation("CartItems cleared successfully.");
     }
 }

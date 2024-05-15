@@ -1,10 +1,10 @@
-﻿using BookShop.Data.Entities;
+﻿using BookShop.Services.Models.CartItemModels;
 
 namespace BookShop.Services.Abstractions;
 
 public interface ICartItemService
 {
-    Task AddAsync(CartItemEntity cartItem);
-    Task RemoveAsync(CartItemEntity cartItem);
-    Task UpdateAsync(CartItemEntity cartItemEntity);
+    Task<CartItemModel> AddAsync(CartItemAddModel cartItem);
+    Task RemoveAsync(long cartItemId);
+    Task<CartItemModel> UpdateAsync(CartItemUpdateModel cartItem);
 }

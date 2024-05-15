@@ -8,7 +8,7 @@ public class InvoiceEntity : IIdentifiable
     public long ClientId { get; set; }
     public long PaymentId { get; set; }
     public long OrderId { get; set; }
-    public DateTimeOffset CreatedAt { get; set; }
+    public DateTime CreatedAt { get; set; }
     public decimal TotalAmount { get; set; }
     public bool IsPaid { get; set; }
     public PaymentEntity? PaymentEntity { get; set; }

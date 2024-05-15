@@ -1,51 +1,45 @@
-﻿using AutoMapper;
-using BookShop.Api.Models.ClientModels;
-using BookShop.Data.Entities;
-using BookShop.Services.Abstractions;
+﻿using BookShop.Services.Abstractions;
+using BookShop.Services.Models.CartItemModels;
+using BookShop.Services.Models.ClientModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("[controller]")]
 public class ClientController : ControllerBase
 {
     private readonly IClientService _clientService;
-    private readonly IMapper _mapper;
 
-    public ClientController(IClientService clientService, IMapper mapper)
+    public ClientController(IClientService clientService)
     {
         _clientService = clientService;
-        _mapper = mapper;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<ClientEntity>> RegisterClient(ClientRegisterModel clientModel)
+    [HttpPost("Registration")]
+    [AllowAnonymous]
+    public async Task<ActionResult<ClientModel>> RegisterClient(ClientRegisterModel clientModel)
     {
-        var client = _mapper.Map<ClientEntity>(clientModel);
-        await _clientService.RegisterAsync(client);
+        var client = await _clientService.RegisterAsync(clientModel);
 
-        return Ok();
+        return Ok(client);
     }
 
-    [Authorize]
     [HttpDelete]
-    public async Task<ActionResult<ClientEntity>> RemoveClient(ClientDeleteModel clientDeleteModel)
+    public async Task<ActionResult> RemoveClient()
     {
-        var client = _mapper.Map<ClientEntity>(clientDeleteModel);
-        await _clientService.RemoveAsync(client);
+        await _clientService.RemoveAsync();
 
         return Ok();
     }
 
-    [Authorize]
     [HttpPut]
-    public async Task<ActionResult<ClientEntity>> UpdateClient(ClientUpdateModel clientModel)
+    public async Task<ActionResult<ClientModel>> UpdateClient(ClientUpdateModel clientModel)
     {
-        var client = _mapper.Map<ClientEntity>(clientModel);
-        await _clientService.UpdateAsync(client);
+        var client = await _clientService.UpdateAsync(clientModel);
 
-        return Ok();
+        return Ok(client);
     }
 }

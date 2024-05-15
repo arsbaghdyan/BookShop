@@ -3,6 +3,10 @@ using BookShop.Data;
 using BookShop.Services.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper;
+using BookShop.Services.Models.CartItemModels;
+using BookShop.Common.ClientService.Impl;
+using BookShop.Common.ClientService.Abstractions;
 
 namespace BookShop.Services.Impl;
 
@@ -10,105 +14,47 @@ internal class WishListItemService : IWishListItemService
 {
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<WishListItemService> _logger;
-    private readonly ICustomAuthenticationService _customAuthenticationService;
+    private readonly IMapper _mapper;
+    private readonly IClientContextReader _clientContextReader;
 
-    public WishListItemService(BookShopDbContext bookShopDbContext, ILogger<WishListItemService> logger,
-        ICustomAuthenticationService customAuthenticationService)
+    public WishListItemService(BookShopDbContext bookShopDbContext, ILogger<WishListItemService> logger, IMapper mapper, ClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
-        _customAuthenticationService = customAuthenticationService;
+        _mapper = mapper;
+        _clientContextReader = clientContextReader;
     }
 
-    public async Task AddAsync(WishListItemEntity wishListItemEntity)
+    public async Task<WishListItemModel> AddAsync(WishListItemAddModel wishListItem)
     {
-        try
-        {
-            if (wishListItemEntity == null)
-            {
-                throw new Exception("There is nothing to add");
-            }
+        var clientId = _clientContextReader.GetClientContextId();
 
-            var wishList = await _bookShopDbContext.WishLists.FirstOrDefaultAsync(c => c.Id == wishListItemEntity.WishListId);
+        var wishList = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
 
-            if (wishList == null)
-            {
-                throw new Exception("Wishlist not found");
-            }
+        var wishlistItemToAdd = _mapper.Map<WishListItemEntity>(wishListItem);
 
-            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == wishList.ClientId);
+        wishlistItemToAdd.WishListId = wishList.Id;
 
-            if (client == null)
-            {
-                throw new Exception("Client not Found");
-            }
+        _bookShopDbContext.WishListItems.Add(wishlistItemToAdd);
+        wishList.WishListItems.Add(wishlistItemToAdd);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Wishlist with Id {wishlistItemToAdd.Id} added succesfully.");
 
-            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
+        var wishListItemModel = _mapper.Map<WishListItemModel>(wishlistItemToAdd);
 
-            if (client.Email != checkingClientEmail)
-            {
-                throw new Exception("Unauthorized: You can only add your own wishlist.");
-            }
-
-            if (wishList.WishListItems == null)
-            {
-                wishList.WishListItems = new List<WishListItemEntity>();
-            }
-
-            _bookShopDbContext.WishListItems.Add(wishListItemEntity);
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"Wishlist with Id {wishListItemEntity.Id} added succesfully.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
+        return wishListItemModel;
     }
 
-    public async Task RemoveAsync(WishListItemEntity wishListItemEntity)
+    public async Task RemoveAsync(long wishlistItemId)
     {
-        try
-        {
-            if (wishListItemEntity == null)
-            {
-                throw new Exception("There is nothing to add");
-            }
+        var clientId = _clientContextReader.GetClientContextId();
 
-            var wishlist = await _bookShopDbContext.WishLists.FirstOrDefaultAsync(c => c.Id == wishListItemEntity.WishListId);
+        var wishlist = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
 
-            if (wishlist == null)
-            {
-                throw new Exception("Wishlist not found");
-            }
+        var wishListEntity = wishlist.WishListItems.FirstOrDefault(w => w.Id == wishlistItemId);
 
-            var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == wishlist.ClientId);
-
-            if (client == null)
-            {
-                throw new Exception("Client not Found");
-            }
-
-            var checkingClientEmail = _customAuthenticationService.GetClientEmailFromToken();
-
-            if (client.Email != checkingClientEmail)
-            {
-                throw new Exception("Unauthorized: You can only remove your own wishlist.");
-            }
-
-            if (wishlist.WishListItems == null)
-            {
-                throw new Exception("Wishlist is Empty");
-            }
-
-            _bookShopDbContext.WishListItems.Remove(wishListItemEntity);
-            await _bookShopDbContext.SaveChangesAsync();
-            _logger.LogInformation($"Wishlist with Id {wishListItemEntity.Id} remove succesfully.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Error {ex.Message}");
-            throw;
-        }
+        _bookShopDbContext.WishListItems.Remove(wishListEntity);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Wishlist with Id {wishlist.Id} remove succesfully.");
     }
 }

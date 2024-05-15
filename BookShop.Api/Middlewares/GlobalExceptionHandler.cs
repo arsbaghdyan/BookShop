@@ -20,7 +20,7 @@ public class GlobalExceptionHandler : IMiddleware
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.ContentType = "text/html;charset=utf-8";
             await context.Response.WriteAsync($"Error: {ex.Message}");
-            _logger.Log(LogLevel.Error, $"Error: {ex.Message}");
+            _logger.LogError(ex, $"Error: {ex.Message}");
         }
     }
 }
