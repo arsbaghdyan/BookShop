@@ -17,7 +17,7 @@ public class PaymentMethodController : ControllerBase
         _paymentMethodService = paymentMethodService;
     }
 
-    [HttpPost]
+    [HttpPost("Add_card")]
     public async Task<ActionResult<PaymentMethodModel>> AddPaymentMethod(PaymentMethodAddModel paymentMethodAddModel)
     {
         var paymentMethod = await _paymentMethodService.AddAsync(paymentMethodAddModel);
