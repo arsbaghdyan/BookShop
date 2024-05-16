@@ -2,5 +2,5 @@
 
 public interface IClientContextReader
 {
-    public long GetClientContextId();
+    long GetClientContextId();
 }

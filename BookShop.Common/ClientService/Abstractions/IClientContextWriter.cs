@@ -2,5 +2,5 @@
 
 public interface IClientContextWriter
 {
-    public void SetClientContextId(long Id);
+    void SetClientContextId(long Id);
 }

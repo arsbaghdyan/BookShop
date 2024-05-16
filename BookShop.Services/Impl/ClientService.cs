@@ -57,7 +57,7 @@ internal class ClientService : IClientService
             catch (Exception ex)
             {
                 transaction.Rollback();
-                throw;
+                throw new Exception($"Error {ex.Message}");
             }
         }
     }
