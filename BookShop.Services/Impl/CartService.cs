@@ -27,11 +27,11 @@ internal class CartService : ICartService
     public async Task<List<CartItemModel>> GetAllCartItemsAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
+        var cartEntity = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
 
         var cartItemModels = new List<CartItemModel>();
 
-        foreach (var cartItem in cart.CartItems)
+        foreach (var cartItem in cartEntity.CartItems)
         {
             var cartItemModel = _mapper.Map<CartItemModel>(cartItem);
             cartItemModels.Add(cartItemModel);
@@ -43,9 +43,9 @@ internal class CartService : ICartService
     public async Task ClearAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
+        var cartEntity = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
 
-        _bookShopDbContext.CartItems.RemoveRange(cart.CartItems);
+        _bookShopDbContext.CartItems.RemoveRange(cartEntity.CartItems);
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"CartItems cleared successfully for client with id {clientId}.");
     }

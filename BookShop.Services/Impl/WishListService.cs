@@ -27,25 +27,25 @@ internal class WishListService : IWishListService
     public async Task<List<WishListItemModel>> GetAllWishListItemsAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var wishlist = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
+        var wishListEntity = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
 
-        var wishlistItemModels = new List<WishListItemModel>();
+        var wishListItemModels = new List<WishListItemModel>();
 
-        foreach (var wishlistItem in wishlist.WishListItems)
+        foreach (var wishlistItem in wishListEntity.WishListItems)
         {
-            var wishlistItemModel = _mapper.Map<WishListItemModel>(wishlistItem);
-            wishlistItemModels.Add(wishlistItemModel);
+            var wishListItemModel = _mapper.Map<WishListItemModel>(wishlistItem);
+            wishListItemModels.Add(wishListItemModel);
         }
 
-        return wishlistItemModels;
+        return wishListItemModels;
     }
 
     public async Task ClearAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var wishlist = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
+        var wishListEntity = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
 
-        _bookShopDbContext.WishListItems.RemoveRange(wishlist.WishListItems);
+        _bookShopDbContext.WishListItems.RemoveRange(wishListEntity.WishListItems);
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"WishList items cleared successfully for client with id {clientId}.");
     }

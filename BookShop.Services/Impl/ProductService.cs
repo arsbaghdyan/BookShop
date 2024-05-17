@@ -31,7 +31,7 @@ internal class ProductService : IProductService
         var productCheck = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Manufacturer == productAddModel.Manufacturer
         && p.Details == p.Details && p.Name == productAddModel.Name && p.Price == productAddModel.Price);
 
-        var product = new ProductEntity();
+        var productEntity = new ProductEntity();
 
         var productModel = new ProductModel();
         if (productCheck != null)
@@ -45,13 +45,13 @@ internal class ProductService : IProductService
 
             return productModel;
         }
-        product = _mapper.Map<ProductEntity>(productAddModel);
-        _bookShopDbContext.Products.Add(product);
+        productEntity = _mapper.Map<ProductEntity>(productAddModel);
+        _bookShopDbContext.Products.Add(productEntity);
 
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Product with Id {product.Id} added successfully");
+        _logger.LogInformation($"Product with Id {productEntity.Id} added successfully");
 
-        productModel = _mapper.Map<ProductModel>(product);
+        productModel = _mapper.Map<ProductModel>(productEntity);
 
         return productModel;
     }
@@ -66,20 +66,20 @@ internal class ProductService : IProductService
 
     public async Task<List<ProductModel>> GetAllAsync()
     {
-        var products = await _bookShopDbContext.Products.ToListAsync();
+        var productEntities = await _bookShopDbContext.Products.ToListAsync();
 
-        var productsToGet = _mapper.Map<List<ProductModel>>(products);
+        var productsModels = _mapper.Map<List<ProductModel>>(productEntities);
 
-        return productsToGet;
+        return productsModels;
     }
 
     public async Task<ProductModel> GetByIdAsync(long productId)
     {
-        var product = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
+        var productEntity = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
 
-        var productsToGet = _mapper.Map<ProductModel>(product);
+        var productsModel = _mapper.Map<ProductModel>(productEntity);
 
-        return productsToGet;
+        return productsModel;
     }
 
     public async Task RemoveAsync(long productId)

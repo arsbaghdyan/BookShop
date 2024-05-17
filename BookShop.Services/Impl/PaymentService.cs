@@ -29,28 +29,28 @@ internal class PaymentService : IPaymentService
     public async Task<PaymentModel> ApprovePayment(PaymentAddModel paymentAddModel)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var invoice = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).FirstOrDefaultAsync(i => i.ClientId == clientId);
+        var invoiceEntity = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).FirstOrDefaultAsync(i => i.ClientId == clientId);
 
-        var payment = new PaymentEntity();
+        var paymentEntity = new PaymentEntity();
 
-        payment.PaymentMethodId = paymentAddModel.PaymentMethodId;
-        payment.Amount = paymentAddModel.Amount;
-        payment.InvoiceId = invoice.Id;
+        paymentEntity.PaymentMethodId = paymentAddModel.PaymentMethodId;
+        paymentEntity.Amount = paymentAddModel.Amount;
+        paymentEntity.InvoiceId = invoiceEntity.Id;
 
-        if (invoice.TotalAmount == payment.Amount)
+        if (invoiceEntity.TotalAmount == paymentEntity.Amount)
         {
-            payment.PaymentStatus = PaymentStatus.Success;
+            paymentEntity.PaymentStatus = PaymentStatus.Success;
         }
         else
         {
-            payment.PaymentStatus = PaymentStatus.Fail;
+            paymentEntity.PaymentStatus = PaymentStatus.Fail;
         }
 
-        _bookShopDbContext.Payments.Add(payment);
+        _bookShopDbContext.Payments.Add(paymentEntity);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Payment with Id {payment.Id} is success for client with Id {clientId}");
+        _logger.LogInformation($"Payment with Id {paymentEntity.Id} is success for client with Id {clientId}");
 
-        var paymentModel = _mapper.Map<PaymentModel>(payment);
+        var paymentModel = _mapper.Map<PaymentModel>(paymentEntity);
 
         return paymentModel;
     }

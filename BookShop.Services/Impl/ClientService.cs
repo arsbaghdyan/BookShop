@@ -43,8 +43,8 @@ internal class ClientService : IClientService
                 var newCart = new CartEntity { ClientId = clientToAdd.Id };
                 _bookShopDbContext.Carts.Add(newCart);
 
-                var newWishlist = new WishListEntity { ClientId = clientToAdd.Id };
-                _bookShopDbContext.WishLists.Add(newWishlist);
+                var newWishList = new WishListEntity { ClientId = clientToAdd.Id };
+                _bookShopDbContext.WishLists.Add(newWishList);
 
                 await _bookShopDbContext.SaveChangesAsync();
                 _logger.LogInformation($"Client with Id {clientToAdd.Id} added successfully.");
@@ -65,19 +65,19 @@ internal class ClientService : IClientService
         }
     }
 
-    public async Task<ClientModel> UpdateAsync(ClientUpdateModel client)
+    public async Task<ClientModel> UpdateAsync(ClientUpdateModel clientUpdateModel)
     {
         var clientId = _clientContextReader.GetClientContextId();
         var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
 
-        clientToUpdate.FirstName = client.FirstName;
-        clientToUpdate.LastName = client.LastName;
-        clientToUpdate.Email = client.Email;
-        clientToUpdate.Address = client.Address;
+        clientToUpdate.FirstName = clientUpdateModel.FirstName;
+        clientToUpdate.LastName = clientUpdateModel.LastName;
+        clientToUpdate.Email = clientUpdateModel.Email;
+        clientToUpdate.Address = clientUpdateModel.Address;
 
-        if (!string.IsNullOrEmpty(client.Password))
+        if (!string.IsNullOrEmpty(clientUpdateModel.Password))
         {
-            clientToUpdate.Password = HashPassword(client.Password);
+            clientToUpdate.Password = HashPassword(clientUpdateModel.Password);
         }
 
         await _bookShopDbContext.SaveChangesAsync();
@@ -103,9 +103,9 @@ internal class ClientService : IClientService
         var clientId = _clientContextReader.GetClientContextId();
         var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == clientId);
 
-        var getClient = _mapper.Map<ClientModel?>(client);
+        var clientModel = _mapper.Map<ClientModel?>(client);
 
-        return getClient;
+        return clientModel;
     }
 
     public async Task<ClientModel?> GetByEmailAndPasswordAsync(

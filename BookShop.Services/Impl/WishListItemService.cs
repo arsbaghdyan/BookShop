@@ -28,29 +28,29 @@ internal class WishListItemService : IWishListItemService
     public async Task<WishListItemModel> AddAsync(WishListItemAddModel wishListItem)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var wishList = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
+        var wishListEntity = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
 
-        var wishlistItemToAdd = _mapper.Map<WishListItemEntity>(wishListItem);
+        var wishListItemToAdd = _mapper.Map<WishListItemEntity>(wishListItem);
 
-        wishlistItemToAdd.WishListId = wishList.Id;
+        wishListItemToAdd.WishListId = wishListEntity.Id;
 
-        _bookShopDbContext.WishListItems.Add(wishlistItemToAdd);
+        _bookShopDbContext.WishListItems.Add(wishListItemToAdd);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Wishlist with Id {wishlistItemToAdd.Id} added succesfully for client with id {clientId}.");
+        _logger.LogInformation($"WishList with Id {wishListItemToAdd.Id} added succesfully for client with id {clientId}.");
 
-        var wishListItemModel = _mapper.Map<WishListItemModel>(wishlistItemToAdd);
+        var wishListItemModel = _mapper.Map<WishListItemModel>(wishListItemToAdd);
 
         return wishListItemModel;
     }
 
-    public async Task RemoveAsync(long wishlistItemId)
+    public async Task RemoveAsync(long wishListItemId)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var wishlist = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
-        var wishListEntity = wishlist.WishListItems.FirstOrDefault(w => w.Id == wishlistItemId);
+        var wishListEntity = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
+        var wishListItemEntity = wishListEntity.WishListItems.FirstOrDefault(w => w.Id == wishListItemId);
 
-        _bookShopDbContext.WishListItems.Remove(wishListEntity);
+        _bookShopDbContext.WishListItems.Remove(wishListItemEntity);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Wishlist with Id {wishlist.Id} remove succesfully for client with id {clientId}.");
+        _logger.LogInformation($"WishList with Id {wishListEntity.Id} remove succesfully for client with id {clientId}.");
     }
 }

@@ -16,7 +16,7 @@ internal class PaymentMethodService : IPaymentMethodService
     private readonly ILogger<PaymentMethodService> _logger;
     private readonly IClientContextReader _clientContextReader;
 
-    public PaymentMethodService(BookShopDbContext bookShopDbContext, ILogger<PaymentMethodService> logger, 
+    public PaymentMethodService(BookShopDbContext bookShopDbContext, ILogger<PaymentMethodService> logger,
                                 IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
@@ -28,22 +28,22 @@ internal class PaymentMethodService : IPaymentMethodService
     {
         var clientId = _clientContextReader.GetClientContextId();
 
-        var paymentMethod = new PaymentMethodEntity
+        var paymentMethodEntity = new PaymentMethodEntity
         {
             ClientId = clientId,
             PaymentMethod = paymentMethodAddModel.PaymentMethod,
             Details = JsonConvert.SerializeObject(paymentMethodAddModel.Details)
         };
 
-        _bookShopDbContext.PaymentMethods.Add(paymentMethod);
+        _bookShopDbContext.PaymentMethods.Add(paymentMethodEntity);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"PaymentMethod with Id {paymentMethod.Id} added successfully for client with id {clientId}.");
+        _logger.LogInformation($"PaymentMethod with Id {paymentMethodEntity.Id} added successfully for client with id {clientId}.");
 
         var paymentMethodModel = new PaymentMethodModel
         {
-            Id = paymentMethod.Id,
+            Id = paymentMethodEntity.Id,
             PaymentMethod = paymentMethodAddModel.PaymentMethod,
-            Details = JsonConvert.DeserializeObject<CardDetails>(paymentMethod.Details)
+            Details = JsonConvert.DeserializeObject<CardDetails>(paymentMethodEntity.Details)
         };
 
         return paymentMethodModel;
@@ -52,11 +52,11 @@ internal class PaymentMethodService : IPaymentMethodService
     public async Task<List<PaymentMethodModel>> GetAllAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var paymentMethodsDb = await _bookShopDbContext.PaymentMethods.Where(p => p.ClientId == clientId).ToListAsync();
+        var paymentMethodEntites = await _bookShopDbContext.PaymentMethods.Where(p => p.ClientId == clientId).ToListAsync();
 
-        var paymentMethods = new List<PaymentMethodModel>();
+        var paymentMethodModels = new List<PaymentMethodModel>();
 
-        foreach (var paymentMethod in paymentMethodsDb)
+        foreach (var paymentMethod in paymentMethodEntites)
         {
             var paymentMethodModel = new PaymentMethodModel
             {
@@ -64,19 +64,19 @@ internal class PaymentMethodService : IPaymentMethodService
                 PaymentMethod = paymentMethod.PaymentMethod,
                 Details = JsonConvert.DeserializeObject<CardDetails>(paymentMethod.Details)
             };
-            paymentMethods.Add(paymentMethodModel);
+            paymentMethodModels.Add(paymentMethodModel);
         }
 
-        return paymentMethods;
+        return paymentMethodModels;
     }
 
     public async Task RemoveAsync(long paymentMethodId)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var paymentMethod = await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(p => p.Id == paymentMethodId && p.ClientId == clientId);
+        var paymentMethodEntity = await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(p => p.Id == paymentMethodId && p.ClientId == clientId);
 
-        _bookShopDbContext.PaymentMethods.Remove(paymentMethod);
+        _bookShopDbContext.PaymentMethods.Remove(paymentMethodEntity);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"PaymentMethod with Id {paymentMethod.Id} removed successfully for client with id {clientId}.");
+        _logger.LogInformation($"PaymentMethod with Id {paymentMethodEntity.Id} removed successfully for client with id {clientId}.");
     }
 }
