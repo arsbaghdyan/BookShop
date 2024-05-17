@@ -41,6 +41,7 @@ internal class InvoiceService : IInvoiceService
 
         var invoiceModel = _mapper.Map<List<InvoiceModel>>(invoiceEntities);
 
+
         return invoiceModel;
     }
 
