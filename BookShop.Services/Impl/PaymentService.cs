@@ -26,7 +26,7 @@ internal class PaymentService : IPaymentService
         _bookShopDbContext = bookShopDbContext;
     }
 
-    public async Task<PaymentModel> ApprovePayment(PaymentAddModel paymentAddModel)
+    public async Task<PaymentModel> ConfirmPayment(PaymentAddModel paymentAddModel)
     {
         var clientId = _clientContextReader.GetClientContextId();
         var invoiceEntity = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).FirstOrDefaultAsync(i => i.ClientId == clientId);
@@ -40,15 +40,17 @@ internal class PaymentService : IPaymentService
         if (invoiceEntity.TotalAmount == paymentEntity.Amount)
         {
             paymentEntity.PaymentStatus = PaymentStatus.Success;
+            _logger.LogInformation($"Payment with Id {paymentEntity.Id} is success for client with Id {clientId}");
         }
         else
         {
             paymentEntity.PaymentStatus = PaymentStatus.Fail;
+            _logger.LogInformation($"Payment with Id {paymentEntity.Id} is fail for client with Id {clientId}");
         }
 
         _bookShopDbContext.Payments.Add(paymentEntity);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Payment with Id {paymentEntity.Id} is success for client with Id {clientId}");
+        _logger.LogInformation($"Payment with Id {paymentEntity.Id} is added for client with Id {clientId}");
 
         var paymentModel = _mapper.Map<PaymentModel>(paymentEntity);
 

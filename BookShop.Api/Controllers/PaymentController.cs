@@ -17,10 +17,10 @@ public class PaymentController : ControllerBase
         _paymentService = paymentService;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<PaymentModel>> ApprovePayment(PaymentAddModel paymentAddModel)
+    [HttpPost("Confirm_payment")]
+    public async Task<ActionResult<PaymentModel>> ConfirmPayment(PaymentAddModel paymentAddModel)
     {
-        var payment = await _paymentService.ApprovePayment(paymentAddModel);
+        var payment = await _paymentService.ConfirmPayment(paymentAddModel);
 
         return Ok(payment);
     }

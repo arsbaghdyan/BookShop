@@ -29,7 +29,7 @@ internal class CartItemService : ICartItemService
     {
         if (cartItemAddModel.Count <= 0)
         {
-            throw new Exception("Produc count cant be less than 0");
+            throw new Exception("Product count cant be less than 0");
         }
 
         var clientId = _clientContextReader.GetClientContextId();
@@ -85,7 +85,7 @@ internal class CartItemService : ICartItemService
     {
         if (cartItemUpdateModel.Count <= 0)
         {
-            throw new Exception("Produc count cant be less than 0");
+            throw new Exception("Product count cant be less than 0");
         }
 
         var clientId = _clientContextReader.GetClientContextId();

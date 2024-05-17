@@ -1,4 +1,4 @@
-﻿namespace BookShop.Services.Models;
+﻿namespace BookShop.Services.Models.TokenModels;
 
 public class TokenModel
 {
