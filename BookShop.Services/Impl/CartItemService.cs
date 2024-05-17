@@ -5,7 +5,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using BookShop.Services.Models.CartItemModels;
 using AutoMapper;
-using BookShop.Common.ClientService.Impl;
 using BookShop.Common.ClientService.Abstractions;
 
 namespace BookShop.Services.Impl;
@@ -17,7 +16,8 @@ internal class CartItemService : ICartItemService
     private readonly IMapper _mapper;
     private readonly IClientContextReader _clientContextReader;
 
-    public CartItemService(BookShopDbContext bookShopDbContext, ILogger<CartItemService> logger, IMapper mapper, ClientContextReader clientContextReader)
+    public CartItemService(BookShopDbContext bookShopDbContext, ILogger<CartItemService> logger, 
+                           IMapper mapper, IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
@@ -25,23 +25,46 @@ internal class CartItemService : ICartItemService
         _clientContextReader = clientContextReader;
     }
 
-    public async Task<CartItemModel> AddAsync(CartItemAddModel cartItem)
+    public async Task<CartItemModel> AddAsync(CartItemAddModel cartItemAddModel)
     {
+        if (cartItemAddModel.Count <= 0)
+        {
+            throw new Exception("Product count cant be less than 0");
+        }
+
         var clientId = _clientContextReader.GetClientContextId();
+        var cartEntity = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
+        var productEntity = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == cartItemAddModel.ProductId);
 
-        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
+        if (productEntity.Count < cartItemAddModel.Count)
+        {
+            throw new Exception("Not enough product");
+        }
 
-        var cartItemToAdd = _mapper.Map<CartItemEntity>(cartItem);
+        var cartItemEntity = cartEntity.CartItems.FirstOrDefault(ci => ci.ProductId == cartItemAddModel.ProductId
+                                                                              && ci.CartId == cartEntity.Id);
+        var cartItemModel = new CartItemModel();
+        if (cartItemEntity != null)
+        {
+            cartItemEntity.Count += cartItemAddModel.Count;
+            cartItemEntity.Price = cartItemEntity.Count * productEntity.Price;
 
-        cartItemToAdd.Id = cart.Id;
+            await _bookShopDbContext.SaveChangesAsync();
+            cartItemModel = _mapper.Map<CartItemModel>(cartItemEntity);
 
-        cartItem.Price *= cartItem.Count;
+            return cartItemModel;
+        }
+        var cartItemToAdd = _mapper.Map<CartItemEntity>(cartItemAddModel);
+
+        cartItemToAdd.Price = cartItemToAdd.Count * productEntity.Price;
+        cartItemToAdd.CartId = cartEntity.Id;
 
         _bookShopDbContext.CartItems.Add(cartItemToAdd);
-        await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Cart with Id {cartItemToAdd.Id} added succesfully.");
 
-        var cartItemModel = _mapper.Map<CartItemModel>(cartItemToAdd);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"CartItem with Id {cartItemToAdd.Id} added successfully for client with id {clientId}.");
+
+        cartItemModel = _mapper.Map<CartItemModel>(cartItemToAdd);
 
         return cartItemModel;
     }
@@ -50,32 +73,40 @@ internal class CartItemService : ICartItemService
     {
         var clientId = _clientContextReader.GetClientContextId();
 
-        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
+        var cartEntity = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
+        var cartItemEntity = cartEntity.CartItems.FirstOrDefault(c => c.Id == cartItemId);
 
-        var cartEntity = cart.CartItems.FirstOrDefault(c => c.Id == cartItemId);
-
-        _bookShopDbContext.CartItems.Remove(cartEntity);
+        _bookShopDbContext.CartItems.Remove(cartItemEntity);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Cart with Id {cartEntity.Id} remove succesfully.");
+        _logger.LogInformation($"Cart with Id {cartItemEntity.Id} remove succesfully for client with id {clientId}.");
     }
 
-    public async Task<CartItemModel> UpdateAsync(CartItemUpdateModel cartItem)
+    public async Task<CartItemModel> UpdateAsync(CartItemUpdateModel cartItemUpdateModel)
     {
+        if (cartItemUpdateModel.Count <= 0)
+        {
+            throw new Exception("Product count cant be less than 0");
+        }
+
         var clientId = _clientContextReader.GetClientContextId();
 
-        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
+        var cartEntity = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
+        var productEntity = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == cartItemUpdateModel.ProductId);
 
-        var cartEntity = cart.CartItems.FirstOrDefault(c => c.Id == cartItem.Id);
+        if (productEntity.Count < cartItemUpdateModel.Count)
+        {
+            throw new Exception("Not enough product");
+        }
 
-        cartEntity.Count = cartItem.Count;
-        cartEntity.Price = cartItem.Price * cartItem.Count;
+        var cartItemEntity = cartEntity.CartItems.FirstOrDefault(c => c.Id == cartItemUpdateModel.Id);
 
-        cartEntity = _mapper.Map<CartItemEntity>(cartItem);
+        cartItemEntity.Count = cartItemUpdateModel.Count;
+        cartItemEntity.Price = productEntity.Price * cartItemEntity.Count;
 
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"CartItem with Id {cartItem.Id} removed successfully");
+        _logger.LogInformation($"CartItem with Id {cartItemUpdateModel.Id} removed successfully for client with id {clientId}.");
 
-        var cartItemModel = _mapper.Map<CartItemModel>(cart);
+        var cartItemModel = _mapper.Map<CartItemModel>(cartItemEntity);
 
         return cartItemModel;
     }

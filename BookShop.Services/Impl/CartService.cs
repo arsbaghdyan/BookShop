@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BookShop.Common.ClientService.Abstractions;
-using BookShop.Common.ClientService.Impl;
 using BookShop.Data;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
@@ -16,7 +15,8 @@ internal class CartService : ICartService
     private readonly IMapper _mapper;
     private readonly IClientContextReader _clientContextReader;
 
-    public CartService(BookShopDbContext bookShopDbContext, ILogger<CartService> logger, IMapper mapper, ClientContextReader clientContextReader)
+    public CartService(BookShopDbContext bookShopDbContext, ILogger<CartService> logger,
+                       IMapper mapper, IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
@@ -27,12 +27,11 @@ internal class CartService : ICartService
     public async Task<List<CartItemModel>> GetAllCartItemsAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-
-        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.Id == clientId);
+        var cartEntity = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
 
         var cartItemModels = new List<CartItemModel>();
 
-        foreach (var cartItem in cart.CartItems)
+        foreach (var cartItem in cartEntity.CartItems)
         {
             var cartItemModel = _mapper.Map<CartItemModel>(cartItem);
             cartItemModels.Add(cartItemModel);
@@ -44,11 +43,10 @@ internal class CartService : ICartService
     public async Task ClearAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
+        var cartEntity = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
 
-        var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.Id == clientId);
-
-        _bookShopDbContext.CartItems.RemoveRange(cart.CartItems);
+        _bookShopDbContext.CartItems.RemoveRange(cartEntity.CartItems);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation("CartItems cleared successfully.");
+        _logger.LogInformation($"CartItems cleared successfully for client with id {clientId}.");
     }
 }

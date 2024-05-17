@@ -21,15 +21,37 @@ internal class ProductService : IProductService
         _mapper = mapper;
     }
 
-    public async Task<ProductModel> AddAsync(ProductAddModel product)
+    public async Task<ProductModel> AddAsync(ProductAddModel productAddModel)
     {
-        var productToAdd = _mapper.Map<ProductEntity>(product);
+        if (productAddModel.Count <= 0)
+        {
+            throw new Exception("Product count can't be less than 0");
+        }
 
-        _bookShopDbContext.Products.Add(productToAdd);
+        var productCheck = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Manufacturer == productAddModel.Manufacturer
+        && p.Details == p.Details && p.Name == productAddModel.Name && p.Price == productAddModel.Price);
+
+        var productEntity = new ProductEntity();
+
+        var productModel = new ProductModel();
+        if (productCheck != null)
+        {
+            productCheck.Count += productAddModel.Count;
+            await _bookShopDbContext.SaveChangesAsync();
+
+            _logger.LogInformation($"Product with Id {productCheck.Id} added successfully");
+
+            productModel = _mapper.Map<ProductModel>(productCheck);
+
+            return productModel;
+        }
+        productEntity = _mapper.Map<ProductEntity>(productAddModel);
+        _bookShopDbContext.Products.Add(productEntity);
+
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Product with Id {productToAdd.Id} added successfully.");
+        _logger.LogInformation($"Product with Id {productEntity.Id} added successfully");
 
-        var productModel = _mapper.Map<ProductModel>(productToAdd);
+        productModel = _mapper.Map<ProductModel>(productEntity);
 
         return productModel;
     }
@@ -44,25 +66,25 @@ internal class ProductService : IProductService
 
     public async Task<List<ProductModel>> GetAllAsync()
     {
-        var products = await _bookShopDbContext.Products.ToListAsync();
+        var productEntities = await _bookShopDbContext.Products.ToListAsync();
 
-        var productsToGet = _mapper.Map<List<ProductModel>>(products);
+        var productsModels = _mapper.Map<List<ProductModel>>(productEntities);
 
-        return productsToGet;
+        return productsModels;
     }
 
     public async Task<ProductModel> GetByIdAsync(long productId)
     {
-        var product = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
+        var productEntity = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
 
-        var productsToGet = _mapper.Map<ProductModel>(product);
+        var productsModel = _mapper.Map<ProductModel>(productEntity);
 
-        return productsToGet;
+        return productsModel;
     }
 
     public async Task RemoveAsync(long productId)
     {
-        var product = _bookShopDbContext.Products.FirstOrDefault(s => s.Id == productId);
+        var product = _bookShopDbContext.Products.FirstOrDefault(p => p.Id == productId);
 
         _bookShopDbContext.Products.Remove(product);
         await _bookShopDbContext.SaveChangesAsync();
@@ -70,6 +92,11 @@ internal class ProductService : IProductService
 
     public async Task<ProductModel> UpdateAsync(ProductUpdateModel product)
     {
+        if (product.Count <= 0)
+        {
+            throw new Exception("Product count can't be less than 0");
+        }
+
         var productToUpdate = await GetByIdAsync(product.Id);
 
         productToUpdate.Name = product.Name;

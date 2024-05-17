@@ -10,14 +10,14 @@ public partial class BookShopDbContext : DbContext
 
     }
 
-    public DbSet<CartEntity> Carts { get; set; }
-    public DbSet<CartItemEntity> CartItems { get; set; }
-    public DbSet<ClientEntity> Clients { get; set; }
-    public DbSet<InvoiceEntity> Invoices { get; set; }
-    public DbSet<OrderEntity> Orders { get; set; }
-    public DbSet<PaymentEntity> Payments { get; set; }
-    public DbSet<PaymentMethodEntity> PaymentMethods { get; set; }
-    public DbSet<ProductEntity> Products { get; set; }
-    public DbSet<WishListItemEntity> WishListItems { get; set; }
-    public DbSet<WishListEntity> WishLists { get; set; }
+    public DbSet<CartEntity> Carts { get; set; } = null!;
+    public DbSet<CartItemEntity> CartItems { get; set; } = null!;
+    public DbSet<ClientEntity> Clients { get; set; } = null!;
+    public DbSet<InvoiceEntity> Invoices { get; set; } = null!;
+    public DbSet<OrderEntity> Orders { get; set; } = null!;
+    public DbSet<PaymentEntity> Payments { get; set; } = null!;
+    public DbSet<PaymentMethodEntity> PaymentMethods { get; set; } = null!;
+    public DbSet<ProductEntity> Products { get; set; } = null!;
+    public DbSet<WishListItemEntity> WishListItems { get; set; } = null!;
+    public DbSet<WishListEntity> WishLists { get; set; } = null!;
 }

@@ -1,4 +1,5 @@
 ﻿using BookShop.Common.ClientService.Abstractions;
+
 namespace BookShop.Common.ClientService.Impl;
 
 public class ClientContextWriter : IClientContextWriter

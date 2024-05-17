@@ -1,4 +1,5 @@
-﻿using BookShop.Services.Abstractions;
+﻿using BookShop.Data.Entities;
+using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,25 +11,25 @@ namespace BookShop.Api.Controllers;
 [Route("[controller]")]
 public class WishListItemController : ControllerBase
 {
-    private readonly IWishListItemService _wishlistItemService;
+    private readonly IWishListItemService _wishListItemService;
 
-    public WishListItemController(IWishListItemService wishlistItemService)
+    public WishListItemController(IWishListItemService wishListItemService)
     {
-        _wishlistItemService = wishlistItemService;
+        _wishListItemService = wishListItemService;
     }
 
     [HttpPost]
-    public async Task<ActionResult<WishListItemModel>> AddItem(WishListItemAddModel wishListItemAddModel)
+    public async Task<ActionResult<WishListItemEntity>> AddItem(WishListItemAddModel wishListItemAddModel)
     {
-        var wishlist=await _wishlistItemService.AddAsync(wishListItemAddModel);
+        var wishListItemToAdd = await _wishListItemService.AddAsync(wishListItemAddModel);
 
-        return Ok(wishlist);
+        return Ok(wishListItemToAdd);
     }
 
     [HttpDelete]
-    public async Task<IActionResult> RemoveItem(long wishlistItemId)
+    public async Task<ActionResult<WishListItemEntity>> RemoveItem(long wishListId)
     {
-        await _wishlistItemService.RemoveAsync(wishlistItemId);
+        await _wishListItemService.RemoveAsync(wishListId);
 
         return Ok();
     }

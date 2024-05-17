@@ -10,25 +10,25 @@ namespace BookShop.Api.Controllers;
 [Route("[controller]")]
 public class WishListController : ControllerBase
 {
-    private readonly IWishListService _wishlistService;
+    private readonly IWishListService _wishListService;
 
-    public WishListController(IWishListService wishlistService)
+    public WishListController(IWishListService wishListService)
     {
-        _wishlistService = wishlistService;
+        _wishListService = wishListService;
     }
 
     [HttpGet]
     public async Task<ActionResult<List<WishListItemModel>>> GetWishlistItems()
     {
-        var wishlistItems = await _wishlistService.GetAllWishListItemsAsync();
+        var wishListItems = await _wishListService.GetAllWishListItemsAsync();
 
-        return Ok(wishlistItems);
+        return Ok(wishListItems);
     }
 
     [HttpDelete]
-    public async Task<IActionResult> ClearAllWishListItems()
+    public async Task<IActionResult> ClearAllItems()
     {
-        await _wishlistService.ClearAsync();
+        await _wishListService.ClearAsync();
 
         return Ok();
     }

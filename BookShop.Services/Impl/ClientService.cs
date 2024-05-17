@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using BookShop.Common.ClientService.Abstractions;
-using BookShop.Common.ClientService.Impl;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
@@ -21,7 +20,7 @@ internal class ClientService : IClientService
     private readonly IClientContextReader _clientContextReader;
 
     public ClientService(BookShopDbContext bookShopDbContext, ILogger<ClientService> logger,
-                         IMapper mapper, ClientContextReader clientContextReader)
+                         IMapper mapper, IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
@@ -44,8 +43,8 @@ internal class ClientService : IClientService
                 var newCart = new CartEntity { ClientId = clientToAdd.Id };
                 _bookShopDbContext.Carts.Add(newCart);
 
-                var newWishlist = new WishListEntity { ClientId = clientToAdd.Id };
-                _bookShopDbContext.WishLists.Add(newWishlist);
+                var newWishList = new WishListEntity { ClientId = clientToAdd.Id };
+                _bookShopDbContext.WishLists.Add(newWishList);
 
                 await _bookShopDbContext.SaveChangesAsync();
                 _logger.LogInformation($"Client with Id {clientToAdd.Id} added successfully.");
@@ -53,30 +52,32 @@ internal class ClientService : IClientService
                 var clientModel = _mapper.Map<ClientModel>(clientToAdd);
 
                 transaction.Commit();
+
                 return clientModel;
             }
             catch (Exception ex)
             {
                 transaction.Rollback();
-                throw;
+                _logger.LogError($"Error {ex.Message}");
+
+                throw new Exception($"Error {ex.Message}");
             }
         }
     }
 
-    public async Task<ClientModel> UpdateAsync(ClientUpdateModel client)
+    public async Task<ClientModel> UpdateAsync(ClientUpdateModel clientUpdateModel)
     {
         var clientId = _clientContextReader.GetClientContextId();
-
         var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
 
-        clientToUpdate.FirstName = client.FirstName;
-        clientToUpdate.LastName = client.LastName;
-        clientToUpdate.Email = client.Email;
-        clientToUpdate.Address = client.Address;
+        clientToUpdate.FirstName = clientUpdateModel.FirstName;
+        clientToUpdate.LastName = clientUpdateModel.LastName;
+        clientToUpdate.Email = clientUpdateModel.Email;
+        clientToUpdate.Address = clientUpdateModel.Address;
 
-        if (!string.IsNullOrEmpty(client.Password))
+        if (!string.IsNullOrEmpty(clientUpdateModel.Password))
         {
-            clientToUpdate.Password = HashPassword(client.Password);
+            clientToUpdate.Password = HashPassword(clientUpdateModel.Password);
         }
 
         await _bookShopDbContext.SaveChangesAsync();
@@ -90,7 +91,6 @@ internal class ClientService : IClientService
     public async Task RemoveAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-
         var clientToRemove = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
 
         _bookShopDbContext.Clients.Remove(clientToRemove);
@@ -101,12 +101,11 @@ internal class ClientService : IClientService
     public async Task<ClientModel?> GetClientAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-
         var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == clientId);
 
-        var getClient = _mapper.Map<ClientModel?>(client);
+        var clientModel = _mapper.Map<ClientModel?>(client);
 
-        return getClient;
+        return clientModel;
     }
 
     public async Task<ClientModel?> GetByEmailAndPasswordAsync(
@@ -132,6 +131,7 @@ internal class ClientService : IClientService
     {
         var passwordBytes = Encoding.UTF8.GetBytes(password);
         var passwordHash = SHA256.HashData(passwordBytes);
+
         return Convert.ToHexString(passwordHash);
     }
 }

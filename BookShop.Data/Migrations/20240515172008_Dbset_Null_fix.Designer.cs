@@ -3,6 +3,7 @@ using System;
 using BookShop.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookShop.Data.Migrations
 {
     [DbContext(typeof(BookShopDbContext))]
-    partial class BookShopDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240515172008_Dbset_Null_fix")]
+    partial class Dbset_Null_fix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,7 +124,13 @@ namespace BookShop.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("boolean");
+
                     b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("PaymentId")
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("TotalAmount")
@@ -132,6 +141,9 @@ namespace BookShop.Data.Migrations
                     b.HasIndex("ClientId");
 
                     b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.HasIndex("PaymentId")
                         .IsUnique();
 
                     b.ToTable("Invoices");
@@ -177,12 +189,6 @@ namespace BookShop.Data.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
-                    b.Property<long?>("InvoiceEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("InvoiceId")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("PaymentMethodId")
                         .HasColumnType("bigint");
 
@@ -190,8 +196,6 @@ namespace BookShop.Data.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("InvoiceEntityId");
 
                     b.HasIndex("PaymentMethodId");
 
@@ -346,9 +350,17 @@ namespace BookShop.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BookShop.Data.Entities.PaymentEntity", "PaymentEntity")
+                        .WithOne("InvoiceEntity")
+                        .HasForeignKey("BookShop.Data.Entities.InvoiceEntity", "PaymentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("ClientEntity");
 
                     b.Navigation("OrderEntity");
+
+                    b.Navigation("PaymentEntity");
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.OrderEntity", b =>
@@ -372,17 +384,11 @@ namespace BookShop.Data.Migrations
 
             modelBuilder.Entity("BookShop.Data.Entities.PaymentEntity", b =>
                 {
-                    b.HasOne("BookShop.Data.Entities.InvoiceEntity", "InvoiceEntity")
-                        .WithMany()
-                        .HasForeignKey("InvoiceEntityId");
-
                     b.HasOne("BookShop.Data.Entities.PaymentMethodEntity", "PaymentMethodEntity")
                         .WithMany("Payments")
                         .HasForeignKey("PaymentMethodId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("InvoiceEntity");
 
                     b.Navigation("PaymentMethodEntity");
                 });
@@ -453,6 +459,11 @@ namespace BookShop.Data.Migrations
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.OrderEntity", b =>
+                {
+                    b.Navigation("InvoiceEntity");
+                });
+
+            modelBuilder.Entity("BookShop.Data.Entities.PaymentEntity", b =>
                 {
                     b.Navigation("InvoiceEntity");
                 });
