@@ -4,6 +4,7 @@ using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.OrderModel;
+using BookShop.Services.Models.OrderModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -28,8 +29,14 @@ internal class OrderService : IOrderService
     public async Task<OrderModel> AddOrderAsync(OrderAddModel orderAddModel)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var orderEntity = await _bookShopDbContext.Orders.FirstOrDefaultAsync(o => o.ClientId == clientId && o.ProductId == orderAddModel.ProductId);
+        var orderEntity = await _bookShopDbContext.Orders
+            .FirstOrDefaultAsync(o => o.ClientId == clientId && o.ProductId == orderAddModel.ProductId);
         var productEntity = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == orderAddModel.ProductId);
+
+        if (orderEntity == null || productEntity == null)
+        {
+            throw new Exception($"Input parametr for productId {orderAddModel.ProductId} is invalid");
+        }
 
         using (var transaction = _bookShopDbContext.Database.BeginTransaction())
         {
@@ -79,6 +86,56 @@ internal class OrderService : IOrderService
                 transaction.Rollback();
                 _logger.LogError($"Error {ex.Message}");
 
+                throw new Exception($"Error {ex.Message}");
+            }
+        }
+    }
+
+    public async Task<OrderModel> AddOrderFromCartAsync(OrderAddFromCardModel orderAddFromCardModel)
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+        var cartItemEntity = await _bookShopDbContext.CartItems.Include(c => c.ProductEntity)
+            .FirstOrDefaultAsync(c => c.Id == orderAddFromCardModel.cartItemId && c.CartEntity.ClientId == clientId);
+
+        if (cartItemEntity == null)
+        {
+            throw new Exception($"CartItem with Id {orderAddFromCardModel.cartItemId} not found for client with Id {clientId}");
+        }
+
+        using (var transaction = _bookShopDbContext.Database.BeginTransaction())
+        {
+            try
+            {
+                var orderToAdd = new OrderEntity
+                {
+                    ClientId = clientId,
+                    ProductId = cartItemEntity.ProductId,
+                    Count = cartItemEntity.Count,
+                    Amount = cartItemEntity.Price
+                };
+
+                _bookShopDbContext.Orders.Add(orderToAdd);
+                await _bookShopDbContext.SaveChangesAsync();
+                _logger.LogInformation($"Order added successfully for client with Id {clientId}");
+
+                var invoice = new InvoiceEntity
+                {
+                    ClientId = clientId,
+                    CreatedAt = DateTime.UtcNow,
+                    OrderId = orderToAdd.Id,
+                    TotalAmount = orderToAdd.Amount,
+                };
+
+                _bookShopDbContext.Invoices.Add(invoice);
+                await _bookShopDbContext.SaveChangesAsync();
+
+                var orderModel = _mapper.Map<OrderModel>(orderToAdd);
+
+                return orderModel;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error {ex.Message}");
                 throw new Exception($"Error {ex.Message}");
             }
         }

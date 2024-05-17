@@ -47,6 +47,12 @@ internal class WishListItemService : IWishListItemService
     {
         var clientId = _clientContextReader.GetClientContextId();
         var wishListEntity = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
+
+        if (wishListEntity==null)
+        {
+            throw new Exception("Parametrs for wishListItem is invalid");
+        }
+
         var wishListItemEntity = wishListEntity.WishListItems.FirstOrDefault(w => w.Id == wishListItemId);
 
         _bookShopDbContext.WishListItems.Remove(wishListItemEntity);

@@ -1,5 +1,6 @@
 ﻿using BookShop.Services.Abstractions;
 using BookShop.Services.Models.OrderModel;
+using BookShop.Services.Models.OrderModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,6 +22,14 @@ public class OrderController : ControllerBase
     public async Task<ActionResult<OrderModel>> AddOrder(OrderAddModel orderAddModel)
     {
         var order = await _orderService.AddOrderAsync(orderAddModel);
+
+        return Ok(order);
+    }
+    
+    [HttpPost("Add_From_Cart")]
+    public async Task<ActionResult<OrderModel>> AddOrderFromCard(OrderAddFromCardModel orderAddFromCardModel)
+    {
+        var order = await _orderService.AddOrderFromCartAsync(orderAddFromCardModel);
 
         return Ok(order);
     }

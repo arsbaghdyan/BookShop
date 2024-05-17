@@ -36,6 +36,11 @@ internal class CartItemService : ICartItemService
         var cartEntity = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
         var productEntity = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == cartItemAddModel.ProductId);
 
+        if (productEntity==null)
+        {
+            throw new Exception($"Input parametr productId {cartItemAddModel.ProductId} is invalid");
+        }
+
         if (productEntity.Count < cartItemAddModel.Count)
         {
             throw new Exception("Not enough product");

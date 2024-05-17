@@ -4,6 +4,7 @@ using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.ClientModels;
 using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModel;
+using BookShop.Services.Models.OrderModels;
 using BookShop.Services.Models.PaymentModels;
 
 namespace BookShop.Services.Mapping;
@@ -30,6 +31,8 @@ public class MappingProfile : Profile
 
         CreateMap<OrderEntity, OrderModel>();
         CreateMap<OrderAddModel, OrderEntity>();
+        CreateMap<CartEntity, OrderAddFromCardModel>()
+            .ForMember(dest => dest.cartItemId, opt => opt.MapFrom(src => src.CartItems.FirstOrDefault().Id));
 
         CreateMap<PaymentEntity, PaymentModel>();
         CreateMap<PaymentAddModel, PaymentEntity>();

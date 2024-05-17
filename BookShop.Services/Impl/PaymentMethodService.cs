@@ -1,6 +1,7 @@
 ﻿using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
+using BookShop.Data.Enums;
 using BookShop.Data.Models;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
@@ -34,6 +35,11 @@ internal class PaymentMethodService : IPaymentMethodService
             PaymentMethod = paymentMethodAddModel.PaymentMethod,
             Details = JsonConvert.SerializeObject(paymentMethodAddModel.Details)
         };
+
+        if (!Enum.IsDefined(typeof(PaymentMethod), paymentMethodAddModel.PaymentMethod))
+        {
+            throw new Exception("Payment method is unknown");
+        }
 
         _bookShopDbContext.PaymentMethods.Add(paymentMethodEntity);
         await _bookShopDbContext.SaveChangesAsync();

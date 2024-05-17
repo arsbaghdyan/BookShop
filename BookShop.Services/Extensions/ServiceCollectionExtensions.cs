@@ -13,8 +13,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICustomAuthenticationService, CustomAuthenticationService>();
         services.AddScoped<ICartService, CartService>();
         services.AddScoped<ICartItemService, CartItemService>();
-        services.AddScoped<IWishListItemService, WishListItemService>();
         services.AddScoped<IWishListService, WishListService>();
+        services.AddScoped<IWishListItemService, WishListItemService>();
         services.AddScoped<IPaymentMethodService, PaymentMethodService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IOrderService, OrderService>();

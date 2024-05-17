@@ -29,7 +29,12 @@ internal class PaymentService : IPaymentService
     public async Task<PaymentModel> ConfirmPayment(PaymentAddModel paymentAddModel)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var invoiceEntity = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).FirstOrDefaultAsync(i => i.ClientId == clientId);
+        var invoiceEntity = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).FirstOrDefaultAsync(i => i.Id == paymentAddModel.InvoiceId);
+
+        if (invoiceEntity == null)
+        {
+            throw new Exception("One of your input parametr is invalid");
+        }
 
         var paymentEntity = new PaymentEntity();
 
