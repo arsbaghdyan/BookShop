@@ -29,7 +29,7 @@ public class MappingProfile : Profile
         CreateMap<WishListItemAddModel, WishListItemEntity>();
 
         CreateMap<OrderEntity, OrderModel>();
-        CreateMap<OrderModel, OrderAddModel>();
+        CreateMap<OrderAddModel, OrderEntity>();
 
         CreateMap<PaymentEntity, PaymentModel>();
         CreateMap<PaymentAddModel, PaymentEntity>();

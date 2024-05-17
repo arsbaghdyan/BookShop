@@ -32,32 +32,57 @@ internal class OrderService : IOrderService
 
         var product = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == orderAddModel.ProductId);
 
-        var orderModel = new OrderModel();
-
-        if (order != null)
+        using (var transaction = _bookShopDbContext.Database.BeginTransaction())
         {
-            order.Count += orderAddModel.Count;
-            order.Amount = product.Price * order.Count;
+            try
+            {
+                var orderModel = new OrderModel();
+                if (order != null)
+                {
+                    order.Count += orderAddModel.Count;
+                    order.Amount = product.Price * order.Count;
 
-            await _bookShopDbContext.SaveChangesAsync();
+                    await _bookShopDbContext.SaveChangesAsync();
 
-            _logger.LogInformation($"Order with Id{order.Id} added successefully for client with id {clientId}");
+                    _logger.LogInformation($"Order with Id{order.Id} added successefully for client with id {clientId}");
 
-            orderModel = _mapper.Map<OrderModel>(order);
+                    orderModel = _mapper.Map<OrderModel>(order);
+                }
+
+                var orderToAdd = _mapper.Map<OrderEntity>(orderAddModel);
+
+                orderToAdd.Amount = product.Price * orderToAdd.Count;
+                orderToAdd.ClientId = clientId;
+
+                _bookShopDbContext.Orders.Add(orderToAdd);
+                await _bookShopDbContext.SaveChangesAsync();
+                _logger.LogInformation($"Order with Id{orderToAdd.Id} added successefully for client with id {clientId}");
+
+                var invoice = new InvoiceEntity
+                {
+                    ClientId = clientId,
+                    CreatedAt = DateTime.UtcNow,
+                    OrderId = orderToAdd.Id,
+                    TotalAmount = orderToAdd.Amount,
+                };
+
+                _bookShopDbContext.Invoices.Add(invoice);
+                await _bookShopDbContext.SaveChangesAsync();
+
+                orderModel = _mapper.Map<OrderModel>(orderToAdd);
+
+                transaction.Commit();
+
+                return orderModel;
+            }
+            catch (Exception ex)
+            {
+                transaction.Rollback();
+                _logger.LogError($"Error {ex.Message}");
+
+                throw new Exception($"Error {ex.Message}");
+            }
         }
-
-        var orderToAdd = _mapper.Map<OrderEntity>(orderAddModel);
-
-        orderToAdd.Amount = product.Price * orderToAdd.Count;
-        orderToAdd.ClientId = clientId;
-
-        _bookShopDbContext.Add(orderToAdd);
-        await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Order with Id{order.Id} added successefully for client with id {clientId}");
-
-        orderModel = _mapper.Map<OrderModel>(orderToAdd);
-
-        return orderModel;
     }
 
     public async Task ClearAsync()

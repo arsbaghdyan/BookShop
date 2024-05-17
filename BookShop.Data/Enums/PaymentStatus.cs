@@ -3,5 +3,5 @@
 public enum PaymentStatus
 {
     Success = 1,
-    Denied = 2
+    Fail = 2
 }

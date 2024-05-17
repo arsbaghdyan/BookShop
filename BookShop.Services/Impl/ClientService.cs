@@ -52,11 +52,14 @@ internal class ClientService : IClientService
                 var clientModel = _mapper.Map<ClientModel>(clientToAdd);
 
                 transaction.Commit();
+
                 return clientModel;
             }
             catch (Exception ex)
             {
                 transaction.Rollback();
+                _logger.LogError($"Error {ex.Message}");
+
                 throw new Exception($"Error {ex.Message}");
             }
         }

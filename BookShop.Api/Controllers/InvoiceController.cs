@@ -17,6 +17,7 @@ public class InvoiceController : ControllerBase
         _invoiceService = invoiceService;
     }
 
+    [HttpGet]
     public async Task<ActionResult<List<InvoiceModel>>> GetAll()
     {
         var invoices = await _invoiceService.GetAllAsync();
@@ -24,6 +25,7 @@ public class InvoiceController : ControllerBase
         return Ok(invoices);
     }
 
+    [HttpGet("{paymentId}")]
     public async Task<ActionResult<InvoiceModel>> GetById(long paymentId)
     {
         var invoice = await _invoiceService.GetByIdAsync(paymentId);
@@ -31,6 +33,7 @@ public class InvoiceController : ControllerBase
         return Ok(invoice);
     }
 
+    [HttpDelete]
     public async Task<IActionResult> Clear()
     {
         await _invoiceService.ClearAsync();

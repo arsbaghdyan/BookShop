@@ -17,6 +17,7 @@ public class OrderController : ControllerBase
         _orderService = orderService;
     }
 
+    [HttpPost]
     public async Task<ActionResult<OrderModel>> AddOrder(OrderAddModel orderAddModel)
     {
         var order = await _orderService.AddOrderAsync(orderAddModel);
@@ -24,6 +25,7 @@ public class OrderController : ControllerBase
         return Ok(order);
     }
 
+    [HttpDelete("{orderId}")]
     public async Task<IActionResult> Remove(long orderId)
     {
         await _orderService.RemoveAsync(orderId);
@@ -31,6 +33,7 @@ public class OrderController : ControllerBase
         return Ok();
     }
 
+    [HttpDelete]
     public async Task<IActionResult> Clear()
     {
         await _orderService.ClearAsync();

@@ -12,12 +12,12 @@ var jwtOption = builder.Configuration.ConfigureJwtOptions();
 builder.Services.AddSingleton(dbOption);
 builder.Services.AddSingleton(jwtOption);
 
+builder.Services.AddDatabaseMigrationService();
+builder.Services.AddBookShopDbContext(dbOption);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAllServices();
-builder.Services.AddDatabaseMigrationService();
-builder.Services.AddBookShopDbContext(dbOption);
 builder.Services.AddJwtConfiguration(jwtOption);
 builder.Services.AddSwaggerConfiguration();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
