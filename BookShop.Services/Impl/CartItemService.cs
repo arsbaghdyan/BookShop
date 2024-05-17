@@ -16,7 +16,8 @@ internal class CartItemService : ICartItemService
     private readonly IMapper _mapper;
     private readonly IClientContextReader _clientContextReader;
 
-    public CartItemService(BookShopDbContext bookShopDbContext, ILogger<CartItemService> logger, IMapper mapper, IClientContextReader clientContextReader)
+    public CartItemService(BookShopDbContext bookShopDbContext, ILogger<CartItemService> logger, 
+                           IMapper mapper, IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
@@ -47,6 +48,7 @@ internal class CartItemService : ICartItemService
         {
             cartItemCheck.Count += cartItemAddModel.Count;
             cartItemCheck.Price = cartItemCheck.Count * product.Price;
+
             await _bookShopDbContext.SaveChangesAsync();
             cartItemModel = _mapper.Map<CartItemModel>(cartItemCheck);
 
@@ -72,7 +74,6 @@ internal class CartItemService : ICartItemService
         var clientId = _clientContextReader.GetClientContextId();
 
         var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
-
         var cartEntity = cart.CartItems.FirstOrDefault(c => c.Id == cartItemId);
 
         _bookShopDbContext.CartItems.Remove(cartEntity);

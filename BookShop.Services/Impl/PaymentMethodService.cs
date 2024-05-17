@@ -16,7 +16,8 @@ internal class PaymentMethodService : IPaymentMethodService
     private readonly ILogger<PaymentMethodService> _logger;
     private readonly IClientContextReader _clientContextReader;
 
-    public PaymentMethodService(BookShopDbContext bookShopDbContext, ILogger<PaymentMethodService> logger, IClientContextReader clientContextReader)
+    public PaymentMethodService(BookShopDbContext bookShopDbContext, ILogger<PaymentMethodService> logger, 
+                                IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
@@ -51,8 +52,7 @@ internal class PaymentMethodService : IPaymentMethodService
     public async Task<List<PaymentMethodModel>> GetAllAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-
-        var paymentMethodsDb = await _bookShopDbContext.PaymentMethods.Where(pm => pm.ClientId == clientId).ToListAsync();
+        var paymentMethodsDb = await _bookShopDbContext.PaymentMethods.Where(p => p.ClientId == clientId).ToListAsync();
 
         var paymentMethods = new List<PaymentMethodModel>();
 
@@ -73,7 +73,6 @@ internal class PaymentMethodService : IPaymentMethodService
     public async Task RemoveAsync(long paymentMethodId)
     {
         var clientId = _clientContextReader.GetClientContextId();
-
         var paymentMethod = await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(p => p.Id == paymentMethodId && p.ClientId == clientId);
 
         _bookShopDbContext.PaymentMethods.Remove(paymentMethod);

@@ -68,7 +68,6 @@ internal class ClientService : IClientService
     public async Task<ClientModel> UpdateAsync(ClientUpdateModel client)
     {
         var clientId = _clientContextReader.GetClientContextId();
-
         var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
 
         clientToUpdate.FirstName = client.FirstName;
@@ -92,7 +91,6 @@ internal class ClientService : IClientService
     public async Task RemoveAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-
         var clientToRemove = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
 
         _bookShopDbContext.Clients.Remove(clientToRemove);
@@ -103,7 +101,6 @@ internal class ClientService : IClientService
     public async Task<ClientModel?> GetClientAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-
         var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == clientId);
 
         var getClient = _mapper.Map<ClientModel?>(client);
@@ -134,6 +131,7 @@ internal class ClientService : IClientService
     {
         var passwordBytes = Encoding.UTF8.GetBytes(password);
         var passwordHash = SHA256.HashData(passwordBytes);
+
         return Convert.ToHexString(passwordHash);
     }
 }

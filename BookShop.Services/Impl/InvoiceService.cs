@@ -15,8 +15,8 @@ internal class InvoiceService : IInvoiceService
     private readonly IMapper _mapper;
     private readonly IClientContextReader _clientContextReader;
 
-    public InvoiceService(BookShopDbContext bookShopDbContext, ILogger<WishListService> logger, IMapper mapper
-        , IClientContextReader clientContextReader)
+    public InvoiceService(BookShopDbContext bookShopDbContext, ILogger<WishListService> logger,
+                          IMapper mapper, IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
@@ -27,8 +27,7 @@ internal class InvoiceService : IInvoiceService
     public async Task ClearAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-
-        var invoice = await _bookShopDbContext.Invoices.Where(c => c.ClientId == clientId).ToListAsync();
+        var invoice = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).ToListAsync();
 
         _bookShopDbContext.Invoices.RemoveRange(invoice);
         await _bookShopDbContext.SaveChangesAsync();
@@ -38,8 +37,7 @@ internal class InvoiceService : IInvoiceService
     public async Task<List<InvoiceModel>> GetAllAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-
-        var invoices = await _bookShopDbContext.Invoices.Where(c => c.ClientId == clientId).ToListAsync();
+        var invoices = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).ToListAsync();
 
         var invoicesToGet = _mapper.Map<List<InvoiceModel>>(invoices);
 
@@ -49,8 +47,7 @@ internal class InvoiceService : IInvoiceService
     public async Task<InvoiceModel> GetByIdAsync(long invoiceId)
     {
         var clientId = _clientContextReader.GetClientContextId();
-
-        var invoice = await _bookShopDbContext.Invoices.FirstOrDefaultAsync(i => i.Id == invoiceId);
+        var invoice = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).FirstOrDefaultAsync(i => i.Id == invoiceId);
 
         var invoiceToGet = _mapper.Map<InvoiceModel>(invoice);
 

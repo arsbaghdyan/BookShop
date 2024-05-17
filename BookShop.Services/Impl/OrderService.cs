@@ -16,7 +16,8 @@ internal class OrderService : IOrderService
     private readonly ILogger<OrderService> _logger;
     private readonly BookShopDbContext _bookShopDbContext;
 
-    public OrderService(IClientContextReader clientContextReader, IMapper mapper, ILogger<OrderService> logger, BookShopDbContext bookShopDbContext)
+    public OrderService(IClientContextReader clientContextReader, IMapper mapper,
+                        ILogger<OrderService> logger, BookShopDbContext bookShopDbContext)
     {
         _clientContextReader = clientContextReader;
         _mapper = mapper;
@@ -27,9 +28,7 @@ internal class OrderService : IOrderService
     public async Task<OrderModel> AddOrderAsync(OrderAddModel orderAddModel)
     {
         var clientId = _clientContextReader.GetClientContextId();
-
         var order = await _bookShopDbContext.Orders.FirstOrDefaultAsync(o => o.ClientId == clientId && o.ProductId == orderAddModel.ProductId);
-
         var product = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == orderAddModel.ProductId);
 
         using (var transaction = _bookShopDbContext.Database.BeginTransaction())
@@ -88,7 +87,6 @@ internal class OrderService : IOrderService
     public async Task ClearAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-
         var orders = await _bookShopDbContext.Orders.Where(o => o.ClientId == clientId).ToListAsync();
 
         _bookShopDbContext.Orders.RemoveRange(orders);
@@ -100,7 +98,6 @@ internal class OrderService : IOrderService
     public async Task RemoveAsync(long orderId)
     {
         var clientId = _clientContextReader.GetClientContextId();
-
         var order = await _bookShopDbContext.Orders.FirstOrDefaultAsync(o => o.ClientId == clientId && o.Id == orderId);
 
         _bookShopDbContext.Orders.Remove(order);

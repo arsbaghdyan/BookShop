@@ -84,7 +84,7 @@ internal class ProductService : IProductService
 
     public async Task RemoveAsync(long productId)
     {
-        var product = _bookShopDbContext.Products.FirstOrDefault(s => s.Id == productId);
+        var product = _bookShopDbContext.Products.FirstOrDefault(p => p.Id == productId);
 
         _bookShopDbContext.Products.Remove(product);
         await _bookShopDbContext.SaveChangesAsync();

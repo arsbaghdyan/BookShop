@@ -15,7 +15,8 @@ internal class WishListService : IWishListService
     private readonly IMapper _mapper;
     private readonly IClientContextReader _clientContextReader;
 
-    public WishListService(BookShopDbContext bookShopDbContext, ILogger<WishListService> logger, IMapper mapper, IClientContextReader clientContextReader)
+    public WishListService(BookShopDbContext bookShopDbContext, ILogger<WishListService> logger,
+                           IMapper mapper, IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
@@ -26,7 +27,6 @@ internal class WishListService : IWishListService
     public async Task<List<WishListItemModel>> GetAllWishListItemsAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-
         var wishlist = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
 
         var wishlistItemModels = new List<WishListItemModel>();
@@ -43,7 +43,6 @@ internal class WishListService : IWishListService
     public async Task ClearAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-
         var wishlist = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
 
         _bookShopDbContext.WishListItems.RemoveRange(wishlist.WishListItems);

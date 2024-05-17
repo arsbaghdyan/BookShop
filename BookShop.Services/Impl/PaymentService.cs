@@ -17,8 +17,8 @@ internal class PaymentService : IPaymentService
     private readonly ILogger<PaymentService> _logger;
     private readonly BookShopDbContext _bookShopDbContext;
 
-    public PaymentService(IClientContextReader clientContextReader, IMapper mapper, ILogger<PaymentService> logger
-        , BookShopDbContext bookShopDbContext)
+    public PaymentService(IClientContextReader clientContextReader, IMapper mapper,
+                          ILogger<PaymentService> logger, BookShopDbContext bookShopDbContext)
     {
         _clientContextReader = clientContextReader;
         _mapper = mapper;
@@ -29,8 +29,7 @@ internal class PaymentService : IPaymentService
     public async Task<PaymentModel> ApprovePayment(PaymentAddModel paymentAddModel)
     {
         var clientId = _clientContextReader.GetClientContextId();
-
-        var invoice = await _bookShopDbContext.Invoices.FirstOrDefaultAsync(i => i.ClientId == clientId);
+        var invoice = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).FirstOrDefaultAsync(i => i.ClientId == clientId);
 
         var payment = new PaymentEntity();
 

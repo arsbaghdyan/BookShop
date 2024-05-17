@@ -15,7 +15,8 @@ internal class CartService : ICartService
     private readonly IMapper _mapper;
     private readonly IClientContextReader _clientContextReader;
 
-    public CartService(BookShopDbContext bookShopDbContext, ILogger<CartService> logger, IMapper mapper, IClientContextReader clientContextReader)
+    public CartService(BookShopDbContext bookShopDbContext, ILogger<CartService> logger,
+                       IMapper mapper, IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
@@ -26,7 +27,6 @@ internal class CartService : ICartService
     public async Task<List<CartItemModel>> GetAllCartItemsAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-
         var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
 
         var cartItemModels = new List<CartItemModel>();
@@ -43,7 +43,6 @@ internal class CartService : ICartService
     public async Task ClearAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-
         var cart = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
 
         _bookShopDbContext.CartItems.RemoveRange(cart.CartItems);
