@@ -95,11 +95,11 @@ internal class OrderService : IOrderService
     {
         var clientId = _clientContextReader.GetClientContextId();
         var cartItemEntity = await _bookShopDbContext.CartItems.Include(c => c.ProductEntity)
-            .FirstOrDefaultAsync(c => c.Id == orderAddFromCardModel.cartItemId && c.CartEntity.ClientId == clientId);
+            .FirstOrDefaultAsync(c => c.Id == orderAddFromCardModel.CartItemId && c.CartEntity.ClientId == clientId);
 
         if (cartItemEntity == null)
         {
-            throw new Exception($"CartItem with Id {orderAddFromCardModel.cartItemId} not found for client with Id {clientId}");
+            throw new Exception($"CartItem with Id {orderAddFromCardModel.CartItemId} not found for client with Id {clientId}");
         }
 
         using (var transaction = _bookShopDbContext.Database.BeginTransaction())

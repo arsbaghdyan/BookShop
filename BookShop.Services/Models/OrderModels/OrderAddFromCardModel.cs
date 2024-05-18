@@ -1,8 +1,6 @@
-﻿using BookShop.Data.Entities;
-
-namespace BookShop.Services.Models.OrderModels;
+﻿namespace BookShop.Services.Models.OrderModels;
 
 public class OrderAddFromCardModel
 {
-    public long cartItemId { get; set; }
+    public long CartItemId { get; set; }
 }

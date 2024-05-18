@@ -25,6 +25,13 @@ public class CartItemController : ControllerBase
 
         return Ok(cartItem);
     }
+    [HttpPost("Add_From_WishList")]
+    public async Task<ActionResult<CartItemEntity>> AddItemFromWishList(CartItemFromWishListModel cartItemFromWishListModel)
+    {
+        var cartItem = await _cartItemService.AddFromWishList(cartItemFromWishListModel);
+
+        return Ok(cartItem);
+    }
 
     [HttpDelete]
     public async Task<ActionResult<CartItemEntity>> RemoveItem(long cartItemId)

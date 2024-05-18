@@ -16,7 +16,7 @@ internal class CartItemService : ICartItemService
     private readonly IMapper _mapper;
     private readonly IClientContextReader _clientContextReader;
 
-    public CartItemService(BookShopDbContext bookShopDbContext, ILogger<CartItemService> logger, 
+    public CartItemService(BookShopDbContext bookShopDbContext, ILogger<CartItemService> logger,
                            IMapper mapper, IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
@@ -36,7 +36,7 @@ internal class CartItemService : ICartItemService
         var cartEntity = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
         var productEntity = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == cartItemAddModel.ProductId);
 
-        if (productEntity==null)
+        if (productEntity == null)
         {
             throw new Exception($"Input parametr productId {cartItemAddModel.ProductId} is invalid");
         }
@@ -72,6 +72,49 @@ internal class CartItemService : ICartItemService
         cartItemModel = _mapper.Map<CartItemModel>(cartItemToAdd);
 
         return cartItemModel;
+    }
+
+    public async Task<CartItemModel> AddFromWishList(CartItemFromWishListModel cartItemFromWishListModel)
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+
+        var cartEntity = await _bookShopDbContext.Carts.Include(c => c.CartItems)
+                                                 .FirstOrDefaultAsync(c => c.ClientId == clientId);
+
+        var wishListItem = await _bookShopDbContext.WishListItems.Include(w => w.ProductEntity)
+                                                   .FirstOrDefaultAsync(w => w.Id == cartItemFromWishListModel.WishListItemId);
+
+        if (cartEntity == null || wishListItem == null)
+        {
+            throw new Exception("Invalid client or wishlist item.");
+        }
+
+        var existingCartItem = cartEntity.CartItems.FirstOrDefault(ci => ci.ProductId == wishListItem.ProductId);
+
+        if (existingCartItem != null)
+        {
+            existingCartItem.Count += cartItemFromWishListModel.Count;
+            await _bookShopDbContext.SaveChangesAsync();
+
+            var cartItemModel = _mapper.Map<CartItemModel>(existingCartItem);
+            return cartItemModel;
+        }
+        else
+        {
+            var cartItem = new CartItemEntity
+            {
+                ProductId = wishListItem.ProductId,
+                Count = cartItemFromWishListModel.Count,
+                Price = wishListItem.ProductEntity.Price,
+                CartId = cartEntity.Id
+            };
+
+            _bookShopDbContext.CartItems.Add(cartItem);
+            await _bookShopDbContext.SaveChangesAsync();
+
+            var cartItemModel = _mapper.Map<CartItemModel>(cartItem);
+            return cartItemModel;
+        }
     }
 
     public async Task RemoveAsync(long cartItemId)

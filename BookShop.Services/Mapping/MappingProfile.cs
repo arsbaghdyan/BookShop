@@ -25,14 +25,17 @@ public class MappingProfile : Profile
         CreateMap<CartItemEntity, CartItemModel>();
         CreateMap<CartItemAddModel, CartItemEntity>();
         CreateMap<CartItemUpdateModel, CartItemEntity>();
+        CreateMap<CartItemFromWishListModel, CartItemEntity>();
 
         CreateMap<WishListItemEntity, WishListItemModel>();
         CreateMap<WishListItemAddModel, WishListItemEntity>();
+        CreateMap<WishListItemEntity, CartItemEntity>();
+        CreateMap<CartItemEntity, CartItemModel>();
 
         CreateMap<OrderEntity, OrderModel>();
         CreateMap<OrderAddModel, OrderEntity>();
         CreateMap<CartEntity, OrderAddFromCardModel>()
-            .ForMember(dest => dest.cartItemId, opt => opt.MapFrom(src => src.CartItems.FirstOrDefault().Id));
+            .ForMember(dest => dest.CartItemId, opt => opt.MapFrom(src => src.CartItems.FirstOrDefault().Id));
 
         CreateMap<PaymentEntity, PaymentModel>();
         CreateMap<PaymentAddModel, PaymentEntity>();
