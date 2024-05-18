@@ -1,4 +1,5 @@
-﻿using BookShop.Data.Entities;
+﻿using BookShop.Api.Controllers.Base;
+using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.AspNetCore.Authorization;
@@ -6,9 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
-[ApiController]
 [Route("[controller]")]
-public class ClientController : ControllerBase
+public class ClientController : BaseAuthorizedController
 {
     private readonly IClientService _clientService;
 
@@ -17,7 +17,8 @@ public class ClientController : ControllerBase
         _clientService = clientService;
     }
 
-    [HttpPost]
+    [AllowAnonymous]
+    [HttpPost("register")]
     public async Task<ActionResult<ClientEntity>> RegisterClient(ClientRegisterModel clientModel)
     {
         var client = await _clientService.RegisterAsync(clientModel);
@@ -25,7 +26,6 @@ public class ClientController : ControllerBase
         return Ok(client);
     }
 
-    [Authorize]
     [HttpDelete]
     public async Task<ActionResult<ClientEntity>> RemoveClient()
     {
@@ -34,7 +34,6 @@ public class ClientController : ControllerBase
         return Ok();
     }
 
-    [Authorize]
     [HttpPut]
     public async Task<ActionResult<ClientEntity>> UpdateClient(ClientUpdateModel clientModel)
     {

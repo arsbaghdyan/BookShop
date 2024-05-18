@@ -91,11 +91,12 @@ internal class ClientService : IClientService
     public async Task RemoveAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var clientToRemove = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
 
-        _bookShopDbContext.Clients.Remove(clientToRemove);
-        await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Client with Id {clientToRemove.Id} removed successfully.");
+        await _bookShopDbContext.Clients
+            .Where(c => c.Id == clientId)
+            .ExecuteDeleteAsync();
+
+        _logger.LogInformation($"Client with Id {clientId} removed successfully.");
     }
 
     public async Task<ClientModel?> GetClientAsync()

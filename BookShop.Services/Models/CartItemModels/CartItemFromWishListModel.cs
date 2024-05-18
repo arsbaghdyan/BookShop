@@ -3,5 +3,5 @@
 public class CartItemFromWishListModel
 {
     public long WishListItemId { get; set; }
-    public long Count { get; set; }
+    public int Count { get; set; }
 }

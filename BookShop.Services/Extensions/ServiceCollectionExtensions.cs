@@ -12,7 +12,6 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<ICustomAuthenticationService, CustomAuthenticationService>();
         services.AddScoped<ICartService, CartService>();
-        services.AddScoped<ICartItemService, CartItemService>();
         services.AddScoped<IWishListService, WishListService>();
         services.AddScoped<IWishListItemService, WishListItemService>();
         services.AddScoped<IPaymentMethodService, PaymentMethodService>();

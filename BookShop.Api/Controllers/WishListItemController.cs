@@ -1,15 +1,13 @@
-﻿using BookShop.Data.Entities;
+﻿using BookShop.Api.Controllers.Base;
+using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
-[Authorize]
-[ApiController]
 [Route("[controller]")]
-public class WishListItemController : ControllerBase
+public class WishListItemController : BaseAuthorizedController
 {
     private readonly IWishListItemService _wishListItemService;
 

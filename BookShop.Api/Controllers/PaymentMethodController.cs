@@ -1,14 +1,13 @@
-﻿using BookShop.Services.Abstractions;
+﻿using BookShop.Api.Controllers.Base;
+using BookShop.Data.Models;
+using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
-[Authorize]
-[ApiController]
 [Route("[controller]")]
-public class PaymentMethodController : ControllerBase
+public class PaymentMethodController : BaseAuthorizedController
 {
     private readonly IPaymentMethodService _paymentMethodService;
 
@@ -17,10 +16,10 @@ public class PaymentMethodController : ControllerBase
         _paymentMethodService = paymentMethodService;
     }
 
-    [HttpPost("Add_card")]
-    public async Task<ActionResult<PaymentMethodModel>> AddPaymentMethod(PaymentMethodAddModel paymentMethodAddModel)
+    [HttpPost("card")]
+    public async Task<ActionResult<PaymentMethodModel>> AddPaymentMethod(CardDetails cardDetails)
     {
-        var paymentMethod = await _paymentMethodService.AddAsync(paymentMethodAddModel);
+        var paymentMethod = await _paymentMethodService.AddCardAsync(cardDetails);
 
         return Ok(paymentMethod);
     }

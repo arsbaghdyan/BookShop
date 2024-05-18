@@ -49,7 +49,7 @@ internal class PaymentService : IPaymentService
         }
         else
         {
-            paymentEntity.PaymentStatus = PaymentStatus.Fail;
+            paymentEntity.PaymentStatus = PaymentStatus.Failed;
             _logger.LogInformation($"Payment with Id {paymentEntity.Id} is fail for client with Id {clientId}");
         }
 

@@ -1,14 +1,12 @@
-﻿using BookShop.Services.Abstractions;
+﻿using BookShop.Api.Controllers.Base;
+using BookShop.Services.Abstractions;
 using BookShop.Services.Models.InvoiceModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
-[Authorize]
-[ApiController]
 [Route("[controller]")]
-public class InvoiceController : ControllerBase
+public class InvoiceController : BaseAuthorizedController
 {
     private readonly IInvoiceService _invoiceService;
 

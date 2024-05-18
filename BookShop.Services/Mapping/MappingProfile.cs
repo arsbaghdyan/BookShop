@@ -41,7 +41,6 @@ public class MappingProfile : Profile
         CreateMap<PaymentAddModel, PaymentEntity>();
 
         CreateMap<PaymentMethodEntity, PaymentMethodModel>();
-        CreateMap<PaymentMethodAddModel, PaymentMethodEntity>();
 
         CreateMap<InvoiceEntity, InvoiceModel>();
     }

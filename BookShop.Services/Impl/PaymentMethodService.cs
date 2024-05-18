@@ -25,21 +25,16 @@ internal class PaymentMethodService : IPaymentMethodService
         _clientContextReader = clientContextReader;
     }
 
-    public async Task<PaymentMethodModel> AddAsync(PaymentMethodAddModel paymentMethodAddModel)
+    public async Task<PaymentMethodModel> AddCardAsync(CardDetails cardDetails)
     {
         var clientId = _clientContextReader.GetClientContextId();
 
         var paymentMethodEntity = new PaymentMethodEntity
         {
             ClientId = clientId,
-            PaymentMethod = paymentMethodAddModel.PaymentMethod,
-            Details = JsonConvert.SerializeObject(paymentMethodAddModel.Details)
+            PaymentMethod = PaymentMethod.Card,
+            Details = JsonConvert.SerializeObject(cardDetails)
         };
-
-        if (!Enum.IsDefined(typeof(PaymentMethod), paymentMethodAddModel.PaymentMethod))
-        {
-            throw new Exception("Payment method is unknown");
-        }
 
         _bookShopDbContext.PaymentMethods.Add(paymentMethodEntity);
         await _bookShopDbContext.SaveChangesAsync();
@@ -48,8 +43,8 @@ internal class PaymentMethodService : IPaymentMethodService
         var paymentMethodModel = new PaymentMethodModel
         {
             Id = paymentMethodEntity.Id,
-            PaymentMethod = paymentMethodAddModel.PaymentMethod,
-            Details = JsonConvert.DeserializeObject<CardDetails>(paymentMethodEntity.Details)
+            PaymentMethod = PaymentMethod.Card,
+            Details = cardDetails
         };
 
         return paymentMethodModel;

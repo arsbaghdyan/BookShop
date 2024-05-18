@@ -1,15 +1,13 @@
-﻿using BookShop.Services.Abstractions;
+﻿using BookShop.Api.Controllers.Base;
+using BookShop.Services.Abstractions;
 using BookShop.Services.Models.OrderModel;
 using BookShop.Services.Models.OrderModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
-[Authorize]
-[ApiController]
 [Route("[controller]")]
-public class OrderController : ControllerBase
+public class OrderController : BaseAuthorizedController
 {
     private readonly IOrderService _orderService;
 

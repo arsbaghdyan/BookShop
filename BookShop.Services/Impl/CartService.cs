@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
+using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.EntityFrameworkCore;
@@ -27,26 +28,119 @@ internal class CartService : ICartService
     public async Task<List<CartItemModel>> GetAllCartItemsAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var cartEntity = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
 
-        var cartItemModels = new List<CartItemModel>();
+        var cartEntity = await _bookShopDbContext.Carts.Include(c => c.CartItems)
+            .FirstOrDefaultAsync(c => c.ClientId == clientId);
 
-        foreach (var cartItem in cartEntity.CartItems)
+        if (cartEntity == null)
         {
-            var cartItemModel = _mapper.Map<CartItemModel>(cartItem);
-            cartItemModels.Add(cartItemModel);
+            throw new Exception($"Cart was not found for client with {clientId} Id");
         }
 
-        return cartItemModels;
+        return _mapper.Map<List<CartItemModel>>(cartEntity.CartItems);
+    }
+
+    public async Task<CartItemModel> AddAsync(CartItemAddModel cartItemAddModel)
+    {
+        if (cartItemAddModel.Count <= 0)
+        {
+            throw new Exception("Product count cant be less than 0");
+        }
+
+        var clientId = _clientContextReader.GetClientContextId();
+
+        var productEntity = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == cartItemAddModel.ProductId);
+
+        if (productEntity == null)
+        {
+            throw new Exception($"Input parametr productId {cartItemAddModel.ProductId} is invalid");
+        }
+
+        if (productEntity.Count < cartItemAddModel.Count)
+        {
+            throw new Exception("Not enough product");
+        }
+
+        var cartItemEntity = await _bookShopDbContext.CartItems
+            .FirstOrDefaultAsync(c => c.CartEntity.ClientId == clientId &&
+                c.ProductId == cartItemAddModel.ProductId);
+
+        if (cartItemEntity != null)
+        {
+            cartItemEntity.Count += cartItemAddModel.Count;
+
+            await _bookShopDbContext.SaveChangesAsync();
+            return _mapper.Map<CartItemModel>(cartItemEntity);
+        }
+
+        var cartItemToAdd = _mapper.Map<CartItemEntity>(cartItemAddModel);
+
+        var cartEntity = await _bookShopDbContext.Carts
+            .FirstOrDefaultAsync(c => c.ClientId == clientId);
+
+        cartItemToAdd.CartId = cartEntity.Id;
+
+        _bookShopDbContext.CartItems.Add(cartItemToAdd);
+
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"CartItem with Id {cartItemToAdd.Id} added successfully for client with id {clientId}.");
+
+        return _mapper.Map<CartItemModel>(cartItemToAdd);
+    }
+
+    public async Task<CartItemModel> UpdateAsync(CartItemUpdateModel cartItemUpdateModel)
+    {
+        if (cartItemUpdateModel.Count <= 0)
+        {
+            throw new Exception("Product count cant be less than 0");
+        }
+
+        var clientId = _clientContextReader.GetClientContextId();
+
+        var cartItemEntity = await _bookShopDbContext.CartItems
+            .FirstOrDefaultAsync(ci => ci.CartEntity.ClientId == clientId &&
+                ci.ProductId == cartItemUpdateModel.ProductId);
+
+        if (cartItemEntity == null)
+        {
+            throw new Exception($"There is no Product with {cartItemUpdateModel.ProductId} Id in the Cart.");
+        }
+
+        var productEntity = await _bookShopDbContext.Products
+            .FirstOrDefaultAsync(p => p.Id == cartItemUpdateModel.ProductId);
+
+        if (productEntity.Count < cartItemUpdateModel.Count)
+        {
+            throw new Exception("Not enough product");
+        }
+
+        cartItemEntity.Count = cartItemUpdateModel.Count;
+        await _bookShopDbContext.SaveChangesAsync();
+
+        _logger.LogInformation($"Product with {cartItemUpdateModel.ProductId} Id is updated for client with id {clientId}.");
+
+        return _mapper.Map<CartItemModel>(cartItemEntity);
+    }
+
+    public async Task RemoveAsync(long productId)
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+
+        await _bookShopDbContext.CartItems
+            .Where(c => c.CartEntity.ClientId == clientId && c.ProductId == productId)
+            .ExecuteDeleteAsync();
+
+        _logger.LogInformation($"Product with {productId} Id is succesfully removed from Cart for '{clientId}' client.");
     }
 
     public async Task ClearAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var cartEntity = await _bookShopDbContext.Carts.Include(c => c.CartItems).FirstOrDefaultAsync(c => c.ClientId == clientId);
 
-        _bookShopDbContext.CartItems.RemoveRange(cartEntity.CartItems);
-        await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"CartItems cleared successfully for client with id {clientId}.");
+        await _bookShopDbContext.CartItems
+            .Where(c => c.CartEntity.ClientId == clientId)
+            .ExecuteDeleteAsync();
+
+        _logger.LogInformation($"CartItems is successfully cleared for '{clientId}' client.");
     }
 }
