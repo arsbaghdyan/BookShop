@@ -33,9 +33,7 @@ internal class ClientService : IClientService
         var clientId = _clientContextReader.GetClientContextId();
         var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == clientId);
 
-        var clientModel = _mapper.Map<ClientModel?>(client);
-
-        return clientModel;
+        return _mapper.Map<ClientModel?>(client);
     }
 
     public async Task<ClientModel?> GetByEmailAndPasswordAsync(
@@ -61,39 +59,21 @@ internal class ClientService : IClientService
 
     public async Task<ClientModel> RegisterAsync(ClientRegisterModel clientRegisterModel)
     {
-        using (var transaction = _bookShopDbContext.Database.BeginTransaction())
-        {
-            try
-            {
-                var clientToAdd = _mapper.Map<ClientEntity>(clientRegisterModel);
-                clientToAdd.Password = HashPassword(clientRegisterModel.Password);
+        var clientToAdd = _mapper.Map<ClientEntity>(clientRegisterModel);
+        clientToAdd.Password = HashPassword(clientRegisterModel.Password);
 
-                _bookShopDbContext.Clients.Add(clientToAdd);
-                await _bookShopDbContext.SaveChangesAsync();
+        _bookShopDbContext.Clients.Add(clientToAdd);
 
-                var newCart = new CartEntity { ClientId = clientToAdd.Id };
-                _bookShopDbContext.Carts.Add(newCart);
+        var newCart = new CartEntity { ClientEntity = clientToAdd };
+        _bookShopDbContext.Carts.Add(newCart);
 
-                var newWishList = new WishListEntity { ClientId = clientToAdd.Id };
-                _bookShopDbContext.WishLists.Add(newWishList);
+        var newWishList = new WishListEntity { ClientEntity = clientToAdd };
+        _bookShopDbContext.WishLists.Add(newWishList);
 
-                await _bookShopDbContext.SaveChangesAsync();
-                _logger.LogInformation($"Client with Id {clientToAdd.Id} added successfully.");
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Client with Id {clientToAdd.Id} added successfully.");
 
-                var clientModel = _mapper.Map<ClientModel>(clientToAdd);
-
-                transaction.Commit();
-
-                return clientModel;
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                _logger.LogError($"Error {ex.Message}");
-
-                throw new Exception($"Error {ex.Message}");
-            }
-        }
+        return _mapper.Map<ClientModel>(clientToAdd);
     }
 
     public async Task<ClientModel> UpdateAsync(ClientUpdateModel clientUpdateModel)
@@ -114,9 +94,7 @@ internal class ClientService : IClientService
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Client with Id {clientId} modified successfully.");
 
-        var clientModel = _mapper.Map<ClientModel>(clientToUpdate);
-
-        return clientModel;
+        return _mapper.Map<ClientModel>(clientToUpdate);
     }
 
     public async Task RemoveAsync()

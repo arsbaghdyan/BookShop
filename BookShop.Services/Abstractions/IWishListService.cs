@@ -6,6 +6,6 @@ public interface IWishListService
 {
     Task<List<WishListItemModel>> GetAllWishListItemsAsync();
     Task<WishListItemModel> AddAsync(WishListItemAddModel wishListItemEntity);
-    Task RemoveAsync(long wishListItemId);
+    Task RemoveAsync(long productId);
     Task ClearAsync();
 }

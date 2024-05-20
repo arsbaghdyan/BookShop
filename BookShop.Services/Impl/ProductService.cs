@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
@@ -99,17 +100,15 @@ internal class ProductService : IProductService
 
     public async Task ClearAsync()
     {
-        var products = await _bookShopDbContext.Products.ToListAsync();
-        _bookShopDbContext.Products.RemoveRange(products);
-        await _bookShopDbContext.SaveChangesAsync();
+        await _bookShopDbContext.Products.ExecuteDeleteAsync();
+
         _logger.LogInformation("All products cleared successfully.");
     }
 
     public async Task RemoveAsync(long productId)
     {
-        var product = _bookShopDbContext.Products.FirstOrDefault(p => p.Id == productId);
+        await _bookShopDbContext.Products.Where(p=>p.Id== productId).ExecuteDeleteAsync();
 
-        _bookShopDbContext.Products.Remove(product);
-        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Product with Id {productId} removed successfully.");
     }
 }

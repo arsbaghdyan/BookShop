@@ -69,66 +69,47 @@ internal class OrderService : IOrderService
             throw new Exception($"Input parametr for productId {productInfo.ProductId} is invalid");
         }
 
-        using (var transaction = _bookShopDbContext.Database.BeginTransaction())
+        var orderModel = new OrderModel();
+        if (orderEntity != null)
         {
-            try
-            {
-                var orderModel = new OrderModel();
-                if (orderEntity != null)
-                {
-                    orderEntity.Count += productInfo.Count;
-                    orderEntity.Amount = productEntity.Price * orderEntity.Count;
+            orderEntity.Count += productInfo.Count;
+            orderEntity.Amount = productEntity.Price * orderEntity.Count;
 
-                    await _bookShopDbContext.SaveChangesAsync();
+            await _bookShopDbContext.SaveChangesAsync();
 
-                    _logger.LogInformation($"Order with Id{orderEntity.Id} added successefully for client with id {clientId}");
+            _logger.LogInformation($"Order with Id{orderEntity.Id} added successefully for client with id {clientId}");
 
-                    orderModel = _mapper.Map<OrderModel>(orderEntity);
-                }
-
-                var orderToAdd = _mapper.Map<OrderEntity>(productInfo);
-
-                orderToAdd.Amount = productEntity.Price * orderToAdd.Count;
-                orderToAdd.ClientId = clientId;
-
-                _bookShopDbContext.Orders.Add(orderToAdd);
-                await _bookShopDbContext.SaveChangesAsync();
-                _logger.LogInformation($"Order with Id{orderToAdd.Id} added successefully for client with id {clientId}");
-
-                var invoice = new InvoiceEntity
-                {
-                    ClientId = clientId,
-                    CreatedAt = DateTime.UtcNow,
-                    OrderId = orderToAdd.Id,
-                    TotalAmount = orderToAdd.Amount,
-                };
-
-                _bookShopDbContext.Invoices.Add(invoice);
-                await _bookShopDbContext.SaveChangesAsync();
-
-                orderModel = _mapper.Map<OrderModel>(orderToAdd);
-
-                transaction.Commit();
-
-                return orderModel;
-            }
-            catch (Exception ex)
-            {
-                transaction.Rollback();
-                _logger.LogError($"Error {ex.Message}");
-
-                throw new Exception($"Error {ex.Message}");
-            }
+            orderModel = _mapper.Map<OrderModel>(orderEntity);
         }
+
+        var orderToAdd = _mapper.Map<OrderEntity>(productInfo);
+
+        orderToAdd.Amount = productEntity.Price * orderToAdd.Count;
+        orderToAdd.ClientId = clientId;
+
+        _bookShopDbContext.Orders.Add(orderToAdd);
+
+        var invoice = new InvoiceEntity
+        {
+            ClientId = clientId,
+            CreatedAt = DateTime.UtcNow,
+            OrderEntity = orderToAdd,
+            TotalAmount = orderToAdd.Amount,
+        };
+
+        _bookShopDbContext.Invoices.Add(invoice);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Order with Id{orderToAdd.Id} added successefully for client with id {clientId}");
+
+        return _mapper.Map<OrderModel>(orderToAdd);
     }
 
     public async Task ClearAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var orderEntities = await _bookShopDbContext.Orders.Where(o => o.ClientId == clientId).ToListAsync();
-
-        _bookShopDbContext.Orders.RemoveRange(orderEntities);
-        await _bookShopDbContext.SaveChangesAsync();
+        await _bookShopDbContext.Orders
+           .Where(c => c.ClientId == clientId)
+           .ExecuteDeleteAsync();
 
         _logger.LogInformation($"Orders cleared successfully for client with Id {clientId}");
     }
@@ -136,11 +117,10 @@ internal class OrderService : IOrderService
     public async Task RemoveAsync(long orderId)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var orderEntity = await _bookShopDbContext.Orders.FirstOrDefaultAsync(o => o.ClientId == clientId && o.Id == orderId);
+        await _bookShopDbContext.Orders
+            .Where(c => c.ClientId == clientId && c.Id == orderId)
+            .ExecuteDeleteAsync();
 
-        _bookShopDbContext.Orders.Remove(orderEntity);
-        await _bookShopDbContext.SaveChangesAsync();
-
-        _logger.LogInformation($"Order with Id{orderEntity.Id} remove for client with Id {clientId}");
+        _logger.LogInformation($"Order with Id{orderId} remove for client with Id {clientId}");
     }
 }

@@ -29,10 +29,7 @@ internal class InvoiceService : IInvoiceService
         var clientId = _clientContextReader.GetClientContextId();
         var invoiceEntities = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).ToListAsync();
 
-        var invoiceModel = _mapper.Map<List<InvoiceModel>>(invoiceEntities);
-
-
-        return invoiceModel;
+        return _mapper.Map<List<InvoiceModel>>(invoiceEntities);
     }
 
     public async Task<InvoiceModel> GetByIdAsync(long invoiceId)
@@ -40,18 +37,16 @@ internal class InvoiceService : IInvoiceService
         var clientId = _clientContextReader.GetClientContextId();
         var invoiceEntity = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).FirstOrDefaultAsync(i => i.Id == invoiceId);
 
-        var invoiceModel = _mapper.Map<InvoiceModel>(invoiceEntity);
-
-        return invoiceModel;
+        return _mapper.Map<InvoiceModel>(invoiceEntity);
     }
 
     public async Task ClearAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var invoiceEntity = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).ToListAsync();
+        await _bookShopDbContext.Invoices
+            .Where(c => c.ClientId == clientId)
+            .ExecuteDeleteAsync();
 
-        _bookShopDbContext.Invoices.RemoveRange(invoiceEntity);
-        await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Invoices cleared successfully for client with id {clientId}.");
     }
 }

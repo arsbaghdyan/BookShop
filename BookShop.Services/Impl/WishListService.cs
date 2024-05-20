@@ -54,35 +54,28 @@ internal class WishListService : IWishListService
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"WishList with Id {wishListItemToAdd.Id} added succesfully for client with id {clientId}.");
 
-        var wishListItemModel = _mapper.Map<WishListItemModel>(wishListItemToAdd);
-
-        return wishListItemModel;
+        return _mapper.Map<WishListItemModel>(wishListItemToAdd);
     }
 
-    public async Task RemoveAsync(long wishListItemId)
+    public async Task RemoveAsync(long productId)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var wishListEntity = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
 
-        if (wishListEntity == null)
-        {
-            throw new Exception("Parametrs for wishListItem is invalid");
-        }
+        await _bookShopDbContext.WishListItems
+            .Where(c => c.WishListEntity.ClientId == clientId && c.ProductId == productId)
+            .ExecuteDeleteAsync();
 
-        var wishListItemEntity = wishListEntity.WishListItems.FirstOrDefault(w => w.Id == wishListItemId);
-
-        _bookShopDbContext.WishListItems.Remove(wishListItemEntity);
-        await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"WishList with Id {wishListEntity.Id} remove succesfully for client with id {clientId}.");
+        _logger.LogInformation($"Product with {productId} Id is succesfully removed from WishList for '{clientId}' client.");
     }
 
     public async Task ClearAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var wishListEntity = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
 
-        _bookShopDbContext.WishListItems.RemoveRange(wishListEntity.WishListItems);
-        await _bookShopDbContext.SaveChangesAsync();
+        await _bookShopDbContext.WishListItems
+            .Where(c => c.WishListEntity.ClientId == clientId)
+            .ExecuteDeleteAsync();
+
         _logger.LogInformation($"WishList items cleared successfully for client with id {clientId}.");
     }
 }

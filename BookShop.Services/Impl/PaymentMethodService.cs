@@ -73,10 +73,11 @@ internal class PaymentMethodService : IPaymentMethodService
     public async Task RemoveAsync(long paymentMethodId)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var paymentMethodEntity = await _bookShopDbContext.PaymentMethods.FirstOrDefaultAsync(p => p.Id == paymentMethodId && p.ClientId == clientId);
 
-        _bookShopDbContext.PaymentMethods.Remove(paymentMethodEntity);
-        await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"PaymentMethod with Id {paymentMethodEntity.Id} removed successfully for client with id {clientId}.");
+        await _bookShopDbContext.PaymentMethods
+           .Where(c => c.ClientId == clientId && c.Id == paymentMethodId)
+           .ExecuteDeleteAsync();
+
+        _logger.LogInformation($"PaymentMethod with Id {paymentMethodId} removed successfully for client with id {clientId}.");
     }
 }
