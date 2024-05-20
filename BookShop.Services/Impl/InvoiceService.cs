@@ -24,16 +24,6 @@ internal class InvoiceService : IInvoiceService
         _clientContextReader = clientContextReader;
     }
 
-    public async Task ClearAsync()
-    {
-        var clientId = _clientContextReader.GetClientContextId();
-        var invoiceEntity = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).ToListAsync();
-
-        _bookShopDbContext.Invoices.RemoveRange(invoiceEntity);
-        await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Invoices cleared successfully for client with id {clientId}.");
-    }
-
     public async Task<List<InvoiceModel>> GetAllAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
@@ -53,5 +43,15 @@ internal class InvoiceService : IInvoiceService
         var invoiceModel = _mapper.Map<InvoiceModel>(invoiceEntity);
 
         return invoiceModel;
+    }
+
+    public async Task ClearAsync()
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+        var invoiceEntity = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).ToListAsync();
+
+        _bookShopDbContext.Invoices.RemoveRange(invoiceEntity);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Invoices cleared successfully for client with id {clientId}.");
     }
 }

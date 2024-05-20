@@ -57,28 +57,6 @@ internal class OrderService : IOrderService
         return order;
     }
 
-    public async Task ClearAsync()
-    {
-        var clientId = _clientContextReader.GetClientContextId();
-        var orderEntities = await _bookShopDbContext.Orders.Where(o => o.ClientId == clientId).ToListAsync();
-
-        _bookShopDbContext.Orders.RemoveRange(orderEntities);
-        await _bookShopDbContext.SaveChangesAsync();
-
-        _logger.LogInformation($"Orders cleared successfully for client with Id {clientId}");
-    }
-
-    public async Task RemoveAsync(long orderId)
-    {
-        var clientId = _clientContextReader.GetClientContextId();
-        var orderEntity = await _bookShopDbContext.Orders.FirstOrDefaultAsync(o => o.ClientId == clientId && o.Id == orderId);
-
-        _bookShopDbContext.Orders.Remove(orderEntity);
-        await _bookShopDbContext.SaveChangesAsync();
-
-        _logger.LogInformation($"Order with Id{orderEntity.Id} remove for client with Id {clientId}");
-    }
-
     private async Task<OrderModel> PlaceOrderInternalAsync(OrderInfo productInfo)
     {
         var clientId = _clientContextReader.GetClientContextId();
@@ -142,5 +120,27 @@ internal class OrderService : IOrderService
                 throw new Exception($"Error {ex.Message}");
             }
         }
+    }
+
+    public async Task ClearAsync()
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+        var orderEntities = await _bookShopDbContext.Orders.Where(o => o.ClientId == clientId).ToListAsync();
+
+        _bookShopDbContext.Orders.RemoveRange(orderEntities);
+        await _bookShopDbContext.SaveChangesAsync();
+
+        _logger.LogInformation($"Orders cleared successfully for client with Id {clientId}");
+    }
+
+    public async Task RemoveAsync(long orderId)
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+        var orderEntity = await _bookShopDbContext.Orders.FirstOrDefaultAsync(o => o.ClientId == clientId && o.Id == orderId);
+
+        _bookShopDbContext.Orders.Remove(orderEntity);
+        await _bookShopDbContext.SaveChangesAsync();
+
+        _logger.LogInformation($"Order with Id{orderEntity.Id} remove for client with Id {clientId}");
     }
 }

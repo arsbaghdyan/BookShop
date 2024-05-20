@@ -24,6 +24,26 @@ internal class PaymentMethodService : IPaymentMethodService
         _logger = logger;
         _clientContextReader = clientContextReader;
     }
+    public async Task<List<PaymentMethodModel>> GetAllAsync()
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+        var paymentMethodEntites = await _bookShopDbContext.PaymentMethods.Where(p => p.ClientId == clientId).ToListAsync();
+
+        var paymentMethodModels = new List<PaymentMethodModel>();
+
+        foreach (var paymentMethod in paymentMethodEntites)
+        {
+            var paymentMethodModel = new PaymentMethodModel
+            {
+                Id = paymentMethod.Id,
+                PaymentMethod = paymentMethod.PaymentMethod,
+                Details = JsonConvert.DeserializeObject<CardDetails>(paymentMethod.Details)
+            };
+            paymentMethodModels.Add(paymentMethodModel);
+        }
+
+        return paymentMethodModels;
+    }
 
     public async Task<PaymentMethodModel> AddCardAsync(CardDetails cardDetails)
     {
@@ -48,27 +68,6 @@ internal class PaymentMethodService : IPaymentMethodService
         };
 
         return paymentMethodModel;
-    }
-
-    public async Task<List<PaymentMethodModel>> GetAllAsync()
-    {
-        var clientId = _clientContextReader.GetClientContextId();
-        var paymentMethodEntites = await _bookShopDbContext.PaymentMethods.Where(p => p.ClientId == clientId).ToListAsync();
-
-        var paymentMethodModels = new List<PaymentMethodModel>();
-
-        foreach (var paymentMethod in paymentMethodEntites)
-        {
-            var paymentMethodModel = new PaymentMethodModel
-            {
-                Id = paymentMethod.Id,
-                PaymentMethod = paymentMethod.PaymentMethod,
-                Details = JsonConvert.DeserializeObject<CardDetails>(paymentMethod.Details)
-            };
-            paymentMethodModels.Add(paymentMethodModel);
-        }
-
-        return paymentMethodModels;
     }
 
     public async Task RemoveAsync(long paymentMethodId)

@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using BookShop.Services.Models.CartItemModels;
 using AutoMapper;
 using BookShop.Common.ClientService.Abstractions;
+using BookShop.Data.Entities;
 
 namespace BookShop.Services.Impl;
 
@@ -38,6 +39,41 @@ internal class WishListService : IWishListService
         }
 
         return wishListItemModels;
+    }
+
+    public async Task<WishListItemModel> AddAsync(WishListItemAddModel wishListItem)
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+        var wishListEntity = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
+
+        var wishListItemToAdd = _mapper.Map<WishListItemEntity>(wishListItem);
+
+        wishListItemToAdd.WishListId = wishListEntity.Id;
+
+        _bookShopDbContext.WishListItems.Add(wishListItemToAdd);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"WishList with Id {wishListItemToAdd.Id} added succesfully for client with id {clientId}.");
+
+        var wishListItemModel = _mapper.Map<WishListItemModel>(wishListItemToAdd);
+
+        return wishListItemModel;
+    }
+
+    public async Task RemoveAsync(long wishListItemId)
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+        var wishListEntity = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
+
+        if (wishListEntity == null)
+        {
+            throw new Exception("Parametrs for wishListItem is invalid");
+        }
+
+        var wishListItemEntity = wishListEntity.WishListItems.FirstOrDefault(w => w.Id == wishListItemId);
+
+        _bookShopDbContext.WishListItems.Remove(wishListItemEntity);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"WishList with Id {wishListEntity.Id} remove succesfully for client with id {clientId}.");
     }
 
     public async Task ClearAsync()

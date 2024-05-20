@@ -28,6 +28,37 @@ internal class ClientService : IClientService
         _clientContextReader = clientContextReader;
     }
 
+    public async Task<ClientModel?> GetClientAsync()
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == clientId);
+
+        var clientModel = _mapper.Map<ClientModel?>(client);
+
+        return clientModel;
+    }
+
+    public async Task<ClientModel?> GetByEmailAndPasswordAsync(
+
+
+        string email,
+        string password)
+    {
+        var client = await _bookShopDbContext.Clients
+            .FirstOrDefaultAsync(p => p.Email == email);
+
+        if (client != null)
+        {
+            var hashedPassword = HashPassword(password);
+            if (client.Password == hashedPassword)
+            {
+                return _mapper.Map<ClientModel?>(client);
+            }
+        }
+
+        return null;
+    }
+
     public async Task<ClientModel> RegisterAsync(ClientRegisterModel clientRegisterModel)
     {
         using (var transaction = _bookShopDbContext.Database.BeginTransaction())
@@ -97,35 +128,6 @@ internal class ClientService : IClientService
             .ExecuteDeleteAsync();
 
         _logger.LogInformation($"Client with Id {clientId} removed successfully.");
-    }
-
-    public async Task<ClientModel?> GetClientAsync()
-    {
-        var clientId = _clientContextReader.GetClientContextId();
-        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == clientId);
-
-        var clientModel = _mapper.Map<ClientModel?>(client);
-
-        return clientModel;
-    }
-
-    public async Task<ClientModel?> GetByEmailAndPasswordAsync(
-        string email,
-        string password)
-    {
-        var client = await _bookShopDbContext.Clients
-            .FirstOrDefaultAsync(p => p.Email == email);
-
-        if (client != null)
-        {
-            var hashedPassword = HashPassword(password);
-            if (client.Password == hashedPassword)
-            {
-                return _mapper.Map<ClientModel?>(client);
-            }
-        }
-
-        return null;
     }
 
     private string HashPassword(string password)
