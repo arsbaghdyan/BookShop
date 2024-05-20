@@ -16,20 +16,20 @@ public class PaymentMethodController : BaseAuthorizedController
         _paymentMethodService = paymentMethodService;
     }
 
-    [HttpPost("card")]
-    public async Task<ActionResult<PaymentMethodModel>> AddPaymentMethod(CardDetails cardDetails)
-    {
-        var paymentMethod = await _paymentMethodService.AddCardAsync(cardDetails);
-
-        return Ok(paymentMethod);
-    }
-
     [HttpGet]
     public async Task<ActionResult<List<PaymentMethodModel>>> GetAllPaymentMethods()
     {
         var paymentMethods = await _paymentMethodService.GetAllAsync();
 
         return Ok(paymentMethods);
+    }
+
+    [HttpPost("card")]
+    public async Task<ActionResult<PaymentMethodModel>> AddPaymentMethod(CardDetails cardDetails)
+    {
+        var paymentMethod = await _paymentMethodService.AddCardAsync(cardDetails);
+
+        return Ok(paymentMethod);
     }
 
     [HttpDelete]

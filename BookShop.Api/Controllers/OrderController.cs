@@ -1,5 +1,7 @@
 ﻿using BookShop.Api.Controllers.Base;
+using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModel;
 using BookShop.Services.Models.OrderModels;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +18,22 @@ public class OrderController : BaseAuthorizedController
         _orderService = orderService;
     }
 
+    [HttpGet]
+    public async Task<ActionResult<List<InvoiceModel>>> GetInvoice()
+    {
+        var orders = await _orderService.GetAllAsync();
+
+        return Ok(orders);
+    }
+
+    [HttpGet("{paymentId}")]
+    public async Task<ActionResult<InvoiceModel>> GetInvoiceById(long paymentId)
+    {
+        var order = await _orderService.GetByIdAsync(paymentId);
+
+        return Ok(order);
+    }
+
     [HttpPost]
     public async Task<ActionResult<OrderModel>> AddOrder(OrderAddModel orderAddModel)
     {
@@ -23,28 +41,12 @@ public class OrderController : BaseAuthorizedController
 
         return Ok(order);
     }
-    
-    [HttpPost("Add_From_Cart")]
+
+    [HttpPost("From_Cart")]
     public async Task<ActionResult<OrderModel>> AddOrderFromCard(OrderAddFromCardModel orderAddFromCardModel)
     {
         var order = await _orderService.AddOrderFromCartAsync(orderAddFromCardModel);
 
         return Ok(order);
-    }
-
-    [HttpDelete("{orderId}")]
-    public async Task<IActionResult> Remove(long orderId)
-    {
-        await _orderService.RemoveAsync(orderId);
-
-        return Ok();
-    }
-
-    [HttpDelete]
-    public async Task<IActionResult> Clear()
-    {
-        await _orderService.ClearAsync();
-
-        return Ok();
     }
 }

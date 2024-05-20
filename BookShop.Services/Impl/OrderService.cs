@@ -3,6 +3,7 @@ using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModel;
 using BookShop.Services.Models.OrderModels;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,22 @@ internal class OrderService : IOrderService
         _mapper = mapper;
         _logger = logger;
         _bookShopDbContext = bookShopDbContext;
+    }
+
+    public async Task<List<InvoiceModel>> GetAllAsync()
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+        var invoiceEntities = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).ToListAsync();
+
+        return _mapper.Map<List<InvoiceModel>>(invoiceEntities);
+    }
+
+    public async Task<InvoiceModel> GetByIdAsync(long invoiceId)
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+        var invoiceEntity = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).FirstOrDefaultAsync(i => i.Id == invoiceId);
+
+        return _mapper.Map<InvoiceModel>(invoiceEntity);
     }
 
     public async Task<OrderModel> AddOrderAsync(OrderAddModel orderAddModel)
@@ -102,25 +119,5 @@ internal class OrderService : IOrderService
         _logger.LogInformation($"Order with Id{orderToAdd.Id} added successefully for client with id {clientId}");
 
         return _mapper.Map<OrderModel>(orderToAdd);
-    }
-
-    public async Task ClearAsync()
-    {
-        var clientId = _clientContextReader.GetClientContextId();
-        await _bookShopDbContext.Orders
-           .Where(c => c.ClientId == clientId)
-           .ExecuteDeleteAsync();
-
-        _logger.LogInformation($"Orders cleared successfully for client with Id {clientId}");
-    }
-
-    public async Task RemoveAsync(long orderId)
-    {
-        var clientId = _clientContextReader.GetClientContextId();
-        await _bookShopDbContext.Orders
-            .Where(c => c.ClientId == clientId && c.Id == orderId)
-            .ExecuteDeleteAsync();
-
-        _logger.LogInformation($"Order with Id{orderId} remove for client with Id {clientId}");
     }
 }

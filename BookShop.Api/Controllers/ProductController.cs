@@ -16,6 +16,24 @@ public class ProductController : BaseAuthorizedController
         _productService = productService;
     }
 
+    [AllowAnonymous]
+    [HttpGet]
+    public async Task<ActionResult<List<ProductModel>>> GetAllProducts()
+    {
+        var products = await _productService.GetAllAsync();
+
+        return Ok(products);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("{productId}")]
+    public async Task<ActionResult<ProductModel>> GetProduct(long productId)
+    {
+        var product = await _productService.GetByIdAsync(productId);
+
+        return Ok(product);
+    }
+
     [HttpPost]
     public async Task<ActionResult<ProductModel>> AddProduct(ProductAddModel productAddModel)
     {
@@ -46,23 +64,5 @@ public class ProductController : BaseAuthorizedController
         await _productService.RemoveAsync(productId);
 
         return Ok();
-    }
-
-    [AllowAnonymous]
-    [HttpGet]
-    public async Task<ActionResult<List<ProductModel>>> GetAllProducts()
-    {
-        var products = await _productService.GetAllAsync();
-
-        return Ok(products);
-    }
-
-    [AllowAnonymous]
-    [HttpGet("{productId}")]
-    public async Task<ActionResult<ProductModel>> GetProduct(long productId)
-    {
-        var product = await _productService.GetByIdAsync(productId);
-
-        return Ok(product);
     }
 }
