@@ -45,13 +45,13 @@ internal class OrderService : IOrderService
         return _mapper.Map<InvoiceModel>(invoiceEntity);
     }
 
-    public async Task<OrderModel> AddOrderAsync(OrderAddModel orderAddModel)
+    public async Task<OrderModel> PlaceOrderAsync(OrderAddModel orderAddModel)
     {
         var orderInfo = new OrderInfo(orderAddModel.ProductId, orderAddModel.Count);
         return await PlaceOrderInternalAsync(orderInfo);
     }
 
-    public async Task<OrderModel> AddOrderFromCartAsync(OrderAddFromCardModel orderAddFromCardModel)
+    public async Task<OrderModel> PlaceOrderFromCartAsync(OrderAddFromCardModel orderAddFromCardModel)
     {
         var clientId = _clientContextReader.GetClientContextId();
 

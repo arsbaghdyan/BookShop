@@ -1,5 +1,4 @@
 ﻿using BookShop.Api.Controllers.Base;
-using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModel;
@@ -37,7 +36,7 @@ public class OrderController : BaseAuthorizedController
     [HttpPost]
     public async Task<ActionResult<OrderModel>> AddOrder(OrderAddModel orderAddModel)
     {
-        var order = await _orderService.AddOrderAsync(orderAddModel);
+        var order = await _orderService.PlaceOrderAsync(orderAddModel);
 
         return Ok(order);
     }
@@ -45,7 +44,7 @@ public class OrderController : BaseAuthorizedController
     [HttpPost("From_Cart")]
     public async Task<ActionResult<OrderModel>> AddOrderFromCard(OrderAddFromCardModel orderAddFromCardModel)
     {
-        var order = await _orderService.AddOrderFromCartAsync(orderAddFromCardModel);
+        var order = await _orderService.PlaceOrderFromCartAsync(orderAddFromCardModel);
 
         return Ok(order);
     }

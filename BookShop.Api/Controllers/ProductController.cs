@@ -1,6 +1,7 @@
 ﻿using BookShop.Api.Controllers.Base;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
+using BookShop.Services.Models.PageModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,9 +19,9 @@ public class ProductController : BaseAuthorizedController
 
     [AllowAnonymous]
     [HttpGet]
-    public async Task<ActionResult<List<ProductModel>>> GetAllProducts()
+    public async Task<ActionResult<List<ProductModel>>> GetAllProducts([FromQuery] ProductPageModel productPageModel)
     {
-        var products = await _productService.GetAllAsync();
+        var products = await _productService.GetAllAsync(productPageModel);
 
         return Ok(products);
     }
@@ -48,14 +49,6 @@ public class ProductController : BaseAuthorizedController
         var product = await _productService.UpdateAsync(productUpdateModel);
 
         return Ok(product);
-    }
-
-    [HttpDelete]
-    public async Task<IActionResult> ClearProducts()
-    {
-        await _productService.ClearAsync();
-
-        return Ok();
     }
 
     [HttpDelete("{productId}")]

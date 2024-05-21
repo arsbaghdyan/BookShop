@@ -8,6 +8,6 @@ public interface IOrderService
 {
     Task<List<InvoiceModel>> GetAllAsync();
     Task<InvoiceModel> GetByIdAsync(long paymentId);
-    Task<OrderModel> AddOrderFromCartAsync(OrderAddFromCardModel orderAddFromCardModel);
-    Task<OrderModel> AddOrderAsync(OrderAddModel orderAddModel);
+    Task<OrderModel> PlaceOrderFromCartAsync(OrderAddFromCardModel orderAddFromCardModel);
+    Task<OrderModel> PlaceOrderAsync(OrderAddModel orderAddModel);
 }

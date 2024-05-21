@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Helper;
 using BookShop.Services.Models.CartItemModels;
+using BookShop.Services.Models.PageModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -22,13 +23,15 @@ internal class ProductService : IProductService
         _mapper = mapper;
     }
 
-    public async Task<List<ProductModel>> GetAllAsync()
+    public async Task<PagedList<ProductModel>> GetAllAsync(ProductPageModel productPageModel)
     {
-        var productEntities = await _bookShopDbContext.Products.ToListAsync();
+        var productQuery = _bookShopDbContext.Products.OrderBy(p => p.Name).AsQueryable();
+        var productEntities =await PagedList<ProductEntity>
+            .ToPagedListAsync(productQuery, productPageModel.PageNumber,productPageModel.PageSize);
 
-        var productsModels = _mapper.Map<List<ProductModel>>(productEntities);
+        var productModels = _mapper.Map<List<ProductModel>>(productEntities);
 
-        return productsModels;
+        return new PagedList<ProductModel>(productModels, productEntities.TotalCount, productEntities.CurrentPage, productEntities.PageSize);
     }
 
     public async Task<ProductModel> GetByIdAsync(long productId)
@@ -48,7 +51,7 @@ internal class ProductService : IProductService
         }
 
         var productCheck = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Manufacturer == productAddModel.Manufacturer
-        && p.Details == p.Details && p.Name == productAddModel.Name && p.Price == productAddModel.Price);
+         && p.Name == productAddModel.Name && p.Price == productAddModel.Price);
 
         var productEntity = new ProductEntity();
 
@@ -87,7 +90,6 @@ internal class ProductService : IProductService
         productToUpdate.Name = product.Name;
         productToUpdate.Price = product.Price;
         productToUpdate.Manufacturer = product.Manufacturer;
-        productToUpdate.Details = product.Details;
         productToUpdate.Count = product.Count;
 
         await _bookShopDbContext.SaveChangesAsync();
@@ -98,16 +100,9 @@ internal class ProductService : IProductService
         return productModel;
     }
 
-    public async Task ClearAsync()
-    {
-        await _bookShopDbContext.Products.ExecuteDeleteAsync();
-
-        _logger.LogInformation("All products cleared successfully.");
-    }
-
     public async Task RemoveAsync(long productId)
     {
-        await _bookShopDbContext.Products.Where(p=>p.Id== productId).ExecuteDeleteAsync();
+        await _bookShopDbContext.Products.Where(p => p.Id == productId).ExecuteDeleteAsync();
 
         _logger.LogInformation($"Product with Id {productId} removed successfully.");
     }
