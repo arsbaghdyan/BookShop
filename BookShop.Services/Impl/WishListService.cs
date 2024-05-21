@@ -52,7 +52,7 @@ internal class WishListService : IWishListService
 
         _bookShopDbContext.WishListItems.Add(wishListItemToAdd);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"WishList with Id {wishListItemToAdd.Id} added succesfully for client with id {clientId}.");
+        _logger.LogInformation($"WishList with Id {wishListItemToAdd.Id} added succesfully for '{clientId}' client.");
 
         return _mapper.Map<WishListItemModel>(wishListItemToAdd);
     }
@@ -76,6 +76,6 @@ internal class WishListService : IWishListService
             .Where(c => c.WishListEntity.ClientId == clientId)
             .ExecuteDeleteAsync();
 
-        _logger.LogInformation($"WishList items cleared successfully for client with id {clientId}.");
+        _logger.LogInformation($"WishList items cleared successfully for '{clientId}' client.");
     }
 }

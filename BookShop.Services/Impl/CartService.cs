@@ -34,7 +34,7 @@ internal class CartService : ICartService
 
         if (cartEntity == null)
         {
-            throw new Exception($"Cart was not found for client with {clientId} Id");
+            throw new Exception($"Cart was not found for '{clientId}' client.");
         }
 
         return _mapper.Map<List<CartItemModel>>(cartEntity.CartItems);
@@ -83,7 +83,7 @@ internal class CartService : ICartService
         _bookShopDbContext.CartItems.Add(cartItemToAdd);
 
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"CartItem with Id {cartItemToAdd.Id} added successfully for client with id {clientId}.");
+        _logger.LogInformation($"Product with {cartItemAddModel.ProductId} Id is added in cart for '{clientId}' client.");
 
         return _mapper.Map<CartItemModel>(cartItemToAdd);
     }
@@ -117,7 +117,7 @@ internal class CartService : ICartService
         cartItemEntity.Count = cartItemUpdateModel.Count;
         await _bookShopDbContext.SaveChangesAsync();
 
-        _logger.LogInformation($"Product with {cartItemUpdateModel.ProductId} Id is updated for client with id {clientId}.");
+        _logger.LogInformation($"Product with {cartItemUpdateModel.ProductId} Id is updated for '{clientId}' client.");
 
         return _mapper.Map<CartItemModel>(cartItemEntity);
     }

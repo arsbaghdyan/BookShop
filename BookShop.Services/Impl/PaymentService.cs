@@ -45,17 +45,17 @@ internal class PaymentService : IPaymentService
         if (invoiceEntity.TotalAmount == paymentEntity.Amount)
         {
             paymentEntity.PaymentStatus = PaymentStatus.Success;
-            _logger.LogInformation($"Payment with Id {paymentEntity.Id} is success for client with Id {clientId}");
+            _logger.LogInformation($"Payment with Id {paymentEntity.Id} is success for '{clientId}' client.");
         }
         else
         {
             paymentEntity.PaymentStatus = PaymentStatus.Failed;
-            _logger.LogInformation($"Payment with Id {paymentEntity.Id} is fail for client with Id {clientId}");
+            _logger.LogInformation($"Payment with Id {paymentEntity.Id} is fail for '{clientId}' client.");
         }
 
         _bookShopDbContext.Payments.Add(paymentEntity);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Payment with Id {paymentEntity.Id} is added for client with Id {clientId}");
+        _logger.LogInformation($"Payment with Id {paymentEntity.Id} is added for '{clientId}' client.");
 
         var paymentModel = _mapper.Map<PaymentModel>(paymentEntity);
 

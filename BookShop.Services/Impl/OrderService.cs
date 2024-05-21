@@ -62,7 +62,7 @@ internal class OrderService : IOrderService
 
         if (cartItemEntity == null)
         {
-            throw new Exception($"CartItem with Id {orderAddFromCardModel.CartItemId} not found for client with Id {clientId}");
+            throw new Exception($"Product with {cartItemEntity.ProductId} Id not found in cart for '{clientId}' client.");
         }
 
         var orderInfo = new OrderInfo(cartItemEntity.ProductId, cartItemEntity.Count);
@@ -94,7 +94,7 @@ internal class OrderService : IOrderService
 
             await _bookShopDbContext.SaveChangesAsync();
 
-            _logger.LogInformation($"Order with Id{orderEntity.Id} added successefully for client with id {clientId}");
+            _logger.LogInformation($"Order with {orderModel.Id} Id is placed succesfully for '{clientId}' client.");
 
             orderModel = _mapper.Map<OrderModel>(orderEntity);
         }
@@ -116,7 +116,7 @@ internal class OrderService : IOrderService
 
         _bookShopDbContext.Invoices.Add(invoice);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Order with Id{orderToAdd.Id} added successefully for client with id {clientId}");
+        _logger.LogInformation($"Order with {orderToAdd.Id} Id is placed succesfully for '{clientId}' client.");
 
         return _mapper.Map<OrderModel>(orderToAdd);
     }

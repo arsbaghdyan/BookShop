@@ -71,7 +71,7 @@ internal class ClientService : IClientService
         _bookShopDbContext.WishLists.Add(newWishList);
 
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Client with Id {clientToAdd.Id} added successfully.");
+        _logger.LogInformation($"Client with {clientToAdd.Id} Id added successfully.");
 
         return _mapper.Map<ClientModel>(clientToAdd);
     }
@@ -92,7 +92,7 @@ internal class ClientService : IClientService
         }
 
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Client with Id {clientId} modified successfully.");
+        _logger.LogInformation($"Client with {clientId} Id modified successfully.");
 
         return _mapper.Map<ClientModel>(clientToUpdate);
     }
@@ -105,7 +105,7 @@ internal class ClientService : IClientService
             .Where(c => c.Id == clientId)
             .ExecuteDeleteAsync();
 
-        _logger.LogInformation($"Client with Id {clientId} removed successfully.");
+        _logger.LogInformation($"Client with {clientId} Id removed successfully.");
     }
 
     private string HashPassword(string password)

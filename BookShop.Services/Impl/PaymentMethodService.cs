@@ -58,7 +58,7 @@ internal class PaymentMethodService : IPaymentMethodService
 
         _bookShopDbContext.PaymentMethods.Add(paymentMethodEntity);
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"PaymentMethod with Id {paymentMethodEntity.Id} added successfully for client with id {clientId}.");
+        _logger.LogInformation($"PaymentMethod with Id {paymentMethodEntity.Id} added successfully for '{clientId}' client.");
 
         var paymentMethodModel = new CardPaymentMethodModel
         {
@@ -78,6 +78,6 @@ internal class PaymentMethodService : IPaymentMethodService
            .Where(c => c.ClientId == clientId && c.Id == paymentMethodId)
            .ExecuteDeleteAsync();
 
-        _logger.LogInformation($"PaymentMethod with Id {paymentMethodId} removed successfully for client with id {clientId}.");
+        _logger.LogInformation($"PaymentMethod with {paymentMethodId} Id removed successfully for '{clientId}' client.");
     }
 }
