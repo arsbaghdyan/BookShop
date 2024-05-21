@@ -61,4 +61,15 @@ internal class PaymentService : IPaymentService
 
         return paymentModel;
     }
+
+    public async Task<PaymentModel?> GetByIdAsync(long paymentId)
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+
+        var paymentEntity = await _bookShopDbContext.Payments
+            .FirstOrDefaultAsync(p => p.InvoiceEntity.ClientId == clientId &&
+                p.PaymentMethodId == paymentId);
+
+        return _mapper.Map<PaymentModel?>(paymentEntity);
+    }
 }

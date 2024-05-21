@@ -3,7 +3,6 @@ using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
-using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModel;
 using BookShop.Services.Models.OrderModels;
 using Microsoft.EntityFrameworkCore;
@@ -29,20 +28,24 @@ internal class OrderService : IOrderService
         _bookShopDbContext = bookShopDbContext;
     }
 
-    public async Task<List<InvoiceModel>> GetAllAsync()
+    public async Task<List<OrderModel>> GetAllAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var invoiceEntities = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).ToListAsync();
+        var orderEntities = await _bookShopDbContext.Orders
+            .Where(i => i.ClientId == clientId)
+            .ToListAsync();
 
-        return _mapper.Map<List<InvoiceModel>>(invoiceEntities);
+        return _mapper.Map<List<OrderModel>>(orderEntities);
     }
 
-    public async Task<InvoiceModel> GetByIdAsync(long invoiceId)
+    public async Task<OrderModel> GetByIdAsync(long orderId)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var invoiceEntity = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).FirstOrDefaultAsync(i => i.Id == invoiceId);
+        var orderEntity = await _bookShopDbContext.Orders
+            .Where(i => i.ClientId == clientId)
+            .FirstOrDefaultAsync(i => i.Id == orderId);
 
-        return _mapper.Map<InvoiceModel>(invoiceEntity);
+        return _mapper.Map<OrderModel>(orderEntity);
     }
 
     public async Task<OrderModel> PlaceOrderAsync(OrderAddModel orderAddModel)

@@ -1,4 +1,5 @@
 ﻿using BookShop.Data.Models;
+using BookShop.Services.Models.BillingModels;
 using BookShop.Services.Models.CartItemModels;
 
 namespace BookShop.Services.Abstractions;

@@ -7,6 +7,7 @@ using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.PageModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Linq.Expressions;
 
 namespace BookShop.Services.Impl;
 
@@ -25,41 +26,25 @@ internal class ProductService : IProductService
 
     public async Task<PagedList<ProductModel>> GetAllAsync(ProductPageModel productPageModel)
     {
-        IQueryable<ProductEntity> productQuery = _bookShopDbContext.Products;
+        var productQuery = _bookShopDbContext.Products;
 
-        if (!string.IsNullOrEmpty(productPageModel.OrderBy))
+        Expression<Func<ProductEntity, object>> keySelector = productPageModel.OrderBy?.ToLower() switch
         {
-            switch (productPageModel.OrderBy.ToLower())
-            {
-                case "id":
-                    productQuery = productPageModel.OrderDirection.ToLower() == "asc"
-                        ? productQuery.OrderBy(p => p.Id)
-                        : productQuery.OrderByDescending(p => p.Id);
-                    break;
-                case "name":
-                    productQuery = productPageModel.OrderDirection.ToLower() == "asc"
-                        ? productQuery.OrderBy(p => p.Name)
-                        : productQuery.OrderByDescending(p => p.Name);
-                    break;
-                case "price":
-                    productQuery = productPageModel.OrderDirection.ToLower() == "asc"
-                        ? productQuery.OrderBy(p => p.Price)
-                        : productQuery.OrderByDescending(p => p.Price);
-                    break;
-                case "manufacturer":
-                    productQuery = productPageModel.OrderDirection.ToLower() == "asc"
-                        ? productQuery.OrderBy(p => p.Manufacturer)
-                        : productQuery.OrderByDescending(p => p.Manufacturer);
-                    break;
-                case "count":
-                    productQuery = productPageModel.OrderDirection.ToLower() == "asc"
-                        ? productQuery.OrderBy(p => p.Count)
-                        : productQuery.OrderByDescending(p => p.Count);
-                    break;
-                default:
-                    productQuery = productQuery.OrderByDescending(p => p.Name);
-                    break;
-            }
+            "id" => p => p.Id,
+            "name" => p => p.Name,
+            "price" => p => p.Price,
+            "manufacturer" => p => p.Manufacturer,
+            "count" => p => p.Count,
+            _ => p => p.Name,
+        };
+
+        if (productPageModel.IsOrderAsc)
+        {
+            productQuery.OrderBy(keySelector);
+        }
+        else
+        {
+            productQuery.OrderByDescending(keySelector);
         }
 
         var productEntities = await PagedList<ProductEntity>

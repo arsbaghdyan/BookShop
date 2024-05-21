@@ -1,5 +1,6 @@
 ﻿using BookShop.Services.Abstractions;
 using BookShop.Services.Impl;
+using BookShop.Services.Mock;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace BookShop.Services.Extensions;
@@ -16,6 +17,8 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPaymentMethodService, PaymentMethodService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IOrderService, OrderService>();
+
+        services.AddSingleton<IBillingService, MockBillingService>();
 
         return services;
     }

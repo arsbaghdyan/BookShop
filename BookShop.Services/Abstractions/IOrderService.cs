@@ -6,8 +6,8 @@ namespace BookShop.Services.Abstractions;
 
 public interface IOrderService
 {
-    Task<List<InvoiceModel>> GetAllAsync();
-    Task<InvoiceModel> GetByIdAsync(long paymentId);
+    Task<List<OrderModel>> GetAllAsync();
+    Task<OrderModel> GetByIdAsync(long orderId);
     Task<OrderModel> PlaceOrderFromCartAsync(OrderAddFromCardModel orderAddFromCardModel);
     Task<OrderModel> PlaceOrderAsync(OrderAddModel orderAddModel);
 }

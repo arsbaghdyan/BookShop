@@ -15,10 +15,10 @@ public class PaymentController : BaseAuthorizedController
         _paymentService = paymentService;
     }
 
-    [HttpPost("Confirm_payment")]
-    public async Task<ActionResult<PaymentModel>> ConfirmPayment(PaymentAddModel paymentAddModel)
+    [HttpGet("{paymentId}")]
+    public async Task<ActionResult<PaymentModel>> GetPaymentById(long paymentId)
     {
-        var payment = await _paymentService.ConfirmPayment(paymentAddModel);
+        var payment = await _paymentService.GetByIdAsync(paymentId);
 
         return Ok(payment);
     }

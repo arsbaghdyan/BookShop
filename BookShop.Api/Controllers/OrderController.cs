@@ -1,6 +1,5 @@
 ﻿using BookShop.Api.Controllers.Base;
 using BookShop.Services.Abstractions;
-using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModel;
 using BookShop.Services.Models.OrderModels;
 using Microsoft.AspNetCore.Mvc;
@@ -18,22 +17,22 @@ public class OrderController : BaseAuthorizedController
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<InvoiceModel>>> GetInvoice()
+    public async Task<ActionResult<List<OrderModel>>> GetOrders()
     {
         var orders = await _orderService.GetAllAsync();
 
         return Ok(orders);
     }
 
-    [HttpGet("{paymentId}")]
-    public async Task<ActionResult<InvoiceModel>> GetInvoiceById(long paymentId)
+    [HttpGet("{orderId}")]
+    public async Task<ActionResult<OrderModel>> GetOrderById(long orderId)
     {
-        var order = await _orderService.GetByIdAsync(paymentId);
+        var order = await _orderService.GetByIdAsync(orderId);
 
         return Ok(order);
     }
 
-    [HttpPost]
+    [HttpPost("placeOrder")]
     public async Task<ActionResult<OrderModel>> AddOrder(OrderAddModel orderAddModel)
     {
         var order = await _orderService.PlaceOrderAsync(orderAddModel);
@@ -41,7 +40,7 @@ public class OrderController : BaseAuthorizedController
         return Ok(order);
     }
 
-    [HttpPost("From_Cart")]
+    [HttpPost("placeOrderFromCart")]
     public async Task<ActionResult<OrderModel>> AddOrderFromCard(OrderAddFromCardModel orderAddFromCardModel)
     {
         var order = await _orderService.PlaceOrderFromCartAsync(orderAddFromCardModel);
