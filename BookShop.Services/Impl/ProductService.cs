@@ -25,7 +25,7 @@ internal class ProductService : IProductService
 
     public async Task<PagedList<ProductModel>> GetAllAsync(ProductPageModel productPageModel)
     {
-        var productQuery = _bookShopDbContext.Products.OrderBy(p => p.Name).AsQueryable();
+        IQueryable<ProductEntity> productQuery = _bookShopDbContext.Products;
 
         if (!string.IsNullOrEmpty(productPageModel.OrderBy))
         {
