@@ -26,10 +26,46 @@ internal class ProductService : IProductService
     public async Task<PagedList<ProductModel>> GetAllAsync(ProductPageModel productPageModel)
     {
         var productQuery = _bookShopDbContext.Products.OrderBy(p => p.Name).AsQueryable();
-        var productEntities =await PagedList<ProductEntity>
-            .ToPagedListAsync(productQuery, productPageModel.PageNumber,productPageModel.PageSize);
 
-        var productModels = _mapper.Map<List<ProductModel>>(productEntities);
+        if (!string.IsNullOrEmpty(productPageModel.OrderBy))
+        {
+            switch (productPageModel.OrderBy.ToLower())
+            {
+                case "id":
+                    productQuery = productPageModel.OrderDirection.ToLower() == "asc"
+                        ? productQuery.OrderBy(p => p.Id)
+                        : productQuery.OrderByDescending(p => p.Id);
+                    break;
+                case "name":
+                    productQuery = productPageModel.OrderDirection.ToLower() == "asc"
+                        ? productQuery.OrderBy(p => p.Name)
+                        : productQuery.OrderByDescending(p => p.Name);
+                    break;
+                case "price":
+                    productQuery = productPageModel.OrderDirection.ToLower() == "asc"
+                        ? productQuery.OrderBy(p => p.Price)
+                        : productQuery.OrderByDescending(p => p.Price);
+                    break;
+                case "manufacturer":
+                    productQuery = productPageModel.OrderDirection.ToLower() == "asc"
+                        ? productQuery.OrderBy(p => p.Manufacturer)
+                        : productQuery.OrderByDescending(p => p.Manufacturer);
+                    break;
+                case "count":
+                    productQuery = productPageModel.OrderDirection.ToLower() == "asc"
+                        ? productQuery.OrderBy(p => p.Count)
+                        : productQuery.OrderByDescending(p => p.Count);
+                    break;
+                default:
+                    productQuery = productQuery.OrderByDescending(p => p.Name);
+                    break;
+            }
+        }
+
+        var productEntities = await PagedList<ProductEntity>
+            .ToPagedListAsync(productQuery, productPageModel.PageNumber, productPageModel.PageSize);
+
+        var productModels = _mapper.Map<List<ProductModel>>(productEntities.Items);
 
         return new PagedList<ProductModel>(productModels, productEntities.TotalCount, productEntities.CurrentPage, productEntities.PageSize);
     }
