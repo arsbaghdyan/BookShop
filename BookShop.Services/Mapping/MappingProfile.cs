@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BookShop.Data.Entities;
+using BookShop.Data.Models;
 using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.ClientModels;
 using BookShop.Services.Models.InvoiceModels;
@@ -36,12 +37,13 @@ public class MappingProfile : Profile
         CreateMap<OrderEntity, OrderModel>();
         CreateMap<OrderEntity, OrderModelWithPaymentResult>();
         CreateMap<OrderInfo, OrderEntity>();
-        CreateMap<CartEntity, OrderAddFromCardModel>()
+        CreateMap<CartEntity, OrderAddFromCartModel>()
             .ForMember(dest => dest.CartItemId, opt => opt.MapFrom(src => src.CartItems.FirstOrDefault().Id));
 
         CreateMap<PaymentEntity, PaymentModel>();
 
-        CreateMap<PaymentMethodEntity, CardPaymentMethodModel>();
+        CreateMap<PaymentMethodEntity, BankCardInfo>();
+        CreateMap<CardDetails, BankCardInfo>();
 
         CreateMap<InvoiceEntity, InvoiceModel>();
     }

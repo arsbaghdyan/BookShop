@@ -2,6 +2,6 @@
 
 public enum PaymentResult
 {
-    Success=1,
-    Failed=2
+    Success = 1,
+    Failed = 2
 }

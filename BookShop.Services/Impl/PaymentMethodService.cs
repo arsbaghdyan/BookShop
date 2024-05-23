@@ -25,17 +25,17 @@ internal class PaymentMethodService : IPaymentMethodService
         _logger = logger;
         _clientContextReader = clientContextReader;
     }
-    public async Task<List<CardPaymentMethodModel?>> GetAllAsync()
+    public async Task<List<BankCardInfo?>> GetAllAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
         var paymentMethodEntites = await _bookShopDbContext.PaymentMethods
             .Where(p => p.ClientId == clientId).ToListAsync();
 
-        var paymentMethodModels = new List<CardPaymentMethodModel?>();
+        var paymentMethodModels = new List<BankCardInfo?>();
 
         foreach (var paymentMethod in paymentMethodEntites)
         {
-            var paymentMethodModel = new CardPaymentMethodModel
+            var paymentMethodModel = new BankCardInfo
             {
                 Id = paymentMethod.Id,
                 PaymentMethod = paymentMethod.PaymentMethod,
@@ -47,7 +47,7 @@ internal class PaymentMethodService : IPaymentMethodService
         return paymentMethodModels;
     }
 
-    public async Task<CardPaymentMethodModel?> AddCardAsync(CardDetails cardDetails)
+    public async Task<BankCardInfo?> AddCardAsync(CardDetails cardDetails)
     {
         var clientId = _clientContextReader.GetClientContextId();
 
@@ -62,7 +62,7 @@ internal class PaymentMethodService : IPaymentMethodService
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"PaymentMethod with Id {paymentMethodEntity.Id} added successfully for '{clientId}' client.");
 
-        var paymentMethodModel = new CardPaymentMethodModel
+        var paymentMethodModel = new BankCardInfo
         {
             Id = paymentMethodEntity.Id,
             PaymentMethod = PaymentMethod.Card,

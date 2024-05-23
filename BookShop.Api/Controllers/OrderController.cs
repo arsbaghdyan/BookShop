@@ -32,17 +32,17 @@ public class OrderController : BaseAuthorizedController
     }
 
     [HttpPost("placeOrder")]
-    public async Task<ActionResult<OrderModelWithPaymentResult>> AddOrder(OrderAddModel orderAddModel, [FromQuery] long paymentMethodId)
+    public async Task<ActionResult<OrderModelWithPaymentResult>> AddOrder(OrderAddModel orderAddModel)
     {
-        var order = await _orderService.PlaceOrderAsync(orderAddModel, paymentMethodId);
+        var order = await _orderService.PlaceOrderAsync(orderAddModel);
 
         return Ok(order);
     }
 
     [HttpPost("placeOrderFromCart")]
-    public async Task<ActionResult<OrderModelWithPaymentResult>> AddOrderFromCard(OrderAddFromCardModel orderAddFromCardModel, [FromQuery] long paymentMethodId)
+    public async Task<ActionResult<OrderModelWithPaymentResult>> AddOrderFromCard(OrderAddFromCartModel orderAddFromCardModel)
     {
-        var order = await _orderService.PlaceOrderFromCartAsync(orderAddFromCardModel, paymentMethodId);
+        var order = await _orderService.PlaceOrderFromCartAsync(orderAddFromCardModel);
 
         return Ok(order);
     }

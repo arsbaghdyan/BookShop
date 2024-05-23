@@ -5,7 +5,7 @@ namespace BookShop.Services.Abstractions;
 
 public interface IPaymentMethodService
 {
-    Task<List<CardPaymentMethodModel?>> GetAllAsync();
-    Task<CardPaymentMethodModel?> AddCardAsync(CardDetails cardDetails);
+    Task<List<BankCardInfo?>> GetAllAsync();
+    Task<BankCardInfo?> AddCardAsync(CardDetails cardDetails);
     Task RemoveAsync(long paymentMethodId);
 }

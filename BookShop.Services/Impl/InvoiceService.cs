@@ -34,7 +34,7 @@ internal class InvoiceService : IInvoiceService
         return _mapper.Map<InvoiceModel?>(invoiceEntity);
     }
 
-    public async Task<InvoiceModel?> CreateInvoiceAsync(OrderEntity orderEntity)
+    public async Task<InvoiceModel> CreateInvoiceAsync(OrderEntity orderEntity)
     {
         var clientId = _clientContextReader.GetClientContextId();
 
@@ -49,6 +49,6 @@ internal class InvoiceService : IInvoiceService
         _bookShopDbContext.Invoices.Add(invoice);
         await _bookShopDbContext.SaveChangesAsync();
 
-        return _mapper.Map<InvoiceModel?>(invoice);
+        return _mapper.Map<InvoiceModel>(invoice);
     }
 }

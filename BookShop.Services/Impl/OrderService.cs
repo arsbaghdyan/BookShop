@@ -2,11 +2,9 @@
 using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
-using BookShop.Data.Enums;
 using BookShop.Services.Abstractions;
-using BookShop.Services.Models.BillingModels;
+using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModels;
-using BookShop.Services.Models.PaymentModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -21,7 +19,7 @@ internal class OrderService : IOrderService
     private readonly IInvoiceService _invoiceService;
     private readonly IPaymentService _paymentService;
 
-    public record OrderInfo(long ProductId, int Count);
+    public record OrderInfo(long ProductId, int Count, long PaymentMethodId);
 
     public OrderService(IClientContextReader clientContextReader,
                         IMapper mapper,
@@ -58,13 +56,13 @@ internal class OrderService : IOrderService
         return _mapper.Map<OrderModel?>(orderEntity);
     }
 
-    public async Task<OrderModelWithPaymentResult?> PlaceOrderAsync(OrderAddModel orderAddModel, long paymentMethodId)
+    public async Task<OrderModelWithPaymentResult?> PlaceOrderAsync(OrderAddModel orderAddModel)
     {
-        var orderInfo = new OrderInfo(orderAddModel.ProductId, orderAddModel.Count);
-        return await PlaceOrderInternalAsync(orderInfo, paymentMethodId);
+        var orderInfo = new OrderInfo(orderAddModel.ProductId, orderAddModel.Count, orderAddModel.PaymentMethodId);
+        return await PlaceOrderInternalAsync(orderInfo);
     }
 
-    public async Task<OrderModelWithPaymentResult?> PlaceOrderFromCartAsync(OrderAddFromCardModel orderAddFromCardModel, long paymentMethodId)
+    public async Task<OrderModelWithPaymentResult?> PlaceOrderFromCartAsync(OrderAddFromCartModel orderAddFromCardModel)
     {
         var clientId = _clientContextReader.GetClientContextId();
 
@@ -78,8 +76,8 @@ internal class OrderService : IOrderService
             throw new Exception($"Product with {cartItemEntity.ProductId} Id not found in cart for '{clientId}' client.");
         }
 
-        var orderInfo = new OrderInfo(cartItemEntity.ProductId, cartItemEntity.Count);
-        var order = await PlaceOrderInternalAsync(orderInfo, paymentMethodId);
+        var orderInfo = new OrderInfo(cartItemEntity.ProductId, cartItemEntity.Count, orderAddFromCardModel.PaymentMethodId);
+        var order = await PlaceOrderInternalAsync(orderInfo);
 
         _bookShopDbContext.CartItems.Remove(cartItemEntity);
         await _bookShopDbContext.SaveChangesAsync();
@@ -87,7 +85,7 @@ internal class OrderService : IOrderService
         return order;
     }
 
-    private async Task<OrderModelWithPaymentResult?> PlaceOrderInternalAsync(OrderInfo productInfo, long paymentMethodId)
+    private async Task<OrderModelWithPaymentResult?> PlaceOrderInternalAsync(OrderInfo productInfo)
     {
         var clientId = _clientContextReader.GetClientContextId();
         var orderEntity = await _bookShopDbContext.Orders
@@ -103,44 +101,47 @@ internal class OrderService : IOrderService
         }
 
         var paymentMethod = await _bookShopDbContext.PaymentMethods
-                                    .FirstOrDefaultAsync(p => p.ClientId == clientId && p.Id == paymentMethodId);
+            .FirstOrDefaultAsync(p => p.ClientId == clientId && p.Id == productInfo.PaymentMethodId);
 
         if (paymentMethod == null)
         {
             throw new Exception($"Payment method not found for '{clientId}' client.");
         }
 
-        var orderToAdd = _mapper.Map<OrderEntity>(productInfo);
+        InvoiceModel invoice;
+        OrderEntity order;
 
-        orderToAdd.Amount = productEntity.Price * orderToAdd.Count;
-        orderToAdd.ClientId = clientId;
-
-        _bookShopDbContext.Orders.Add(orderToAdd);
-        await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Order with {orderToAdd.Id} Id is placed succesfully for '{clientId}' client.");
-
-        var invoice = await _invoiceService.CreateInvoiceAsync(orderToAdd);
-
-        var paymentRequest = new PaymentRequest<BankCardInfo>();
-
-        var paymentResponse = new PaymentResponse();
-
-        if (paymentRequest.Amount==invoice.TotalAmount)
+        using (var transaction = await _bookShopDbContext.Database.BeginTransactionAsync())
         {
-            paymentResponse.Result = PaymentResult.Success;
-        }
-        else
-        {
-            paymentResponse.Result = PaymentResult.Success;
+            try
+            {
+                order = _mapper.Map<OrderEntity>(productInfo);
+
+                order.Amount = productEntity.Price * order.Count;
+                order.ClientId = clientId;
+
+                _bookShopDbContext.Orders.Add(order);
+                await _bookShopDbContext.SaveChangesAsync();
+                _logger.LogInformation($"Order with {order.Id} Id is placed succesfully for '{clientId}' client.");
+
+                invoice = await _invoiceService.CreateInvoiceAsync(order);
+
+                await transaction.CommitAsync();
+            }
+            catch (Exception)
+            {
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
         var payment = await _paymentService.PayAsync(invoice.Id);
 
         var orderResult = new OrderModelWithPaymentResult
         {
-            Order = _mapper.Map<OrderModel>(orderToAdd),
+            Order = _mapper.Map<OrderModel>(order),
             PaymentMethodId = payment.PaymentMethodId,
-            PaymentResult = paymentResponse.Result
+            PaymentResult = payment.PaymentStatus
         };
 
         return orderResult;

@@ -11,4 +11,5 @@ public class PaymentMethodEntity : IIdentifiable
     public string Details { get; set; }
     public ClientEntity? ClientEntity { get; set; }
     public List<PaymentEntity>? Payments { get; set; }
+    public List<OrderEntity>? OrderEntities { get; set; }
 }

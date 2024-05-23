@@ -17,7 +17,7 @@ public class PaymentMethodController : BaseAuthorizedController
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<CardPaymentMethodModel>>> GetAllPaymentMethods()
+    public async Task<ActionResult<List<BankCardInfo>>> GetAllPaymentMethods()
     {
         var paymentMethods = await _paymentMethodService.GetAllAsync();
 
@@ -25,7 +25,7 @@ public class PaymentMethodController : BaseAuthorizedController
     }
 
     [HttpPost("card")]
-    public async Task<ActionResult<CardPaymentMethodModel>> AddPaymentMethod(CardDetails cardDetails)
+    public async Task<ActionResult<BankCardInfo>> AddPaymentMethod(CardDetails cardDetails)
     {
         var paymentMethod = await _paymentMethodService.AddCardAsync(cardDetails);
 
