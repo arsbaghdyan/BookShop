@@ -17,14 +17,16 @@ internal class ProductService : IProductService
     private readonly ILogger<ProductService> _logger;
     private readonly IMapper _mapper;
 
-    public ProductService(BookShopDbContext bookShopDbContext, ILogger<ProductService> logger, IMapper mapper)
+    public ProductService(BookShopDbContext bookShopDbContext,
+                          ILogger<ProductService> logger,
+                          IMapper mapper)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
         _mapper = mapper;
     }
 
-    public async Task<PagedList<ProductModel>> GetAllAsync(ProductPageModel productPageModel)
+    public async Task<PagedList<ProductModel?>> GetAllAsync(ProductPageModel productPageModel)
     {
         var productQuery = _bookShopDbContext.Products;
 
@@ -50,29 +52,29 @@ internal class ProductService : IProductService
         var productEntities = await PagedList<ProductEntity>
             .ToPagedListAsync(productQuery, productPageModel.PageNumber, productPageModel.PageSize);
 
-        var productModels = _mapper.Map<List<ProductModel>>(productEntities.Items);
+        var productModels = _mapper.Map<List<ProductModel?>>(productEntities.Items);
 
-        return new PagedList<ProductModel>(productModels, productEntities.TotalCount, productEntities.CurrentPage, productEntities.PageSize);
+        return new PagedList<ProductModel?>(productModels, productEntities.TotalCount, productEntities.CurrentPage, productEntities.PageSize);
     }
 
-    public async Task<ProductModel> GetByIdAsync(long productId)
+    public async Task<ProductModel?> GetByIdAsync(long productId)
     {
-        var productEntity = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == productId);
+        var productEntity = await _bookShopDbContext.Products
+            .FirstOrDefaultAsync(p => p.Id == productId);
 
-        var productsModel = _mapper.Map<ProductModel>(productEntity);
-
-        return productsModel;
+        return _mapper.Map<ProductModel?>(productEntity);
     }
 
-    public async Task<ProductModel> AddAsync(ProductAddModel productAddModel)
+    public async Task<ProductModel?> AddAsync(ProductAddModel productAddModel)
     {
         if (productAddModel.Count <= 0)
         {
             throw new Exception("Product count can't be less than 0");
         }
 
-        var productCheck = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Manufacturer == productAddModel.Manufacturer
-         && p.Name == productAddModel.Name && p.Price == productAddModel.Price);
+        var productCheck = await _bookShopDbContext.Products
+            .FirstOrDefaultAsync(p => p.Manufacturer == productAddModel.Manufacturer &&
+            p.Name == productAddModel.Name && p.Price == productAddModel.Price);
 
         var productEntity = new ProductEntity();
 
@@ -94,12 +96,10 @@ internal class ProductService : IProductService
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Product with Id {productEntity.Id} added successfully");
 
-        productModel = _mapper.Map<ProductModel>(productEntity);
-
-        return productModel;
+        return _mapper.Map<ProductModel>(productEntity);
     }
 
-    public async Task<ProductModel> UpdateAsync(ProductUpdateModel product)
+    public async Task<ProductModel?> UpdateAsync(ProductUpdateModel product)
     {
         if (product.Count <= 0)
         {
@@ -116,14 +116,14 @@ internal class ProductService : IProductService
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Product with Id {product.Id} updated successfully.");
 
-        var productModel = _mapper.Map<ProductModel>(productToUpdate);
-
-        return productModel;
+        return _mapper.Map<ProductModel?>(productToUpdate);
     }
 
     public async Task RemoveAsync(long productId)
     {
-        await _bookShopDbContext.Products.Where(p => p.Id == productId).ExecuteDeleteAsync();
+        await _bookShopDbContext.Products
+            .Where(p => p.Id == productId)
+            .ExecuteDeleteAsync();
 
         _logger.LogInformation($"Product with Id {productId} removed successfully.");
     }

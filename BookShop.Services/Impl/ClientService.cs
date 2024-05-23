@@ -19,8 +19,10 @@ internal class ClientService : IClientService
     private readonly IMapper _mapper;
     private readonly IClientContextReader _clientContextReader;
 
-    public ClientService(BookShopDbContext bookShopDbContext, ILogger<ClientService> logger,
-                         IMapper mapper, IClientContextReader clientContextReader)
+    public ClientService(BookShopDbContext bookShopDbContext,
+                         ILogger<ClientService> logger,
+                         IMapper mapper,
+                         IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
@@ -31,7 +33,8 @@ internal class ClientService : IClientService
     public async Task<ClientModel?> GetClientAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var client = await _bookShopDbContext.Clients.FirstOrDefaultAsync(p => p.Id == clientId);
+        var client = await _bookShopDbContext.Clients
+            .FirstOrDefaultAsync(p => p.Id == clientId);
 
         return _mapper.Map<ClientModel?>(client);
     }
@@ -57,7 +60,7 @@ internal class ClientService : IClientService
         return null;
     }
 
-    public async Task<ClientModel> RegisterAsync(ClientRegisterModel clientRegisterModel)
+    public async Task<ClientModel?> RegisterAsync(ClientRegisterModel clientRegisterModel)
     {
         var clientToAdd = _mapper.Map<ClientEntity>(clientRegisterModel);
         clientToAdd.Password = HashPassword(clientRegisterModel.Password);
@@ -73,13 +76,19 @@ internal class ClientService : IClientService
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Client with {clientToAdd.Id} Id added successfully.");
 
-        return _mapper.Map<ClientModel>(clientToAdd);
+        return _mapper.Map<ClientModel?>(clientToAdd);
     }
 
-    public async Task<ClientModel> UpdateAsync(ClientUpdateModel clientUpdateModel)
+    public async Task<ClientModel?> UpdateAsync(ClientUpdateModel clientUpdateModel)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var clientToUpdate = await _bookShopDbContext.Clients.FirstOrDefaultAsync(c => c.Id == clientId);
+        var clientToUpdate = await _bookShopDbContext.Clients
+            .FirstOrDefaultAsync(c => c.Id == clientId);
+
+        if (clientToUpdate==null)
+        {
+            throw new Exception("Client not found");
+        }
 
         clientToUpdate.FirstName = clientUpdateModel.FirstName;
         clientToUpdate.LastName = clientUpdateModel.LastName;
@@ -94,7 +103,7 @@ internal class ClientService : IClientService
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Client with {clientId} Id modified successfully.");
 
-        return _mapper.Map<ClientModel>(clientToUpdate);
+        return _mapper.Map<ClientModel?>(clientToUpdate);
     }
 
     public async Task RemoveAsync()

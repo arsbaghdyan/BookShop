@@ -1,6 +1,5 @@
 ﻿using BookShop.Api.Controllers.Base;
 using BookShop.Services.Abstractions;
-using BookShop.Services.Models.OrderModel;
 using BookShop.Services.Models.OrderModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -33,17 +32,17 @@ public class OrderController : BaseAuthorizedController
     }
 
     [HttpPost("placeOrder")]
-    public async Task<ActionResult<OrderModel>> AddOrder(OrderAddModel orderAddModel)
+    public async Task<ActionResult<OrderModelWithPaymentResult>> AddOrder(OrderAddModel orderAddModel, [FromQuery] long paymentMethodId)
     {
-        var order = await _orderService.PlaceOrderAsync(orderAddModel);
+        var order = await _orderService.PlaceOrderAsync(orderAddModel, paymentMethodId);
 
         return Ok(order);
     }
 
     [HttpPost("placeOrderFromCart")]
-    public async Task<ActionResult<OrderModel>> AddOrderFromCard(OrderAddFromCardModel orderAddFromCardModel)
+    public async Task<ActionResult<OrderModelWithPaymentResult>> AddOrderFromCard(OrderAddFromCardModel orderAddFromCardModel, [FromQuery] long paymentMethodId)
     {
-        var order = await _orderService.PlaceOrderFromCartAsync(orderAddFromCardModel);
+        var order = await _orderService.PlaceOrderFromCartAsync(orderAddFromCardModel, paymentMethodId);
 
         return Ok(order);
     }

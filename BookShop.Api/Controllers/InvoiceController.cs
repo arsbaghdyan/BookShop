@@ -20,11 +20,6 @@ public class InvoiceController : BaseAuthorizedController
     {
         var invoice = await _invoiceService.GetByIdAsync(invoiceId);
 
-        if (invoice == null)
-        {
-            return NotFound();
-        }
-
         return Ok(invoice);
     }
 }

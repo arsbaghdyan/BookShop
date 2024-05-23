@@ -3,9 +3,9 @@ using BookShop.Data.Entities;
 using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.ClientModels;
 using BookShop.Services.Models.InvoiceModels;
-using BookShop.Services.Models.OrderModel;
 using BookShop.Services.Models.OrderModels;
 using BookShop.Services.Models.PaymentModels;
+using static BookShop.Services.Impl.OrderService;
 
 namespace BookShop.Services.Mapping;
 
@@ -32,8 +32,9 @@ public class MappingProfile : Profile
         CreateMap<WishListItemEntity, CartItemEntity>();
         CreateMap<CartItemEntity, CartItemModel>();
 
-        CreateMap<OrderEntity, OrderModel>();
         CreateMap<OrderAddModel, OrderEntity>();
+        CreateMap<OrderEntity, OrderModel>();
+        CreateMap<OrderInfo, OrderEntity>();
         CreateMap<CartEntity, OrderAddFromCardModel>()
             .ForMember(dest => dest.CartItemId, opt => opt.MapFrom(src => src.CartItems.FirstOrDefault().Id));
 

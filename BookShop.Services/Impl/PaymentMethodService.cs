@@ -4,7 +4,6 @@ using BookShop.Data.Entities;
 using BookShop.Data.Enums;
 using BookShop.Data.Models;
 using BookShop.Services.Abstractions;
-using BookShop.Services.Models.BillingModels;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,19 +17,21 @@ internal class PaymentMethodService : IPaymentMethodService
     private readonly ILogger<PaymentMethodService> _logger;
     private readonly IClientContextReader _clientContextReader;
 
-    public PaymentMethodService(BookShopDbContext bookShopDbContext, ILogger<PaymentMethodService> logger,
+    public PaymentMethodService(BookShopDbContext bookShopDbContext,
+                                ILogger<PaymentMethodService> logger,
                                 IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
         _clientContextReader = clientContextReader;
     }
-    public async Task<List<CardPaymentMethodModel>> GetAllAsync()
+    public async Task<List<CardPaymentMethodModel?>> GetAllAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var paymentMethodEntites = await _bookShopDbContext.PaymentMethods.Where(p => p.ClientId == clientId).ToListAsync();
+        var paymentMethodEntites = await _bookShopDbContext.PaymentMethods
+            .Where(p => p.ClientId == clientId).ToListAsync();
 
-        var paymentMethodModels = new List<CardPaymentMethodModel>();
+        var paymentMethodModels = new List<CardPaymentMethodModel?>();
 
         foreach (var paymentMethod in paymentMethodEntites)
         {
@@ -46,7 +47,7 @@ internal class PaymentMethodService : IPaymentMethodService
         return paymentMethodModels;
     }
 
-    public async Task<CardPaymentMethodModel> AddCardAsync(CardDetails cardDetails)
+    public async Task<CardPaymentMethodModel?> AddCardAsync(CardDetails cardDetails)
     {
         var clientId = _clientContextReader.GetClientContextId();
 

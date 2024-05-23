@@ -40,7 +40,7 @@ public class WishListController : BaseAuthorizedController
         return Ok();
     }
 
-    [HttpDelete("Clear")]
+    [HttpDelete("clear")]
     public async Task<IActionResult> ClearAllItems()
     {
         await _wishListService.ClearAsync();

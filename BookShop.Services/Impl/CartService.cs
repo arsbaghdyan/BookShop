@@ -16,8 +16,10 @@ internal class CartService : ICartService
     private readonly IMapper _mapper;
     private readonly IClientContextReader _clientContextReader;
 
-    public CartService(BookShopDbContext bookShopDbContext, ILogger<CartService> logger,
-                       IMapper mapper, IClientContextReader clientContextReader)
+    public CartService(BookShopDbContext bookShopDbContext,
+                       ILogger<CartService> logger,
+                       IMapper mapper,
+                       IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
@@ -25,7 +27,7 @@ internal class CartService : ICartService
         _clientContextReader = clientContextReader;
     }
 
-    public async Task<List<CartItemModel>> GetAllCartItemsAsync()
+    public async Task<List<CartItemModel?>> GetAllCartItemsAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
 
@@ -37,10 +39,10 @@ internal class CartService : ICartService
             throw new Exception($"Cart was not found for '{clientId}' client.");
         }
 
-        return _mapper.Map<List<CartItemModel>>(cartEntity.CartItems);
+        return _mapper.Map<List<CartItemModel?>>(cartEntity.CartItems);
     }
 
-    public async Task<CartItemModel> AddAsync(CartItemAddModel cartItemAddModel)
+    public async Task<CartItemModel?> AddAsync(CartItemAddModel cartItemAddModel)
     {
         if (cartItemAddModel.Count <= 0)
         {
@@ -62,8 +64,8 @@ internal class CartService : ICartService
         }
 
         var cartItemEntity = await _bookShopDbContext.CartItems
-            .FirstOrDefaultAsync(c => c.CartEntity.ClientId == clientId &&
-                c.ProductId == cartItemAddModel.ProductId);
+            .Where(c => c.CartEntity.ClientId == clientId)
+            .FirstOrDefaultAsync(c => c.ProductId == cartItemAddModel.ProductId);
 
         if (cartItemEntity != null)
         {
@@ -85,10 +87,10 @@ internal class CartService : ICartService
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Product with {cartItemAddModel.ProductId} Id is added in cart for '{clientId}' client.");
 
-        return _mapper.Map<CartItemModel>(cartItemToAdd);
+        return _mapper.Map<CartItemModel?>(cartItemToAdd);
     }
 
-    public async Task<CartItemModel> UpdateAsync(CartItemUpdateModel cartItemUpdateModel)
+    public async Task<CartItemModel?> UpdateAsync(CartItemUpdateModel cartItemUpdateModel)
     {
         if (cartItemUpdateModel.Count <= 0)
         {
@@ -98,8 +100,8 @@ internal class CartService : ICartService
         var clientId = _clientContextReader.GetClientContextId();
 
         var cartItemEntity = await _bookShopDbContext.CartItems
-            .FirstOrDefaultAsync(ci => ci.CartEntity.ClientId == clientId &&
-                ci.ProductId == cartItemUpdateModel.ProductId);
+            .Where(ci => ci.CartEntity.ClientId == clientId)
+            .FirstOrDefaultAsync(ci => ci.ProductId == cartItemUpdateModel.ProductId);
 
         if (cartItemEntity == null)
         {
@@ -119,7 +121,7 @@ internal class CartService : ICartService
 
         _logger.LogInformation($"Product with {cartItemUpdateModel.ProductId} Id is updated for '{clientId}' client.");
 
-        return _mapper.Map<CartItemModel>(cartItemEntity);
+        return _mapper.Map<CartItemModel?>(cartItemEntity);
     }
 
     public async Task RemoveAsync(long productId)

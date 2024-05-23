@@ -16,8 +16,10 @@ internal class WishListService : IWishListService
     private readonly IMapper _mapper;
     private readonly IClientContextReader _clientContextReader;
 
-    public WishListService(BookShopDbContext bookShopDbContext, ILogger<WishListService> logger,
-                           IMapper mapper, IClientContextReader clientContextReader)
+    public WishListService(BookShopDbContext bookShopDbContext, 
+                           ILogger<WishListService> logger,
+                           IMapper mapper, 
+                           IClientContextReader clientContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
@@ -25,28 +27,30 @@ internal class WishListService : IWishListService
         _clientContextReader = clientContextReader;
     }
 
-    public async Task<List<WishListItemModel>> GetAllWishListItemsAsync()
+    public async Task<List<WishListItemModel?>> GetAllWishListItemsAsync()
     {
         var clientId = _clientContextReader.GetClientContextId();
         var wishListEntity = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
 
-        var wishListItemModels = new List<WishListItemModel>();
+        var wishListItemModels = new List<WishListItemModel?>();
 
         foreach (var wishlistItem in wishListEntity.WishListItems)
         {
-            var wishListItemModel = _mapper.Map<WishListItemModel>(wishlistItem);
+            var wishListItemModel = _mapper.Map<WishListItemModel?>(wishlistItem);
             wishListItemModels.Add(wishListItemModel);
         }
 
         return wishListItemModels;
     }
 
-    public async Task<WishListItemModel> AddAsync(WishListItemAddModel wishListItem)
+    public async Task<WishListItemModel?> AddAsync(WishListItemAddModel wishListItem)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var wishListEntity = await _bookShopDbContext.WishLists.Include(w => w.WishListItems).FirstOrDefaultAsync(w => w.ClientId == clientId);
+        var wishListEntity = await _bookShopDbContext.WishLists
+            .Include(w => w.WishListItems)
+            .FirstOrDefaultAsync(w => w.ClientId == clientId);
 
-        var wishListItemToAdd = _mapper.Map<WishListItemEntity>(wishListItem);
+        var wishListItemToAdd = _mapper.Map<WishListItemEntity?>(wishListItem);
 
         wishListItemToAdd.WishListId = wishListEntity.Id;
 
@@ -54,7 +58,7 @@ internal class WishListService : IWishListService
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"WishList with Id {wishListItemToAdd.Id} added succesfully for '{clientId}' client.");
 
-        return _mapper.Map<WishListItemModel>(wishListItemToAdd);
+        return _mapper.Map<WishListItemModel?>(wishListItemToAdd);
     }
 
     public async Task RemoveAsync(long productId)

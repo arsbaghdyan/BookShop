@@ -14,8 +14,8 @@ internal class InvoiceService : IInvoiceService
     private readonly BookShopDbContext _bookShopDbContext;
 
     public InvoiceService(IClientContextReader clientContextReader,
-        IMapper mapper,
-        BookShopDbContext bookShopDbContext)
+                          IMapper mapper,
+                          BookShopDbContext bookShopDbContext)
     {
         _clientContextReader = clientContextReader;
         _mapper = mapper;

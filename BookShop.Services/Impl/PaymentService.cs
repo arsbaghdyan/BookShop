@@ -17,8 +17,10 @@ internal class PaymentService : IPaymentService
     private readonly ILogger<PaymentService> _logger;
     private readonly BookShopDbContext _bookShopDbContext;
 
-    public PaymentService(IClientContextReader clientContextReader, IMapper mapper,
-                          ILogger<PaymentService> logger, BookShopDbContext bookShopDbContext)
+    public PaymentService(IClientContextReader clientContextReader,
+                          IMapper mapper,
+                          ILogger<PaymentService> logger,
+                          BookShopDbContext bookShopDbContext)
     {
         _clientContextReader = clientContextReader;
         _mapper = mapper;
@@ -26,10 +28,12 @@ internal class PaymentService : IPaymentService
         _bookShopDbContext = bookShopDbContext;
     }
 
-    public async Task<PaymentModel> ConfirmPayment(PaymentAddModel paymentAddModel)
+    public async Task<PaymentModel?> ConfirmPayment(PaymentAddModel paymentAddModel)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var invoiceEntity = await _bookShopDbContext.Invoices.Where(i => i.ClientId == clientId).FirstOrDefaultAsync(i => i.Id == paymentAddModel.InvoiceId);
+        var invoiceEntity = await _bookShopDbContext.Invoices
+            .Where(i => i.ClientId == clientId)
+            .FirstOrDefaultAsync(i => i.Id == paymentAddModel.InvoiceId);
 
         if (invoiceEntity == null)
         {
@@ -57,9 +61,7 @@ internal class PaymentService : IPaymentService
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Payment with Id {paymentEntity.Id} is added for '{clientId}' client.");
 
-        var paymentModel = _mapper.Map<PaymentModel>(paymentEntity);
-
-        return paymentModel;
+        return _mapper.Map<PaymentModel?>(paymentEntity);
     }
 
     public async Task<PaymentModel?> GetByIdAsync(long paymentId)
@@ -67,8 +69,8 @@ internal class PaymentService : IPaymentService
         var clientId = _clientContextReader.GetClientContextId();
 
         var paymentEntity = await _bookShopDbContext.Payments
-            .FirstOrDefaultAsync(p => p.InvoiceEntity.ClientId == clientId &&
-                p.PaymentMethodId == paymentId);
+            .Where(p => p.InvoiceEntity.ClientId == clientId)
+            .FirstOrDefaultAsync(p => p.PaymentMethodId == paymentId);
 
         return _mapper.Map<PaymentModel?>(paymentEntity);
     }

@@ -1,6 +1,5 @@
 ﻿using BookShop.Data.Enums;
 using BookShop.Data.Models;
-using BookShop.Services.Models.BillingModels;
 
 namespace BookShop.Services.Models.CartItemModels;
 

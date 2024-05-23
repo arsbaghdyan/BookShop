@@ -1,4 +1,4 @@
-﻿namespace BookShop.Services.Models.OrderModel;
+﻿namespace BookShop.Services.Models.OrderModels;
 
 public class OrderModel
 {
