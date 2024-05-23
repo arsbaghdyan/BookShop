@@ -18,7 +18,8 @@ internal class OrderService : IOrderService
     private readonly IMapper _mapper;
     private readonly ILogger<OrderService> _logger;
     private readonly BookShopDbContext _bookShopDbContext;
-    private readonly IBillingService _billingService;
+    private readonly IInvoiceService _invoiceService;
+    private readonly IPaymentService _paymentService;
 
     public record OrderInfo(long ProductId, int Count);
 
@@ -26,13 +27,15 @@ internal class OrderService : IOrderService
                         IMapper mapper,
                         ILogger<OrderService> logger,
                         BookShopDbContext bookShopDbContext,
-                        IBillingService billingService)
+                        IInvoiceService invoiceService,
+                        IPaymentService paymentService)
     {
         _clientContextReader = clientContextReader;
         _mapper = mapper;
         _logger = logger;
         _bookShopDbContext = bookShopDbContext;
-        _billingService = billingService;
+        _invoiceService = invoiceService;
+        _paymentService = paymentService;
     }
 
     public async Task<List<OrderModel?>> GetAllAsync()
@@ -113,53 +116,32 @@ internal class OrderService : IOrderService
         orderToAdd.ClientId = clientId;
 
         _bookShopDbContext.Orders.Add(orderToAdd);
-
-        var invoice = new InvoiceEntity
-        {
-            ClientId = clientId,
-            CreatedAt = DateTime.UtcNow,
-            OrderEntity = orderToAdd,
-            TotalAmount = orderToAdd.Amount,
-        };
-
-        _bookShopDbContext.Invoices.Add(invoice);
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Order with {orderToAdd.Id} Id is placed succesfully for '{clientId}' client.");
 
-        var paymentResponse = await _billingService
-            .PayViaCardAsync(new PaymentRequest<BankCardInfo>
-            {
-                Amount = invoice.TotalAmount
-            });
+        var invoice = await _invoiceService.CreateInvoiceAsync(orderToAdd);
+
+        var paymentRequest = new PaymentRequest<BankCardInfo>();
+
+        var paymentResponse = new PaymentResponse();
+
+        if (paymentRequest.Amount==invoice.TotalAmount)
+        {
+            paymentResponse.Result = PaymentResult.Success;
+        }
+        else
+        {
+            paymentResponse.Result = PaymentResult.Success;
+        }
+
+        var payment = await _paymentService.PayAsync(invoice.Id);
 
         var orderResult = new OrderModelWithPaymentResult
         {
             Order = _mapper.Map<OrderModel>(orderToAdd),
-            PaymentResult = paymentResponse.Result,
-            PaymentMethodId = paymentMethod.Id
+            PaymentMethodId = payment.PaymentMethodId,
+            PaymentResult = paymentResponse.Result
         };
-
-        var paymentEntity = new PaymentEntity
-        {
-            PaymentMethodId = orderResult.PaymentMethodId,
-            Amount = paymentResponse.Amount,
-            InvoiceEntity =invoice,
-        };
-
-        if (orderResult.PaymentResult == PaymentResult.Success)
-        {
-            paymentEntity.PaymentStatus = PaymentStatus.Success;
-            _logger.LogInformation($"Payment with Id {paymentEntity.Id} is success for '{clientId}' client.");
-        }
-        else
-        {
-            paymentEntity.PaymentStatus = PaymentStatus.Failed;
-            _logger.LogInformation($"Payment with Id {paymentEntity.Id} is fail for '{clientId}' client.");
-        }
-
-        _bookShopDbContext.Payments.Add(paymentEntity);
-        await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Payment with Id {paymentEntity.Id} is added for '{clientId}' client.");
 
         return orderResult;
     }
