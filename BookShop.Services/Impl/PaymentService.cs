@@ -14,7 +14,6 @@ internal class PaymentService : IPaymentService
 {
     private readonly IClientContextReader _clientContextReader;
     private readonly IMapper _mapper;
-    private readonly ILogger<PaymentService> _logger;
     private readonly BookShopDbContext _bookShopDbContext;
 
     public PaymentService(IClientContextReader clientContextReader,
@@ -24,44 +23,7 @@ internal class PaymentService : IPaymentService
     {
         _clientContextReader = clientContextReader;
         _mapper = mapper;
-        _logger = logger;
         _bookShopDbContext = bookShopDbContext;
-    }
-
-    public async Task<PaymentModel?> ConfirmPayment(PaymentAddModel paymentAddModel)
-    {
-        var clientId = _clientContextReader.GetClientContextId();
-        var invoiceEntity = await _bookShopDbContext.Invoices
-            .Where(i => i.ClientId == clientId)
-            .FirstOrDefaultAsync(i => i.Id == paymentAddModel.InvoiceId);
-
-        if (invoiceEntity == null)
-        {
-            throw new Exception("One of your input parametr is invalid");
-        }
-
-        var paymentEntity = new PaymentEntity();
-
-        paymentEntity.PaymentMethodId = paymentAddModel.PaymentMethodId;
-        paymentEntity.Amount = paymentAddModel.Amount;
-        paymentEntity.InvoiceId = invoiceEntity.Id;
-
-        if (invoiceEntity.TotalAmount == paymentEntity.Amount)
-        {
-            paymentEntity.PaymentStatus = PaymentStatus.Success;
-            _logger.LogInformation($"Payment with Id {paymentEntity.Id} is success for '{clientId}' client.");
-        }
-        else
-        {
-            paymentEntity.PaymentStatus = PaymentStatus.Failed;
-            _logger.LogInformation($"Payment with Id {paymentEntity.Id} is fail for '{clientId}' client.");
-        }
-
-        _bookShopDbContext.Payments.Add(paymentEntity);
-        await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Payment with Id {paymentEntity.Id} is added for '{clientId}' client.");
-
-        return _mapper.Map<PaymentModel?>(paymentEntity);
     }
 
     public async Task<PaymentModel?> GetByIdAsync(long paymentId)

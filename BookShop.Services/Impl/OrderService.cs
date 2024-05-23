@@ -2,9 +2,11 @@
 using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
+using BookShop.Data.Enums;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.BillingModels;
 using BookShop.Services.Models.OrderModels;
+using BookShop.Services.Models.PaymentModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -121,21 +123,44 @@ internal class OrderService : IOrderService
         };
 
         _bookShopDbContext.Invoices.Add(invoice);
-        await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Order with {orderToAdd.Id} Id is placed succesfully for '{clientId}' client.");
 
-        var paymentRequest = new PaymentRequest<BankCardInfo>();
-
-        paymentRequest.Amount = invoice.TotalAmount;
-
-        var paymentResponse = await _billingService.PayViaCardAsync(paymentRequest);
+        var paymentResponse = await _billingService
+            .PayViaCardAsync(new PaymentRequest<BankCardInfo>
+            {
+                Amount = invoice.TotalAmount
+            });
 
         var orderResult = new OrderModelWithPaymentResult
         {
-            Order = _mapper.Map<OrderModel>(orderToAdd),
+            Amount = orderToAdd.Amount,
+            Count = orderToAdd.Count,
+            ProductId = productInfo.ProductId,
             PaymentResult = paymentResponse.Result,
             PaymentMethodId = paymentMethod.Id
         };
+
+        var paymentEntity = new PaymentEntity
+        {
+            PaymentMethodId = orderResult.PaymentMethodId,
+            Amount = paymentResponse.Amount,
+            InvoiceEntity = invoice
+        };
+
+        if (orderResult.PaymentResult == PaymentResult.Success)
+        {
+            paymentEntity.PaymentStatus = PaymentStatus.Success;
+            _logger.LogInformation($"Payment with Id {paymentEntity.Id} is success for '{clientId}' client.");
+        }
+        else
+        {
+            paymentEntity.PaymentStatus = PaymentStatus.Failed;
+            _logger.LogInformation($"Payment with Id {paymentEntity.Id} is fail for '{clientId}' client.");
+        }
+
+        _bookShopDbContext.Payments.Add(paymentEntity);
+        await _bookShopDbContext.SaveChangesAsync();
+        _logger.LogInformation($"Payment with Id {paymentEntity.Id} is added for '{clientId}' client.");
 
         return orderResult;
     }
