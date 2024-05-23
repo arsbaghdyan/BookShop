@@ -31,8 +31,8 @@ internal class PaymentService : IPaymentService
         var clientId = _clientContextReader.GetClientContextId();
 
         var paymentEntity = await _bookShopDbContext.Payments
-            .Where(p => p.InvoiceEntity.ClientId == clientId)
-            .FirstOrDefaultAsync(p => p.PaymentMethodId == paymentId);
+            .Include(p => p.InvoiceEntity)
+            .FirstOrDefaultAsync(p => p.Id == paymentId && p.InvoiceEntity.ClientId == clientId);
 
         return _mapper.Map<PaymentModel?>(paymentEntity);
     }

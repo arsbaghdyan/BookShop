@@ -6,7 +6,6 @@ public class PaymentModel
 {
     public long Id { get; set; }
     public long PaymentMethodId { get; set; }
-    public long InvoiceId { get; set; }
     public decimal Amount { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
 }

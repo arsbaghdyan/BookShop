@@ -34,12 +34,12 @@ public class MappingProfile : Profile
 
         CreateMap<OrderAddModel, OrderEntity>();
         CreateMap<OrderEntity, OrderModel>();
+        CreateMap<OrderEntity, OrderModelWithPaymentResult>();
         CreateMap<OrderInfo, OrderEntity>();
         CreateMap<CartEntity, OrderAddFromCardModel>()
             .ForMember(dest => dest.CartItemId, opt => opt.MapFrom(src => src.CartItems.FirstOrDefault().Id));
 
         CreateMap<PaymentEntity, PaymentModel>();
-        CreateMap<PaymentAddModel, PaymentEntity>();
 
         CreateMap<PaymentMethodEntity, CardPaymentMethodModel>();
 

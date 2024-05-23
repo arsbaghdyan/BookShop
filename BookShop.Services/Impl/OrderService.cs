@@ -123,6 +123,7 @@ internal class OrderService : IOrderService
         };
 
         _bookShopDbContext.Invoices.Add(invoice);
+        await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Order with {orderToAdd.Id} Id is placed succesfully for '{clientId}' client.");
 
         var paymentResponse = await _billingService
@@ -133,9 +134,7 @@ internal class OrderService : IOrderService
 
         var orderResult = new OrderModelWithPaymentResult
         {
-            Amount = orderToAdd.Amount,
-            Count = orderToAdd.Count,
-            ProductId = productInfo.ProductId,
+            Order = _mapper.Map<OrderModel>(orderToAdd),
             PaymentResult = paymentResponse.Result,
             PaymentMethodId = paymentMethod.Id
         };
@@ -144,7 +143,7 @@ internal class OrderService : IOrderService
         {
             PaymentMethodId = orderResult.PaymentMethodId,
             Amount = paymentResponse.Amount,
-            InvoiceEntity = invoice
+            InvoiceEntity =invoice,
         };
 
         if (orderResult.PaymentResult == PaymentResult.Success)

@@ -27,8 +27,7 @@ internal class InvoiceService : IInvoiceService
         var clientId = _clientContextReader.GetClientContextId();
 
         var invoiceEntity = await _bookShopDbContext.Invoices
-            .Where(i => i.ClientId == clientId)
-            .FirstOrDefaultAsync(i => i.Id == invoiceId);
+            .FirstOrDefaultAsync(i => i.Id == invoiceId && i.ClientId == clientId);
 
         return _mapper.Map<InvoiceModel?>(invoiceEntity);
     }

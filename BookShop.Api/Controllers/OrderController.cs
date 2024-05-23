@@ -16,7 +16,7 @@ public class OrderController : BaseAuthorizedController
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<OrderModel>>> GetOrders()
+    public async Task<ActionResult<List<OrderModelWithPaymentResult>>> GetOrders()
     {
         var orders = await _orderService.GetAllAsync();
 
