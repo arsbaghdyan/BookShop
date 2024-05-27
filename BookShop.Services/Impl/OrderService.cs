@@ -67,8 +67,8 @@ internal class OrderService : IOrderService
         var clientId = _clientContextReader.GetClientContextId();
 
         var cartItemEntity = await _bookShopDbContext.CartItems
-            .Include(c => c.ProductEntity)
-            .Where(c => c.CartEntity.ClientId == clientId)
+            .Include(c => c.Product)
+            .Where(c => c.Cart.ClientId == clientId)
             .FirstOrDefaultAsync(c => c.Id == orderAddFromCardModel.CartItemId);
 
         if (cartItemEntity == null)

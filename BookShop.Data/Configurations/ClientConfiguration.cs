@@ -14,19 +14,19 @@ public class ClientConfiguration : IEntityTypeConfiguration<ClientEntity>
                .IsUnique();
 
         builder.HasMany(c => c.PaymentMethods)
-               .WithOne(pm => pm.ClientEntity)
+               .WithOne(pm => pm.Client)
                .HasForeignKey(pm => pm.ClientId);
 
         builder.HasMany(c => c.Orders)
-               .WithOne(o => o.ClientEntity)
+               .WithOne(o => o.Client)
                .HasForeignKey(o => o.ClientId);
 
         builder.HasMany(c => c.Invoices)
-               .WithOne(i => i.ClientEntity)
+               .WithOne(i => i.Client)
                .HasForeignKey(i => i.ClientId);
 
-        builder.HasOne(w => w.WishListEntity)
-               .WithOne(c => c.ClientEntity)
+        builder.HasOne(w => w.WishList)
+               .WithOne(c => c.Client)
                .HasForeignKey<WishListEntity>(w => w.ClientId);
     }
 }

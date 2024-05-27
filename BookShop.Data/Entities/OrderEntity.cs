@@ -6,12 +6,11 @@ public class OrderEntity : IIdentifiable
 {
     public long Id { get; set; }
     public long ClientId { get; set; }
-    public long ProductId { get; set; }
     public long PaymentMethodId { get; set; }
     public int Count { get; set; }
     public decimal Amount { get; set; }
     public PaymentMethodEntity? PaymentMethod { get; set; }
-    public InvoiceEntity? InvoiceEntity { get; set; }
-    public ProductEntity? ProductEntity { get; set; }
-    public ClientEntity? ClientEntity { get; set; }
+    public InvoiceEntity? Invoice { get; set; }
+    public ClientEntity? Client { get; set; }
+    public List<OrderProduct> OrderProducts { get; set; } = new();
 }

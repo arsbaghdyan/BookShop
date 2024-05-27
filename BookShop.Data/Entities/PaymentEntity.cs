@@ -10,6 +10,6 @@ public class PaymentEntity : IIdentifiable
     public long InvoiceId { get; set; }
     public decimal Amount { get; set; }
     public PaymentStatus PaymentStatus { get; set; }
-    public PaymentMethodEntity? PaymentMethodEntity { get; set; }
-    public InvoiceEntity? InvoiceEntity { get; set; }
+    public PaymentMethodEntity? PaymentMethod { get; set; }
+    public InvoiceEntity? Invoice { get; set; }
 }

@@ -64,7 +64,7 @@ internal class CartService : ICartService
         }
 
         var cartItemEntity = await _bookShopDbContext.CartItems
-            .Where(c => c.CartEntity.ClientId == clientId)
+            .Where(c => c.Cart.ClientId == clientId)
             .FirstOrDefaultAsync(c => c.ProductId == cartItemAddModel.ProductId);
 
         if (cartItemEntity != null)
@@ -100,7 +100,7 @@ internal class CartService : ICartService
         var clientId = _clientContextReader.GetClientContextId();
 
         var cartItemEntity = await _bookShopDbContext.CartItems
-            .Where(ci => ci.CartEntity.ClientId == clientId)
+            .Where(ci => ci.Cart.ClientId == clientId)
             .FirstOrDefaultAsync(ci => ci.ProductId == cartItemUpdateModel.ProductId);
 
         if (cartItemEntity == null)
@@ -129,7 +129,7 @@ internal class CartService : ICartService
         var clientId = _clientContextReader.GetClientContextId();
 
         await _bookShopDbContext.CartItems
-            .Where(c => c.CartEntity.ClientId == clientId && c.ProductId == productId)
+            .Where(c => c.Cart.ClientId == clientId && c.ProductId == productId)
             .ExecuteDeleteAsync();
 
         _logger.LogInformation($"Product with {productId} Id is succesfully removed from Cart for '{clientId}' client.");
@@ -140,7 +140,7 @@ internal class CartService : ICartService
         var clientId = _clientContextReader.GetClientContextId();
 
         await _bookShopDbContext.CartItems
-            .Where(c => c.CartEntity.ClientId == clientId)
+            .Where(c => c.Cart.ClientId == clientId)
             .ExecuteDeleteAsync();
 
         _logger.LogInformation($"CartItems is successfully cleared for '{clientId}' client.");

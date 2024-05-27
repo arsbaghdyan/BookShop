@@ -4,7 +4,6 @@ using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.InvoiceModels;
-using BookShop.Services.Models.PaymentModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookShop.Services.Impl;
@@ -42,7 +41,7 @@ internal class InvoiceService : IInvoiceService
         {
             ClientId = clientId,
             CreatedAt = DateTime.UtcNow,
-            OrderEntity = orderEntity,
+            Order = orderEntity,
             TotalAmount = orderEntity.Amount,
         };
 

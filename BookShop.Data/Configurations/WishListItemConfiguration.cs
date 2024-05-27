@@ -10,11 +10,11 @@ public class WishListItemConfiguration : IEntityTypeConfiguration<WishListItemEn
     {
         builder.HasKey(wli => wli.Id);
 
-        builder.HasOne(wli => wli.ProductEntity)
-               .WithMany(p => p.WishListItemEntity)
+        builder.HasOne(wli => wli.Product)
+               .WithMany(p => p.WishListItems)
                .HasForeignKey(wli => wli.ProductId);
 
-        builder.HasOne(wli => wli.WishListEntity)
+        builder.HasOne(wli => wli.WishList)
                .WithMany(wl => wl.WishListItems)
                .HasForeignKey(wli => wli.WishListId);
 

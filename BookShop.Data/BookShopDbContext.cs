@@ -15,6 +15,7 @@ public partial class BookShopDbContext : DbContext
     public DbSet<ClientEntity> Clients { get; set; } = null!;
     public DbSet<InvoiceEntity> Invoices { get; set; } = null!;
     public DbSet<OrderEntity> Orders { get; set; } = null!;
+    public DbSet<OrderProduct> OrderProducts { get; set; } = null!;
     public DbSet<PaymentEntity> Payments { get; set; } = null!;
     public DbSet<PaymentMethodEntity> PaymentMethods { get; set; } = null!;
     public DbSet<ProductEntity> Products { get; set; } = null!;

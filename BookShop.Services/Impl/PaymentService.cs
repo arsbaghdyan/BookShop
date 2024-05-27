@@ -2,12 +2,10 @@
 using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
-using BookShop.Data.Enums;
 using BookShop.Data.Models;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Extensions;
 using BookShop.Services.Models.BillingModels;
-using BookShop.Services.Models.OrderModels;
 using BookShop.Services.Models.PaymentModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -41,8 +39,8 @@ internal class PaymentService : IPaymentService
         var clientId = _clientContextReader.GetClientContextId();
 
         var paymentEntity = await _bookShopDbContext.Payments
-            .Include(p => p.InvoiceEntity)
-            .FirstOrDefaultAsync(p => p.Id == paymentId && p.InvoiceEntity.ClientId == clientId);
+            .Include(p => p.Invoice)
+            .FirstOrDefaultAsync(p => p.Id == paymentId && p.Invoice.ClientId == clientId);
 
         return _mapper.Map<PaymentModel?>(paymentEntity);
     }
@@ -52,11 +50,11 @@ internal class PaymentService : IPaymentService
         var clientId = _clientContextReader.GetClientContextId();
 
         var invoiceEntity = await _bookShopDbContext.Invoices
-            .Include(i => i.OrderEntity)
+            .Include(i => i.Order)
             .ThenInclude(o => o.PaymentMethod)
             .FirstOrDefaultAsync(p => p.Id == invoiceId && p.ClientId == clientId);
 
-        var paymentMethodDetails = invoiceEntity.OrderEntity.PaymentMethod.Details;
+        var paymentMethodDetails = invoiceEntity.Order.PaymentMethod.Details;
 
         var bankCard = JsonConvert.DeserializeObject<CardDetails>(paymentMethodDetails);
 
@@ -71,8 +69,8 @@ internal class PaymentService : IPaymentService
         var paymentEntity = new PaymentEntity
         {
             Amount = invoiceEntity.TotalAmount,
-            InvoiceEntity = invoiceEntity,
-            PaymentMethodId = invoiceEntity.OrderEntity.PaymentMethod.Id,
+            Invoice = invoiceEntity,
+            PaymentMethodId = invoiceEntity.Order.PaymentMethod.Id,
             PaymentStatus = paymentResponse.GetPaymentStatus()
         };
 

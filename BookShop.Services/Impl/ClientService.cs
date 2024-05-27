@@ -67,10 +67,10 @@ internal class ClientService : IClientService
 
         _bookShopDbContext.Clients.Add(clientToAdd);
 
-        var newCart = new CartEntity { ClientEntity = clientToAdd };
+        var newCart = new CartEntity { Client = clientToAdd };
         _bookShopDbContext.Carts.Add(newCart);
 
-        var newWishList = new WishListEntity { ClientEntity = clientToAdd };
+        var newWishList = new WishListEntity { Client = clientToAdd };
         _bookShopDbContext.WishLists.Add(newWishList);
 
         await _bookShopDbContext.SaveChangesAsync();

@@ -9,6 +9,6 @@ public class InvoiceEntity : IIdentifiable
     public long OrderId { get; set; }
     public DateTime CreatedAt { get; set; }
     public decimal TotalAmount { get; set; }
-    public OrderEntity? OrderEntity { get; set; }
-    public ClientEntity? ClientEntity { get; set; }
+    public OrderEntity? Order { get; set; }
+    public ClientEntity? Client { get; set; }
 }

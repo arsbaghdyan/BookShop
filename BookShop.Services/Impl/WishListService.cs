@@ -66,7 +66,7 @@ internal class WishListService : IWishListService
         var clientId = _clientContextReader.GetClientContextId();
 
         await _bookShopDbContext.WishListItems
-            .Where(c => c.WishListEntity.ClientId == clientId && c.ProductId == productId)
+            .Where(c => c.WishList.ClientId == clientId && c.ProductId == productId)
             .ExecuteDeleteAsync();
 
         _logger.LogInformation($"Product with {productId} Id is succesfully removed from WishList for '{clientId}' client.");
@@ -77,7 +77,7 @@ internal class WishListService : IWishListService
         var clientId = _clientContextReader.GetClientContextId();
 
         await _bookShopDbContext.WishListItems
-            .Where(c => c.WishListEntity.ClientId == clientId)
+            .Where(c => c.WishList.ClientId == clientId)
             .ExecuteDeleteAsync();
 
         _logger.LogInformation($"WishList items cleared successfully for '{clientId}' client.");
