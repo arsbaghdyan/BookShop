@@ -7,6 +7,7 @@ using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using static BookShop.Services.Impl.OrderService;
 
 namespace BookShop.Services.Impl;
 
@@ -41,6 +42,8 @@ internal class OrderService : IOrderService
         var clientId = _clientContextReader.GetClientContextId();
         var orderEntities = await _bookShopDbContext.Orders
             .Where(i => i.ClientId == clientId)
+            .Include(o => o.OrderProducts)
+            .ThenInclude(op => op.Product)
             .ToListAsync();
 
         return _mapper.Map<List<OrderModel?>>(orderEntities);
@@ -51,6 +54,8 @@ internal class OrderService : IOrderService
         var clientId = _clientContextReader.GetClientContextId();
         var orderEntity = await _bookShopDbContext.Orders
             .Where(i => i.ClientId == clientId)
+            .Include(o => o.OrderProducts)
+            .ThenInclude(op => op.Product)
             .FirstOrDefaultAsync(i => i.Id == orderId);
 
         return _mapper.Map<OrderModel?>(orderEntity);
@@ -88,17 +93,12 @@ internal class OrderService : IOrderService
     private async Task<OrderModelWithPaymentResult?> PlaceOrderInternalAsync(OrderInfo productInfo)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var orderEntity = await _bookShopDbContext.OrderProducts
-            .Where(op => op.ProductId == productInfo.ProductId)
-            .Include(op=>op.Order)
-            .FirstOrDefaultAsync(op=>op.Order.ClientId==clientId);
-
         var productEntity = await _bookShopDbContext.Products
             .FirstOrDefaultAsync(p => p.Id == productInfo.ProductId);
 
-        if (orderEntity == null || productEntity == null)
+        if (productEntity == null)
         {
-            throw new Exception($"Input parametr for productId {productInfo.ProductId} is invalid");
+            throw new Exception($"Product with Id {productInfo.ProductId} not found.");
         }
 
         var paymentMethod = await _bookShopDbContext.PaymentMethods
@@ -116,17 +116,29 @@ internal class OrderService : IOrderService
         {
             try
             {
-                order = _mapper.Map<OrderEntity>(productInfo);
-
-                order.Amount = productEntity.Price * order.Count;
-                order.ClientId = clientId;
+                order = new OrderEntity
+                {
+                    ClientId = clientId,
+                    PaymentMethodId = productInfo.PaymentMethodId,
+                    Amount = productEntity.Price * productInfo.Count,
+                    Count = productInfo.Count,
+                    OrderProducts = new List<OrderProduct>
+                    {
+                        new OrderProduct
+                        {
+                            ProductId = productInfo.ProductId,
+                            Product = productEntity
+                        }
+                    }
+                };
 
                 _bookShopDbContext.Orders.Add(order);
                 await _bookShopDbContext.SaveChangesAsync();
-                _logger.LogInformation($"Order with {order.Id} Id is placed succesfully for '{clientId}' client.");
+
+                await _bookShopDbContext.SaveChangesAsync();
+                _logger.LogInformation($"Order with Id {order.Id} placed successfully for client '{clientId}'.");
 
                 invoice = await _invoiceService.CreateInvoiceAsync(order);
-
                 await transaction.CommitAsync();
             }
             catch (Exception)
@@ -138,13 +150,11 @@ internal class OrderService : IOrderService
 
         var payment = await _paymentService.PayAsync(invoice.Id);
 
-        var orderResult = new OrderModelWithPaymentResult
+        return new OrderModelWithPaymentResult
         {
             Order = _mapper.Map<OrderModel>(order),
             PaymentMethodId = payment.PaymentMethodId,
             PaymentResult = payment.PaymentStatus
         };
-
-        return orderResult;
     }
 }

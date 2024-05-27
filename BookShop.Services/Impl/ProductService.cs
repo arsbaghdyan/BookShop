@@ -79,6 +79,7 @@ internal class ProductService : IProductService
         var productEntity = new ProductEntity();
 
         var productModel = new ProductModel();
+
         if (productCheck != null)
         {
             productCheck.Count += productAddModel.Count;
@@ -86,10 +87,9 @@ internal class ProductService : IProductService
 
             _logger.LogInformation($"Product with Id {productCheck.Id} added successfully");
 
-            productModel = _mapper.Map<ProductModel>(productCheck);
-
-            return productModel;
+            return _mapper.Map<ProductModel>(productCheck);
         }
+
         productEntity = _mapper.Map<ProductEntity>(productAddModel);
         _bookShopDbContext.Products.Add(productEntity);
 
