@@ -88,9 +88,10 @@ internal class OrderService : IOrderService
     private async Task<OrderModelWithPaymentResult?> PlaceOrderInternalAsync(OrderInfo productInfo)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var orderEntity = await _bookShopDbContext.Orders
-            .Where(o => o.ClientId == clientId)
-            .FirstOrDefaultAsync(o => o.ProductId == productInfo.ProductId);
+        var orderEntity = await _bookShopDbContext.OrderProducts
+            .Where(op => op.ProductId == productInfo.ProductId)
+            .Include(op=>op.Order)
+            .FirstOrDefaultAsync(op=>op.Order.ClientId==clientId);
 
         var productEntity = await _bookShopDbContext.Products
             .FirstOrDefaultAsync(p => p.Id == productInfo.ProductId);
