@@ -61,51 +61,58 @@ internal class OrderService : IOrderService
         return _mapper.Map<OrderModel?>(orderEntity);
     }
 
-    public async Task<List<OrderModelWithPaymentResult>?> PlaceOrderAsync(List<OrderAddModel> orderAddModels)
+    public async Task<List<OrderModelWithPaymentResult>> PlaceOrderAsync(List<OrderAddModel> orderAddModels)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var orders = new List<OrderModelWithPaymentResult>();
+        var orderModels = new List<OrderModelWithPaymentResult>();
 
         foreach (var orderAddModel in orderAddModels)
         {
             var orderInfos = orderAddModel.OrderItems
-                .Select(orderItem => new OrderInfo(orderItem.ProductId, orderItem.Count, orderAddModel.PaymentMethodId))
+                .Select(orderItemModel => new OrderInfo(orderItemModel.ProductId, orderItemModel.Count, orderAddModel.PaymentMethodId))
                 .ToList();
 
             var order = await PlaceOrderInternalAsync(orderInfos);
-            orders.Add(order);
+            orderModels.Add(order);
         }
 
-        return orders;
+        return orderModels;
     }
 
-    public async Task<List<OrderModelWithPaymentResult>?> PlaceOrderFromCartAsync(List<OrderAddFromCartModel> orderAddFromCardModels)
+    public async Task<List<OrderModelWithPaymentResult>> PlaceOrderFromCartAsync(List<OrderAddFromCartModel> orderAddFromCardModels)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var orders = new List<OrderModelWithPaymentResult>();
+        var orderModels = new List<OrderModelWithPaymentResult>();
 
         foreach (var orderAddFromCardModel in orderAddFromCardModels)
         {
-            var cartItemEntity = await _bookShopDbContext.CartItems
-                .Include(c => c.Product)
-                .Where(c => c.Cart.ClientId == clientId)
-                .FirstOrDefaultAsync(c => c.Id == orderAddFromCardModel.CartItemId);
+            var orderInfos = new List<OrderInfo>();
 
-            if (cartItemEntity == null)
+            foreach (var cartItemId in orderAddFromCardModel.CartItemIds)
             {
-                throw new Exception($"Product with {orderAddFromCardModel.CartItemId} Id not found in cart for '{clientId}' client.");
+                var cartItemEntity = await _bookShopDbContext.CartItems
+                    .Include(c => c.Product)
+                    .Where(c => c.Cart.ClientId == clientId)
+                    .FirstOrDefaultAsync(c => c.Id == cartItemId);
+
+                if (cartItemEntity == null)
+                {
+                    throw new Exception($"Product with {cartItemId} Id not found in cart for '{clientId}' client.");
+                }
+
+                var orderInfo = new OrderInfo(cartItemEntity.ProductId, cartItemEntity.Count, orderAddFromCardModel.PaymentMethodId);
+                orderInfos.Add(orderInfo);
+
+                _bookShopDbContext.CartItems.Remove(cartItemEntity);
             }
 
-            var orderInfo = new OrderInfo(cartItemEntity.ProductId, cartItemEntity.Count, orderAddFromCardModel.PaymentMethodId);
-            var order = await PlaceOrderInternalAsync(new List<OrderInfo> { orderInfo });
-
-            _bookShopDbContext.CartItems.Remove(cartItemEntity);
             await _bookShopDbContext.SaveChangesAsync();
 
-            orders.Add(order);
+            var order = await PlaceOrderInternalAsync(orderInfos);
+            orderModels.Add(order);
         }
 
-        return orders;
+        return orderModels;
     }
 
     private async Task<OrderModelWithPaymentResult?> PlaceOrderInternalAsync(List<OrderInfo> orderInfoList)

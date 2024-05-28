@@ -24,6 +24,7 @@ public class MappingProfile : Profile
         CreateMap<ProductAddModel, ProductEntity>();
         CreateMap<ProductUpdateModel, ProductEntity>();
         CreateMap<ProductEntity, ProductModel>();
+        CreateMap<ProductModel, ProductEntity>();
 
         CreateMap<CartItemEntity, CartItemModel>();
         CreateMap<CartItemAddModel, CartItemEntity>();
@@ -42,7 +43,7 @@ public class MappingProfile : Profile
         CreateMap<OrderInfo, OrderEntity>();
 
         CreateMap<CartEntity, OrderAddFromCartModel>()
-            .ForMember(dest => dest.CartItemId, opt => opt.MapFrom(src => src.CartItems.FirstOrDefault().Id));
+            .ForMember(dest => dest.CartItemIds, opt => opt.MapFrom(src => src.CartItems.FirstOrDefault().Id));
 
         CreateMap<OrderProduct, OrderProductModel>();
         CreateMap<PaymentEntity, PaymentModel>();

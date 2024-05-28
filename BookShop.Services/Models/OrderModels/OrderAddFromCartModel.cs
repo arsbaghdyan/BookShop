@@ -2,6 +2,6 @@
 
 public class OrderAddFromCartModel
 {
-    public long CartItemId { get; set; }
+    public List<long> CartItemIds { get; set; }
     public long PaymentMethodId { get; set; }
 }

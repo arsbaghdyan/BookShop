@@ -106,7 +106,8 @@ internal class ProductService : IProductService
             throw new Exception("Product count can't be less than 0");
         }
 
-        var productToUpdate = await GetByIdAsync(product.Id);
+        var productToUpdate = await _bookShopDbContext.Products
+            .FirstOrDefaultAsync(p => p.Id == product.Id);
 
         productToUpdate.Name = product.Name;
         productToUpdate.Price = product.Price;
