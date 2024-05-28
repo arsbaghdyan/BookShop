@@ -18,23 +18,19 @@ public class MappingProfile : Profile
     {
         CreateMap<ClientRegisterModel, ClientEntity>();
         CreateMap<ClientUpdateModel, ClientEntity>();
-        CreateMap<ClientLoginModel, ClientEntity>();
         CreateMap<ClientEntity, ClientModel>();
 
         CreateMap<ProductAddModel, ProductEntity>();
         CreateMap<ProductUpdateModel, ProductEntity>();
         CreateMap<ProductEntity, ProductModel>();
-        CreateMap<ProductModel, ProductEntity>();
 
         CreateMap<CartItemEntity, CartItemModel>();
         CreateMap<CartItemAddModel, CartItemEntity>();
         CreateMap<CartItemUpdateModel, CartItemEntity>();
-        CreateMap<CartItemFromWishListModel, CartItemEntity>();
 
         CreateMap<WishListItemEntity, WishListItemModel>();
         CreateMap<WishListItemAddModel, WishListItemEntity>();
         CreateMap<WishListItemEntity, CartItemEntity>();
-        CreateMap<CartItemEntity, CartItemModel>();
 
         CreateMap<OrderAddModel, OrderEntity>();
         CreateMap<OrderEntity, OrderModel>()

@@ -2,7 +2,6 @@
 using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
-using BookShop.Data.Enums;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModels;
