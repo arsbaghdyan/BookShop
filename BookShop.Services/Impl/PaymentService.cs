@@ -58,10 +58,10 @@ internal class PaymentService : IPaymentService
 
         var bankCard = JsonConvert.DeserializeObject<CardDetails>(paymentMethodDetails);
 
-        var paymentRequest = new PaymentRequest<BankCardInfo>()
+        var paymentRequest = new PaymentRequest<BankCardInformation>()
         {
             Amount = invoiceEntity.TotalAmount,
-            PaymentMethod = _mapper.Map<BankCardInfo>(bankCard)
+            PaymentMethod = _mapper.Map<BankCardInformation>(bankCard)
         };
 
         var paymentResponse = await _billingService.PayViaCardAsync(paymentRequest);

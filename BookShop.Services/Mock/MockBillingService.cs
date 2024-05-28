@@ -5,7 +5,7 @@ namespace BookShop.Services.Mock;
 
 internal class MockBillingService : IBillingService
 {
-    public Task<PaymentResponse> PayViaCardAsync(PaymentRequest<BankCardInfo> paymentRequest)
+    public Task<PaymentResponse> PayViaCardAsync(PaymentRequest<BankCardInformation> paymentRequest)
     {
         var response = new PaymentResponse
         {

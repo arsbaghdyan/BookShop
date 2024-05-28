@@ -1,6 +1,6 @@
 ﻿namespace BookShop.Services.Models.BillingModels;
 
-public class BankCardInfo
+public class BankCardInformation
 {
     public long CardNumber { get; set; }
     public int CVV { get; set; }

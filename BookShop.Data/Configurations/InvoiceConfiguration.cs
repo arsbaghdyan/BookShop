@@ -13,5 +13,9 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<InvoiceEntity>
         builder.HasOne(i => i.Order)
                .WithOne(o => o.Invoice)
                .HasForeignKey<InvoiceEntity>(i => i.OrderId);
+
+        builder.HasMany(i => i.Payments)
+               .WithOne(p => p.Invoice)
+               .HasForeignKey(p => p.InvoiceId);
     }
 }

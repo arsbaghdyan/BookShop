@@ -200,8 +200,7 @@ namespace BookShop.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InvoiceId")
-                        .IsUnique();
+                    b.HasIndex("InvoiceId");
 
                     b.HasIndex("PaymentMethodId");
 
@@ -393,8 +392,8 @@ namespace BookShop.Data.Migrations
             modelBuilder.Entity("BookShop.Data.Entities.PaymentEntity", b =>
                 {
                     b.HasOne("BookShop.Data.Entities.InvoiceEntity", "Invoice")
-                        .WithOne("Payment")
-                        .HasForeignKey("BookShop.Data.Entities.PaymentEntity", "InvoiceId")
+                        .WithMany("Payments")
+                        .HasForeignKey("InvoiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -470,7 +469,7 @@ namespace BookShop.Data.Migrations
 
             modelBuilder.Entity("BookShop.Data.Entities.InvoiceEntity", b =>
                 {
-                    b.Navigation("Payment");
+                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.OrderEntity", b =>

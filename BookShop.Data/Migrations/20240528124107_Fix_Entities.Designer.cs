@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookShop.Data.Migrations
 {
     [DbContext(typeof(BookShopDbContext))]
-    [Migration("20240527050619_Refactor_Entities")]
-    partial class Refactor_Entities
+    [Migration("20240528124107_Fix_Entities")]
+    partial class Fix_Entities
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -395,7 +395,7 @@ namespace BookShop.Data.Migrations
             modelBuilder.Entity("BookShop.Data.Entities.PaymentEntity", b =>
                 {
                     b.HasOne("BookShop.Data.Entities.InvoiceEntity", "Invoice")
-                        .WithMany()
+                        .WithMany("Payments")
                         .HasForeignKey("InvoiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -468,6 +468,11 @@ namespace BookShop.Data.Migrations
                     b.Navigation("PaymentMethods");
 
                     b.Navigation("WishList");
+                });
+
+            modelBuilder.Entity("BookShop.Data.Entities.InvoiceEntity", b =>
+                {
+                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.OrderEntity", b =>
