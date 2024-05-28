@@ -31,7 +31,8 @@ internal class CartService : ICartService
     {
         var clientId = _clientContextReader.GetClientContextId();
 
-        var cartEntity = await _bookShopDbContext.Carts.Include(c => c.CartItems)
+        var cartEntity = await _bookShopDbContext.Carts
+            .Include(c => c.CartItems)
             .FirstOrDefaultAsync(c => c.ClientId == clientId);
 
         if (cartEntity == null)
@@ -51,7 +52,8 @@ internal class CartService : ICartService
 
         var clientId = _clientContextReader.GetClientContextId();
 
-        var productEntity = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == cartItemAddModel.ProductId);
+        var productEntity = await _bookShopDbContext.Products
+            .FirstOrDefaultAsync(p => p.Id == cartItemAddModel.ProductId);
 
         if (productEntity == null)
         {
@@ -69,21 +71,22 @@ internal class CartService : ICartService
 
         if (cartItemEntity != null)
         {
-            cartItemEntity.Count += cartItemAddModel.Count;
+            if (cartItemEntity.Count + cartItemAddModel.Count < productEntity.Count)
+            {
+                cartItemEntity.Count += cartItemAddModel.Count;
 
-            await _bookShopDbContext.SaveChangesAsync();
-            return _mapper.Map<CartItemModel>(cartItemEntity);
+                await _bookShopDbContext.SaveChangesAsync();
+                return _mapper.Map<CartItemModel>(cartItemEntity);
+            }
+            throw new Exception("Not enough product");
         }
 
         var cartItemToAdd = _mapper.Map<CartItemEntity>(cartItemAddModel);
 
-        var cartEntity = await _bookShopDbContext.Carts
-            .FirstOrDefaultAsync(c => c.ClientId == clientId);
-
-        cartItemToAdd.CartId = cartEntity.Id;
+        cartItemToAdd.CartId = (await _bookShopDbContext.Carts
+            .FirstOrDefaultAsync(c => c.ClientId == clientId)).Id;
 
         _bookShopDbContext.CartItems.Add(cartItemToAdd);
-
         await _bookShopDbContext.SaveChangesAsync();
         _logger.LogInformation($"Product with {cartItemAddModel.ProductId} Id is added in cart for '{clientId}' client.");
 
@@ -92,7 +95,7 @@ internal class CartService : ICartService
 
     public async Task<CartItemModel?> UpdateAsync(CartItemUpdateModel cartItemUpdateModel)
     {
-        if (cartItemUpdateModel.Count <= 0)
+        if (cartItemUpdateModel.Count < 0)
         {
             throw new Exception("Product count cant be less than 0");
         }
@@ -106,6 +109,15 @@ internal class CartService : ICartService
         if (cartItemEntity == null)
         {
             throw new Exception($"There is no Product with {cartItemUpdateModel.ProductId} Id in the Cart.");
+        }
+
+        if (cartItemUpdateModel.Count == 0)
+        {
+            _bookShopDbContext.CartItems.Remove(cartItemEntity);
+            await _bookShopDbContext.SaveChangesAsync();
+            _logger.LogInformation($"Product with {cartItemUpdateModel.ProductId} Id is removed for '{clientId}' client.");
+
+            return null;
         }
 
         var productEntity = await _bookShopDbContext.Products

@@ -3,6 +3,7 @@ using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModels;
 using Microsoft.EntityFrameworkCore;
@@ -101,6 +102,11 @@ internal class OrderService : IOrderService
             throw new Exception($"Product with Id {productInfo.ProductId} not found.");
         }
 
+        if (productEntity.Count < productInfo.Count)
+        {
+            throw new Exception("Not enough product");
+        }
+
         var paymentMethod = await _bookShopDbContext.PaymentMethods
             .FirstOrDefaultAsync(p => p.ClientId == clientId && p.Id == productInfo.PaymentMethodId);
 
@@ -135,6 +141,7 @@ internal class OrderService : IOrderService
                 _bookShopDbContext.Orders.Add(order);
                 await _bookShopDbContext.SaveChangesAsync();
 
+                productEntity.Count -= productInfo.Count;
                 await _bookShopDbContext.SaveChangesAsync();
                 _logger.LogInformation($"Order with Id {order.Id} placed successfully for client '{clientId}'.");
 

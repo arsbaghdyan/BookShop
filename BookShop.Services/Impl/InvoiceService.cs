@@ -30,12 +30,27 @@ internal class InvoiceService : IInvoiceService
         var invoiceEntity = await _bookShopDbContext.Invoices
             .FirstOrDefaultAsync(i => i.Id == invoiceId && i.ClientId == clientId);
 
+        if (invoiceEntity == null)
+        {
+            throw new Exception($"Invoice with Id {invoiceId} not found for client '{clientId}'.");
+        }
+
         return _mapper.Map<InvoiceModel?>(invoiceEntity);
     }
 
     public async Task<InvoiceModel> CreateInvoiceAsync(OrderEntity orderEntity)
     {
         var clientId = _clientContextReader.GetClientContextId();
+
+        if (orderEntity == null)
+        {
+            throw new Exception($"Order with id {orderEntity.Id} not found for client '{clientId}'.");
+        }
+
+        if (orderEntity.ClientId != clientId)
+        {
+            throw new InvalidOperationException($"Order does not belong to client '{clientId}'.");
+        }
 
         var invoice = new InvoiceEntity
         {
