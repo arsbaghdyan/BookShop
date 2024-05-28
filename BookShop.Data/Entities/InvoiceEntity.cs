@@ -11,4 +11,5 @@ public class InvoiceEntity : IIdentifiable
     public decimal TotalAmount { get; set; }
     public OrderEntity? Order { get; set; }
     public ClientEntity? Client { get; set; }
+    public PaymentEntity? Payment { get; set; }
 }
