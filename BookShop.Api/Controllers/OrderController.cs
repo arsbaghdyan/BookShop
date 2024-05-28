@@ -32,17 +32,17 @@ public class OrderController : BaseAuthorizedController
     }
 
     [HttpPost("placeOrder")]
-    public async Task<ActionResult<OrderModelWithPaymentResult>> AddOrder(OrderAddModel orderAddModel)
+    public async Task<ActionResult<OrderModelWithPaymentResult>> AddOrder(List<OrderAddModel> orderAddModels)
     {
-        var order = await _orderService.PlaceOrderAsync(orderAddModel);
+        var order = await _orderService.PlaceOrderAsync(orderAddModels);
 
         return Ok(order);
     }
 
     [HttpPost("placeOrderFromCart")]
-    public async Task<ActionResult<OrderModelWithPaymentResult>> AddOrderFromCard(OrderAddFromCartModel orderAddFromCardModel)
+    public async Task<ActionResult<OrderModelWithPaymentResult>> AddOrderFromCard(List<OrderAddFromCartModel> orderAddFromCardModels)
     {
-        var order = await _orderService.PlaceOrderFromCartAsync(orderAddFromCardModel);
+        var order = await _orderService.PlaceOrderFromCartAsync(orderAddFromCardModels);
 
         return Ok(order);
     }

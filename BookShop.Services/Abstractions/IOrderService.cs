@@ -6,6 +6,6 @@ public interface IOrderService
 {
     Task<List<OrderModel?>> GetAllAsync();
     Task<OrderModel?> GetByIdAsync(long orderId);
-    Task<OrderModelWithPaymentResult?> PlaceOrderFromCartAsync(OrderAddFromCartModel orderAddFromCardModel);
-    Task<OrderModelWithPaymentResult?> PlaceOrderAsync(OrderAddModel orderAddModel);
+    Task<List<OrderModelWithPaymentResult>?> PlaceOrderAsync(List<OrderAddModel> orderAddModels);
+    Task<List<OrderModelWithPaymentResult>?> PlaceOrderFromCartAsync(List<OrderAddFromCartModel> orderAddFromCardModels);
 }

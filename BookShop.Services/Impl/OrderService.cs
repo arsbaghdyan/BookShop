@@ -2,13 +2,12 @@
 using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
+using BookShop.Data.Enums;
 using BookShop.Services.Abstractions;
-using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using static BookShop.Services.Impl.OrderService;
 
 namespace BookShop.Services.Impl;
 
@@ -62,53 +61,86 @@ internal class OrderService : IOrderService
         return _mapper.Map<OrderModel?>(orderEntity);
     }
 
-    public async Task<OrderModelWithPaymentResult?> PlaceOrderAsync(OrderAddModel orderAddModel)
-    {
-        var orderInfo = new OrderInfo(orderAddModel.ProductId, orderAddModel.Count, orderAddModel.PaymentMethodId);
-        return await PlaceOrderInternalAsync(orderInfo);
-    }
-
-    public async Task<OrderModelWithPaymentResult?> PlaceOrderFromCartAsync(OrderAddFromCartModel orderAddFromCardModel)
+    public async Task<List<OrderModelWithPaymentResult>?> PlaceOrderAsync(List<OrderAddModel> orderAddModels)
     {
         var clientId = _clientContextReader.GetClientContextId();
+        var orders = new List<OrderModelWithPaymentResult>();
 
-        var cartItemEntity = await _bookShopDbContext.CartItems
-            .Include(c => c.Product)
-            .Where(c => c.Cart.ClientId == clientId)
-            .FirstOrDefaultAsync(c => c.Id == orderAddFromCardModel.CartItemId);
-
-        if (cartItemEntity == null)
+        foreach (var orderAddModel in orderAddModels)
         {
-            throw new Exception($"Product with {cartItemEntity.ProductId} Id not found in cart for '{clientId}' client.");
+            var orderInfos = orderAddModel.OrderItems
+                .Select(orderItem => new OrderInfo(orderItem.ProductId, orderItem.Count, orderAddModel.PaymentMethodId))
+                .ToList();
+
+            var order = await PlaceOrderInternalAsync(orderInfos);
+            orders.Add(order);
         }
 
-        var orderInfo = new OrderInfo(cartItemEntity.ProductId, cartItemEntity.Count, orderAddFromCardModel.PaymentMethodId);
-        var order = await PlaceOrderInternalAsync(orderInfo);
-
-        _bookShopDbContext.CartItems.Remove(cartItemEntity);
-        await _bookShopDbContext.SaveChangesAsync();
-
-        return order;
+        return orders;
     }
 
-    private async Task<OrderModelWithPaymentResult?> PlaceOrderInternalAsync(OrderInfo productInfo)
+    public async Task<List<OrderModelWithPaymentResult>?> PlaceOrderFromCartAsync(List<OrderAddFromCartModel> orderAddFromCardModels)
     {
         var clientId = _clientContextReader.GetClientContextId();
-        var productEntity = await _bookShopDbContext.Products
-            .FirstOrDefaultAsync(p => p.Id == productInfo.ProductId);
+        var orders = new List<OrderModelWithPaymentResult>();
 
-        if (productEntity == null)
+        foreach (var orderAddFromCardModel in orderAddFromCardModels)
         {
-            throw new Exception($"Product with Id {productInfo.ProductId} not found.");
+            var cartItemEntity = await _bookShopDbContext.CartItems
+                .Include(c => c.Product)
+                .Where(c => c.Cart.ClientId == clientId)
+                .FirstOrDefaultAsync(c => c.Id == orderAddFromCardModel.CartItemId);
+
+            if (cartItemEntity == null)
+            {
+                throw new Exception($"Product with {orderAddFromCardModel.CartItemId} Id not found in cart for '{clientId}' client.");
+            }
+
+            var orderInfo = new OrderInfo(cartItemEntity.ProductId, cartItemEntity.Count, orderAddFromCardModel.PaymentMethodId);
+            var order = await PlaceOrderInternalAsync(new List<OrderInfo> { orderInfo });
+
+            _bookShopDbContext.CartItems.Remove(cartItemEntity);
+            await _bookShopDbContext.SaveChangesAsync();
+
+            orders.Add(order);
         }
 
-        if (productEntity.Count < productInfo.Count)
+        return orders;
+    }
+
+    private async Task<OrderModelWithPaymentResult?> PlaceOrderInternalAsync(List<OrderInfo> orderInfoList)
+    {
+        var clientId = _clientContextReader.GetClientContextId();
+        var orderProducts = new List<OrderProduct>();
+
+        decimal totalAmount = 0;
+
+        foreach (var orderInfo in orderInfoList)
         {
-            throw new Exception("Not enough product");
+            var productEntity = await _bookShopDbContext.Products
+                .FirstOrDefaultAsync(p => p.Id == orderInfo.ProductId);
+
+            if (productEntity == null)
+            {
+                throw new Exception($"Product with Id {orderInfo.ProductId} not found.");
+            }
+
+            if (productEntity.Count < orderInfo.Count)
+            {
+                throw new Exception("Not enough product");
+            }
+
+            totalAmount += productEntity.Price * orderInfo.Count;
+
+            orderProducts.Add(new OrderProduct
+            {
+                ProductId = orderInfo.ProductId,
+                Product = productEntity
+            });
         }
 
         var paymentMethod = await _bookShopDbContext.PaymentMethods
-            .FirstOrDefaultAsync(p => p.ClientId == clientId && p.Id == productInfo.PaymentMethodId);
+            .FirstOrDefaultAsync(p => p.ClientId == clientId);
 
         if (paymentMethod == null)
         {
@@ -125,23 +157,21 @@ internal class OrderService : IOrderService
                 order = new OrderEntity
                 {
                     ClientId = clientId,
-                    PaymentMethodId = productInfo.PaymentMethodId,
-                    Amount = productEntity.Price * productInfo.Count,
-                    Count = productInfo.Count,
-                    OrderProducts = new List<OrderProduct>
-                    {
-                        new OrderProduct
-                        {
-                            ProductId = productInfo.ProductId,
-                            Product = productEntity
-                        }
-                    }
+                    PaymentMethodId = paymentMethod.Id,
+                    Amount = totalAmount,
+                    Count = orderInfoList.Sum(orderInfo => orderInfo.Count),
+                    OrderProducts = orderProducts
                 };
 
                 _bookShopDbContext.Orders.Add(order);
                 await _bookShopDbContext.SaveChangesAsync();
 
-                productEntity.Count -= productInfo.Count;
+                foreach (var orderInfo in orderInfoList)
+                {
+                    var productEntity = await _bookShopDbContext.Products.FirstOrDefaultAsync(p => p.Id == orderInfo.ProductId);
+                    productEntity.Count -= orderInfo.Count;
+                }
+
                 await _bookShopDbContext.SaveChangesAsync();
                 _logger.LogInformation($"Order with Id {order.Id} placed successfully for client '{clientId}'.");
 

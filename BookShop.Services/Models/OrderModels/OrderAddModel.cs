@@ -2,7 +2,6 @@
 
 public class OrderAddModel
 {
-    public long ProductId { get; set; }
-    public int Count { get; set; }
+    public List<OrderItemModel> OrderItems { get; set; }
     public long PaymentMethodId { get; set; }
 }
