@@ -23,16 +23,16 @@ internal class InvoiceService : IInvoiceService
         _bookShopDbContext = bookShopDbContext;
     }
 
-    public async Task<InvoiceModel?> GetByIdAsync(long invoiceId)
+    public async Task<InvoiceModel?> GetByIdAsync(long orderId)
     {
         var clientId = _clientContextReader.GetClientContextId();
 
         var invoiceEntity = await _bookShopDbContext.Invoices
-            .FirstOrDefaultAsync(i => i.Id == invoiceId && i.ClientId == clientId);
+            .FirstOrDefaultAsync(i => i.OrderId == orderId && i.ClientId == clientId);
 
         if (invoiceEntity == null)
         {
-            throw new Exception($"Invoice with Id {invoiceId} not found for client '{clientId}'.");
+            throw new Exception($"Invoice with Id {invoiceEntity.Id} not found for client '{clientId}'.");
         }
 
         return _mapper.Map<InvoiceModel?>(invoiceEntity);
