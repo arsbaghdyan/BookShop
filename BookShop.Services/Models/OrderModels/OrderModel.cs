@@ -8,4 +8,6 @@ public class OrderModel
     public List<OrderProductModel> OrderProducts { get; set; } = new();
     public decimal Amount { get; set; }
     public int Count { get; set; }
+    public long InvoiceId { get; set; }
+    public long PaymentId { get; set; }
 }

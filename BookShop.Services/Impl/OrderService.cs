@@ -5,6 +5,7 @@ using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModels;
+using BookShop.Services.Models.PaymentModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -42,7 +43,9 @@ internal class OrderService : IOrderService
         var orderEntities = await _bookShopDbContext.Orders
             .Where(i => i.ClientId == clientId)
             .Include(o => o.OrderProducts)
-            .ThenInclude(op => op.Product)
+                .ThenInclude(op => op.Product)
+            .Include(o => o.Invoice)
+                .ThenInclude(i => i.Payments)
             .ToListAsync();
 
         return _mapper.Map<List<OrderModel?>>(orderEntities);
@@ -54,7 +57,9 @@ internal class OrderService : IOrderService
         var orderEntity = await _bookShopDbContext.Orders
             .Where(i => i.ClientId == clientId)
             .Include(o => o.OrderProducts)
-            .ThenInclude(op => op.Product)
+                .ThenInclude(op => op.Product)
+            .Include(o => o.Invoice)
+                .ThenInclude(i => i.Payments)
             .FirstOrDefaultAsync(i => i.Id == orderId);
 
         return _mapper.Map<OrderModel?>(orderEntity);
@@ -155,6 +160,7 @@ internal class OrderService : IOrderService
 
         InvoiceModel invoice;
         OrderEntity order;
+        PaymentModel paymentModel;
 
         using (var transaction = await _bookShopDbContext.Database.BeginTransactionAsync())
         {
@@ -166,7 +172,7 @@ internal class OrderService : IOrderService
                     PaymentMethodId = paymentMethod.Id,
                     Amount = totalAmount,
                     Count = orderInfoList.Sum(orderInfo => orderInfo.Count),
-                    OrderProducts = orderProducts
+                    OrderProducts = orderProducts,
                 };
 
                 _bookShopDbContext.Orders.Add(order);
@@ -182,6 +188,7 @@ internal class OrderService : IOrderService
                 _logger.LogInformation($"Order with Id {order.Id} placed successfully for client '{clientId}'.");
 
                 invoice = await _invoiceService.CreateInvoiceAsync(order);
+                paymentModel = await _paymentService.PayAsync(invoice.Id);
                 await transaction.CommitAsync();
             }
             catch (Exception)
@@ -191,13 +198,15 @@ internal class OrderService : IOrderService
             }
         }
 
-        var payment = await _paymentService.PayAsync(invoice.Id);
+        var orderModel = _mapper.Map<OrderModel>(order);
+        orderModel.InvoiceId = invoice.Id;
+        orderModel.PaymentId = paymentModel.Id;
 
         return new OrderModelWithPaymentResult
         {
-            Order = _mapper.Map<OrderModel>(order),
-            PaymentMethodId = payment.PaymentMethodId,
-            PaymentResult = payment.PaymentStatus
+            Order = orderModel,
+            PaymentMethodId = paymentModel.PaymentMethodId,
+            PaymentResult = paymentModel.PaymentStatus
         };
     }
 }

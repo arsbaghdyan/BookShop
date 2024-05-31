@@ -33,9 +33,9 @@ public class WishListController : BaseAuthorizedController
     }
 
     [HttpDelete]
-    public async Task<ActionResult<WishListItemEntity>> RemoveItem(long wishListId)
+    public async Task<ActionResult<WishListItemEntity>> RemoveItem(long productId)
     {
-        await _wishListService.RemoveAsync(wishListId);
+        await _wishListService.RemoveAsync(productId);
 
         return Ok();
     }

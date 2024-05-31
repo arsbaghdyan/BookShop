@@ -34,7 +34,9 @@ public class MappingProfile : Profile
 
         CreateMap<OrderAddModel, OrderEntity>();
         CreateMap<OrderEntity, OrderModel>()
-            .ForMember(dest => dest.OrderProducts, opt => opt.MapFrom(src => src.OrderProducts)); ;
+            .ForMember(dest => dest.OrderProducts, opt => opt.MapFrom(src => src.OrderProducts))
+            .ForMember(dest => dest.InvoiceId, opt => opt.MapFrom(src => src.Invoice.Id))
+            .ForMember(dest => dest.PaymentId, opt => opt.MapFrom(src => src.Invoice.Payments.FirstOrDefault().Id));
         CreateMap<OrderEntity, OrderModelWithPaymentResult>();
         CreateMap<OrderInfo, OrderEntity>();
 

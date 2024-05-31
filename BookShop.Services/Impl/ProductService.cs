@@ -69,7 +69,7 @@ internal class ProductService : IProductService
     {
         if (productAddModel.Count <= 0)
         {
-            throw new Exception("Product count can't be less than 0");
+            throw new Exception("Product count can't be less or equal 0");
         }
 
         var productCheck = await _bookShopDbContext.Products
