@@ -1,14 +1,12 @@
-﻿using BookShop.Services.Abstractions;
+﻿using BookShop.Api.Controllers.Base;
+using BookShop.Services.Abstractions;
 using BookShop.Services.Models.InvoiceModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
-[Authorize]
-[ApiController]
 [Route("[controller]")]
-public class InvoiceController : ControllerBase
+public class InvoiceController : BaseAuthorizedController
 {
     private readonly IInvoiceService _invoiceService;
 
@@ -17,27 +15,11 @@ public class InvoiceController : ControllerBase
         _invoiceService = invoiceService;
     }
 
-    [HttpGet]
-    public async Task<ActionResult<List<InvoiceModel>>> GetAll()
+    [HttpGet("{orderId}")]
+    public async Task<ActionResult<InvoiceModel>> GetInvoiceById(long orderId)
     {
-        var invoices = await _invoiceService.GetAllAsync();
-
-        return Ok(invoices);
-    }
-
-    [HttpGet("{paymentId}")]
-    public async Task<ActionResult<InvoiceModel>> GetById(long paymentId)
-    {
-        var invoice = await _invoiceService.GetByIdAsync(paymentId);
+        var invoice = await _invoiceService.GetByIdAsync(orderId);
 
         return Ok(invoice);
-    }
-
-    [HttpDelete]
-    public async Task<IActionResult> Clear()
-    {
-        await _invoiceService.ClearAsync();
-
-        return Ok();
     }
 }

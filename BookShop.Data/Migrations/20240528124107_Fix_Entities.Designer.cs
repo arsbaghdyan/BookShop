@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookShop.Data.Migrations
 {
     [DbContext(typeof(BookShopDbContext))]
-    [Migration("20240508171246_Initial")]
-    partial class Initial
+    [Migration("20240528124107_Fix_Entities")]
+    partial class Fix_Entities
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -55,20 +55,18 @@ namespace BookShop.Data.Migrations
                     b.Property<long>("CartId")
                         .HasColumnType("bigint");
 
-                    b.Property<long>("Count")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
+                    b.Property<int>("Count")
+                        .HasColumnType("integer");
 
                     b.Property<long>("ProductId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CartId");
-
                     b.HasIndex("ProductId");
+
+                    b.HasIndex("CartId", "ProductId")
+                        .IsUnique();
 
                     b.ToTable("CartItems");
                 });
@@ -101,15 +99,10 @@ namespace BookShop.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long?>("WishListEntityId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
-
-                    b.HasIndex("WishListEntityId");
 
                     b.ToTable("Clients");
                 });
@@ -125,16 +118,10 @@ namespace BookShop.Data.Migrations
                     b.Property<long>("ClientId")
                         .HasColumnType("bigint");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<bool>("IsPaid")
-                        .HasColumnType("boolean");
-
                     b.Property<long>("OrderId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("PaymentId")
                         .HasColumnType("bigint");
 
                     b.Property<decimal>("TotalAmount")
@@ -144,9 +131,8 @@ namespace BookShop.Data.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("PaymentId");
+                    b.HasIndex("OrderId")
+                        .IsUnique();
 
                     b.ToTable("Invoices");
                 });
@@ -159,30 +145,40 @@ namespace BookShop.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
                     b.Property<long>("ClientId")
                         .HasColumnType("bigint");
 
                     b.Property<int>("Count")
                         .HasColumnType("integer");
 
-                    b.Property<long?>("InvoiceEntityId")
-                        .HasColumnType("bigint");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("numeric");
-
-                    b.Property<long>("ProductId")
+                    b.Property<long>("PaymentMethodId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("InvoiceEntityId");
+                    b.HasIndex("PaymentMethodId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("BookShop.Data.Entities.OrderProduct", b =>
+                {
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("ProductId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("OrderId", "ProductId");
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("OrderProducts");
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.PaymentEntity", b =>
@@ -196,6 +192,9 @@ namespace BookShop.Data.Migrations
                     b.Property<decimal>("Amount")
                         .HasColumnType("numeric");
 
+                    b.Property<long>("InvoiceId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("PaymentMethodId")
                         .HasColumnType("bigint");
 
@@ -203,6 +202,8 @@ namespace BookShop.Data.Migrations
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InvoiceId");
 
                     b.HasIndex("PaymentMethodId");
 
@@ -242,15 +243,8 @@ namespace BookShop.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("CartEntityId")
-                        .HasColumnType("bigint");
-
                     b.Property<int>("Count")
                         .HasColumnType("integer");
-
-                    b.Property<string>("Details")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("Manufacturer")
                         .IsRequired()
@@ -263,14 +257,7 @@ namespace BookShop.Data.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
 
-                    b.Property<long?>("WishListEntityId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("CartEntityId");
-
-                    b.HasIndex("WishListEntityId");
 
                     b.ToTable("Products");
                 });
@@ -288,6 +275,9 @@ namespace BookShop.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ClientId")
+                        .IsUnique();
+
                     b.ToTable("WishLists");
                 });
 
@@ -299,9 +289,6 @@ namespace BookShop.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
-                    b.Property<long?>("ClientEntityId")
-                        .HasColumnType("bigint");
-
                     b.Property<long>("ProductId")
                         .HasColumnType("bigint");
 
@@ -310,166 +297,159 @@ namespace BookShop.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClientEntityId");
-
                     b.HasIndex("ProductId");
 
-                    b.HasIndex("WishListId");
+                    b.HasIndex("WishListId", "ProductId")
+                        .IsUnique();
 
                     b.ToTable("WishListItems");
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.CartEntity", b =>
                 {
-                    b.HasOne("BookShop.Data.Entities.ClientEntity", "ClientEntity")
-                        .WithOne("CartEntity")
+                    b.HasOne("BookShop.Data.Entities.ClientEntity", "Client")
+                        .WithOne("Cart")
                         .HasForeignKey("BookShop.Data.Entities.CartEntity", "ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ClientEntity");
+                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.CartItemEntity", b =>
                 {
-                    b.HasOne("BookShop.Data.Entities.CartEntity", "CartEntity")
+                    b.HasOne("BookShop.Data.Entities.CartEntity", "Cart")
                         .WithMany("CartItems")
                         .HasForeignKey("CartId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookShop.Data.Entities.ProductEntity", "ProductEntity")
-                        .WithMany()
+                    b.HasOne("BookShop.Data.Entities.ProductEntity", "Product")
+                        .WithMany("CartItems")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CartEntity");
+                    b.Navigation("Cart");
 
-                    b.Navigation("ProductEntity");
-                });
-
-            modelBuilder.Entity("BookShop.Data.Entities.ClientEntity", b =>
-                {
-                    b.HasOne("BookShop.Data.Entities.WishListEntity", "WishListEntity")
-                        .WithMany()
-                        .HasForeignKey("WishListEntityId");
-
-                    b.Navigation("WishListEntity");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.InvoiceEntity", b =>
                 {
-                    b.HasOne("BookShop.Data.Entities.ClientEntity", "ClientEntity")
+                    b.HasOne("BookShop.Data.Entities.ClientEntity", "Client")
                         .WithMany("Invoices")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookShop.Data.Entities.OrderEntity", "OrderEntity")
-                        .WithMany()
-                        .HasForeignKey("OrderId")
+                    b.HasOne("BookShop.Data.Entities.OrderEntity", "Order")
+                        .WithOne("Invoice")
+                        .HasForeignKey("BookShop.Data.Entities.InvoiceEntity", "OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookShop.Data.Entities.PaymentEntity", "PaymentEntity")
-                        .WithMany()
-                        .HasForeignKey("PaymentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Client");
 
-                    b.Navigation("ClientEntity");
-
-                    b.Navigation("OrderEntity");
-
-                    b.Navigation("PaymentEntity");
+                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.OrderEntity", b =>
                 {
-                    b.HasOne("BookShop.Data.Entities.ClientEntity", "ClientEntity")
+                    b.HasOne("BookShop.Data.Entities.ClientEntity", "Client")
                         .WithMany("Orders")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookShop.Data.Entities.InvoiceEntity", "InvoiceEntity")
-                        .WithMany()
-                        .HasForeignKey("InvoiceEntityId");
-
-                    b.HasOne("BookShop.Data.Entities.ProductEntity", "ProductEntity")
+                    b.HasOne("BookShop.Data.Entities.PaymentMethodEntity", "PaymentMethod")
                         .WithMany("Orders")
+                        .HasForeignKey("PaymentMethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Client");
+
+                    b.Navigation("PaymentMethod");
+                });
+
+            modelBuilder.Entity("BookShop.Data.Entities.OrderProduct", b =>
+                {
+                    b.HasOne("BookShop.Data.Entities.OrderEntity", "Order")
+                        .WithMany("OrderProducts")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookShop.Data.Entities.ProductEntity", "Product")
+                        .WithMany("OrderProducts")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ClientEntity");
+                    b.Navigation("Order");
 
-                    b.Navigation("InvoiceEntity");
-
-                    b.Navigation("ProductEntity");
+                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.PaymentEntity", b =>
                 {
-                    b.HasOne("BookShop.Data.Entities.PaymentMethodEntity", "PaymentMethodEntity")
+                    b.HasOne("BookShop.Data.Entities.InvoiceEntity", "Invoice")
+                        .WithMany("Payments")
+                        .HasForeignKey("InvoiceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookShop.Data.Entities.PaymentMethodEntity", "PaymentMethod")
                         .WithMany("Payments")
                         .HasForeignKey("PaymentMethodId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("PaymentMethodEntity");
+                    b.Navigation("Invoice");
+
+                    b.Navigation("PaymentMethod");
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.PaymentMethodEntity", b =>
                 {
-                    b.HasOne("BookShop.Data.Entities.ClientEntity", "ClientEntity")
+                    b.HasOne("BookShop.Data.Entities.ClientEntity", "Client")
                         .WithMany("PaymentMethods")
                         .HasForeignKey("ClientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ClientEntity");
+                    b.Navigation("Client");
                 });
 
-            modelBuilder.Entity("BookShop.Data.Entities.ProductEntity", b =>
+            modelBuilder.Entity("BookShop.Data.Entities.WishListEntity", b =>
                 {
-                    b.HasOne("BookShop.Data.Entities.CartEntity", "CartEntity")
-                        .WithMany()
-                        .HasForeignKey("CartEntityId");
+                    b.HasOne("BookShop.Data.Entities.ClientEntity", "Client")
+                        .WithOne("WishList")
+                        .HasForeignKey("BookShop.Data.Entities.WishListEntity", "ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("BookShop.Data.Entities.WishListEntity", "WishListEntity")
-                        .WithMany()
-                        .HasForeignKey("WishListEntityId");
-
-                    b.Navigation("CartEntity");
-
-                    b.Navigation("WishListEntity");
+                    b.Navigation("Client");
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.WishListItemEntity", b =>
                 {
-                    b.HasOne("BookShop.Data.Entities.ClientEntity", "ClientEntity")
-                        .WithMany()
-                        .HasForeignKey("ClientEntityId");
-
-                    b.HasOne("BookShop.Data.Entities.ProductEntity", "ProductEntity")
-                        .WithMany()
+                    b.HasOne("BookShop.Data.Entities.ProductEntity", "Product")
+                        .WithMany("WishListItems")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BookShop.Data.Entities.WishListEntity", "WishListEntity")
+                    b.HasOne("BookShop.Data.Entities.WishListEntity", "WishList")
                         .WithMany("WishListItems")
                         .HasForeignKey("WishListId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ClientEntity");
+                    b.Navigation("Product");
 
-                    b.Navigation("ProductEntity");
-
-                    b.Navigation("WishListEntity");
+                    b.Navigation("WishList");
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.CartEntity", b =>
@@ -479,23 +459,43 @@ namespace BookShop.Data.Migrations
 
             modelBuilder.Entity("BookShop.Data.Entities.ClientEntity", b =>
                 {
-                    b.Navigation("CartEntity");
+                    b.Navigation("Cart");
 
                     b.Navigation("Invoices");
 
                     b.Navigation("Orders");
 
                     b.Navigation("PaymentMethods");
+
+                    b.Navigation("WishList");
+                });
+
+            modelBuilder.Entity("BookShop.Data.Entities.InvoiceEntity", b =>
+                {
+                    b.Navigation("Payments");
+                });
+
+            modelBuilder.Entity("BookShop.Data.Entities.OrderEntity", b =>
+                {
+                    b.Navigation("Invoice");
+
+                    b.Navigation("OrderProducts");
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.PaymentMethodEntity", b =>
                 {
+                    b.Navigation("Orders");
+
                     b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.ProductEntity", b =>
                 {
-                    b.Navigation("Orders");
+                    b.Navigation("CartItems");
+
+                    b.Navigation("OrderProducts");
+
+                    b.Navigation("WishListItems");
                 });
 
             modelBuilder.Entity("BookShop.Data.Entities.WishListEntity", b =>

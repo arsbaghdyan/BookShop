@@ -1,10 +1,11 @@
-﻿using BookShop.Services.Models.OrderModel;
+﻿using BookShop.Services.Models.OrderModels;
 
 namespace BookShop.Services.Abstractions;
 
 public interface IOrderService
 {
-    Task<OrderModel> AddOrderAsync(OrderAddModel orderAddModel);
-    Task RemoveAsync(long orderId);
-    Task ClearAsync();
+    Task<List<OrderModel?>> GetAllAsync();
+    Task<OrderModel?> GetByIdAsync(long orderId);
+    Task<List<OrderModelWithPaymentResult>> PlaceOrderAsync(List<OrderAddModel> orderAddModels);
+    Task<List<OrderModelWithPaymentResult>> PlaceOrderFromCartAsync(List<OrderAddFromCartModel> orderAddFromCardModels);
 }

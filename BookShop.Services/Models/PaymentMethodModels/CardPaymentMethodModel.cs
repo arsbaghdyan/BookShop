@@ -3,7 +3,7 @@ using BookShop.Data.Models;
 
 namespace BookShop.Services.Models.CartItemModels;
 
-public class PaymentMethodModel
+public class BankCardInfo
 {
     public long Id { get; set; }
     public PaymentMethod PaymentMethod { get; set; }

@@ -1,20 +1,38 @@
-﻿using BookShop.Services.Abstractions;
+﻿using BookShop.Api.Controllers.Base;
+using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
+using BookShop.Services.Models.PageModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
-[Authorize]
-[ApiController]
 [Route("[controller]")]
-public class ProductController : ControllerBase
+public class ProductController : BaseAuthorizedController
 {
     private readonly IProductService _productService;
 
     public ProductController(IProductService productService)
     {
         _productService = productService;
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    public async Task<ActionResult<List<ProductModel>>> GetAllProducts([FromQuery] ProductPageModel productPageModel)
+    {
+        var products = await _productService.GetAllAsync(productPageModel);
+
+        return Ok(products);
+    }
+
+    [AllowAnonymous]
+    [HttpGet("{productId}")]
+    public async Task<ActionResult<ProductModel>> GetProduct(long productId)
+    {
+        var product = await _productService.GetByIdAsync(productId);
+
+        return Ok(product);
     }
 
     [HttpPost]
@@ -33,37 +51,11 @@ public class ProductController : ControllerBase
         return Ok(product);
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> ClearProducts()
-    {
-        await _productService.ClearAsync();
-
-        return Ok();
-    }
-
     [HttpDelete("{productId}")]
     public async Task<IActionResult> RemoveProduct(long productId)
     {
         await _productService.RemoveAsync(productId);
 
         return Ok();
-    }
-
-    [AllowAnonymous]
-    [HttpGet]
-    public async Task<ActionResult<List<ProductModel>>> GetAllProducts()
-    {
-        var products = await _productService.GetAllAsync();
-
-        return Ok(products);
-    }
-
-    [AllowAnonymous]
-    [HttpGet("{productId}")]
-    public async Task<ActionResult<ProductModel>> GetProduct(long productId)
-    {
-        var product = await _productService.GetByIdAsync(productId);
-
-        return Ok(product);
     }
 }

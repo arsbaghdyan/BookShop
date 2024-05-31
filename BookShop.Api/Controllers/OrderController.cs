@@ -1,14 +1,12 @@
-﻿using BookShop.Services.Abstractions;
-using BookShop.Services.Models.OrderModel;
-using Microsoft.AspNetCore.Authorization;
+﻿using BookShop.Api.Controllers.Base;
+using BookShop.Services.Abstractions;
+using BookShop.Services.Models.OrderModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
-[Authorize]
-[ApiController]
 [Route("[controller]")]
-public class OrderController : ControllerBase
+public class OrderController : BaseAuthorizedController
 {
     private readonly IOrderService _orderService;
 
@@ -17,27 +15,35 @@ public class OrderController : ControllerBase
         _orderService = orderService;
     }
 
-    [HttpPost]
-    public async Task<ActionResult<OrderModel>> AddOrder(OrderAddModel orderAddModel)
+    [HttpGet]
+    public async Task<ActionResult<List<OrderModelWithPaymentResult>>> GetOrders()
     {
-        var order = await _orderService.AddOrderAsync(orderAddModel);
+        var orders = await _orderService.GetAllAsync();
+
+        return Ok(orders);
+    }
+
+    [HttpGet("{orderId}")]
+    public async Task<ActionResult<OrderModel>> GetOrderById(long orderId)
+    {
+        var order = await _orderService.GetByIdAsync(orderId);
 
         return Ok(order);
     }
 
-    [HttpDelete("{orderId}")]
-    public async Task<IActionResult> Remove(long orderId)
+    [HttpPost("placeOrder")]
+    public async Task<ActionResult<OrderModelWithPaymentResult>> AddOrder(List<OrderAddModel> orderAddModels)
     {
-        await _orderService.RemoveAsync(orderId);
+        var order = await _orderService.PlaceOrderAsync(orderAddModels);
 
-        return Ok();
+        return Ok(order);
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> Clear()
+    [HttpPost("placeOrderFromCart")]
+    public async Task<ActionResult<OrderModelWithPaymentResult>> AddOrderFromCard(List<OrderAddFromCartModel> orderAddFromCardModels)
     {
-        await _orderService.ClearAsync();
+        var order = await _orderService.PlaceOrderFromCartAsync(orderAddFromCardModels);
 
-        return Ok();
+        return Ok(order);
     }
 }

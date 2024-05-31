@@ -1,10 +1,14 @@
 ﻿using AutoMapper;
 using BookShop.Data.Entities;
+using BookShop.Data.Models;
+using BookShop.Services.Models.BillingModels;
 using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.ClientModels;
 using BookShop.Services.Models.InvoiceModels;
-using BookShop.Services.Models.OrderModel;
+using BookShop.Services.Models.OrderModels;
+using BookShop.Services.Models.OrderProductModels;
 using BookShop.Services.Models.PaymentModels;
+using static BookShop.Services.Impl.OrderService;
 
 namespace BookShop.Services.Mapping;
 
@@ -14,7 +18,6 @@ public class MappingProfile : Profile
     {
         CreateMap<ClientRegisterModel, ClientEntity>();
         CreateMap<ClientUpdateModel, ClientEntity>();
-        CreateMap<ClientLoginModel, ClientEntity>();
         CreateMap<ClientEntity, ClientModel>();
 
         CreateMap<ProductAddModel, ProductEntity>();
@@ -27,15 +30,24 @@ public class MappingProfile : Profile
 
         CreateMap<WishListItemEntity, WishListItemModel>();
         CreateMap<WishListItemAddModel, WishListItemEntity>();
+        CreateMap<WishListItemEntity, CartItemEntity>();
 
-        CreateMap<OrderEntity, OrderModel>();
         CreateMap<OrderAddModel, OrderEntity>();
+        CreateMap<OrderEntity, OrderModel>()
+            .ForMember(dest => dest.OrderProducts, opt => opt.MapFrom(src => src.OrderProducts))
+            .ForMember(dest => dest.InvoiceId, opt => opt.MapFrom(src => src.Invoice.Id))
+            .ForMember(dest => dest.PaymentId, opt => opt.MapFrom(src => src.Invoice.Payments.FirstOrDefault().Id));
+        CreateMap<OrderEntity, OrderModelWithPaymentResult>();
+        CreateMap<OrderInfo, OrderEntity>();
 
+        CreateMap<CartEntity, OrderAddFromCartModel>()
+            .ForMember(dest => dest.CartItemIds, opt => opt.MapFrom(src => src.CartItems.FirstOrDefault().Id));
+
+        CreateMap<OrderProduct, OrderProductModel>();
         CreateMap<PaymentEntity, PaymentModel>();
-        CreateMap<PaymentAddModel, PaymentEntity>();
 
-        CreateMap<PaymentMethodEntity, PaymentMethodModel>();
-        CreateMap<PaymentMethodAddModel, PaymentMethodEntity>();
+        CreateMap<PaymentMethodEntity, BankCardInfo>();
+        CreateMap<CardDetails, BankCardInformation>();
 
         CreateMap<InvoiceEntity, InvoiceModel>();
     }

@@ -1,7 +1,7 @@
-﻿namespace BookShop.Services.Models.OrderModel;
+﻿namespace BookShop.Services.Models.OrderModels;
 
 public class OrderAddModel
 {
-    public long ProductId { get; set; }
-    public int Count { get; set; }
+    public List<OrderItemModel> OrderItems { get; set; }
+    public long PaymentMethodId { get; set; }
 }

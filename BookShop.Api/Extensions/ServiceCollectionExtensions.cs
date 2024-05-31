@@ -65,23 +65,11 @@ public static class ServiceCollectionExtensions
     }
 
     public static IServiceCollection AddGlobalExceptionHandler(this IServiceCollection services)
-    {
-        services.AddTransient<GlobalExceptionHandler>();
-
-        return services;
-    }
+        => services.AddTransient<GlobalExceptionHandler>();
 
     public static IServiceCollection AddClientContextMiddleware(this IServiceCollection services)
-    {
-        services.AddTransient<ClientContextMiddleware>();
-
-        return services;
-    }
+        => services.AddTransient<ClientContextMiddleware>();
 
     public static IServiceCollection AddDatabaseMigrationService(this IServiceCollection services)
-    {
-        services.AddHostedService<DatabaseMigrationService>();
-
-        return services;
-    }
+        => services.AddHostedService<DatabaseMigrationService>();
 }

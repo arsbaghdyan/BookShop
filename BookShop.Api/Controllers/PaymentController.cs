@@ -1,14 +1,12 @@
-﻿using BookShop.Services.Abstractions;
+﻿using BookShop.Api.Controllers.Base;
+using BookShop.Services.Abstractions;
 using BookShop.Services.Models.PaymentModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
-[Authorize]
-[ApiController]
 [Route("[controller]")]
-public class PaymentController : ControllerBase
+public class PaymentController : BaseAuthorizedController
 {
     private readonly IPaymentService _paymentService;
 
@@ -17,10 +15,10 @@ public class PaymentController : ControllerBase
         _paymentService = paymentService;
     }
 
-    [HttpPost("Confirm_payment")]
-    public async Task<ActionResult<PaymentModel>> ConfirmPayment(PaymentAddModel paymentAddModel)
+    [HttpGet("{paymentId}")]
+    public async Task<ActionResult<PaymentModel>> GetPaymentById(long paymentId)
     {
-        var payment = await _paymentService.ConfirmPayment(paymentAddModel);
+        var payment = await _paymentService.GetByIdAsync(paymentId);
 
         return Ok(payment);
     }

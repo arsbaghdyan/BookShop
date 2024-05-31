@@ -4,5 +4,6 @@ namespace BookShop.Services.Abstractions;
 
 public interface IPaymentService
 {
-    Task<PaymentModel> ConfirmPayment(PaymentAddModel paymentAddModel);
+    Task<PaymentModel?> GetByIdAsync(long paymentId);
+    Task<PaymentModel> PayAsync(long invoiceId);
 }

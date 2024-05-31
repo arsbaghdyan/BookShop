@@ -1,4 +1,5 @@
-﻿using BookShop.Services.Abstractions;
+﻿using BookShop.Api.Controllers.Base;
+using BookShop.Services.Abstractions;
 using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.TokenModels;
 using Microsoft.AspNetCore.Authorization;
@@ -6,10 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
-[Authorize]
-[ApiController]
 [Route("[controller]")]
-public class AuthenticationController : ControllerBase
+public class AuthenticationController : BaseAuthorizedController
 {
     private readonly ICustomAuthenticationService _authenticationService;
     private readonly IClientService _clientService;

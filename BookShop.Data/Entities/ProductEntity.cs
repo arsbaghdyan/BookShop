@@ -8,9 +8,8 @@ public class ProductEntity : IIdentifiable
     public string Name { get; set; }
     public decimal Price { get; set; }
     public string Manufacturer { get; set; }
-    public string Details { get; set; }
     public int Count { get; set; }
-    public List<OrderEntity> Orders { get; set; } = new();
-    public List<WishListItemEntity> WishListItemEntity { get; set; } = new();
-    public List<CartItemEntity> CartItemEntity { get; set; } = new();
+    public List<WishListItemEntity> WishListItems { get; set; } = new();
+    public List<CartItemEntity> CartItems { get; set; } = new();
+    public List<OrderProduct> OrderProducts { get; set; } = new();
 }
