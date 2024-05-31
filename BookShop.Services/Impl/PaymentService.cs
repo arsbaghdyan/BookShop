@@ -2,6 +2,7 @@
 using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
+using BookShop.Data.Enums;
 using BookShop.Data.Models;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Extensions;
@@ -73,6 +74,15 @@ internal class PaymentService : IPaymentService
             PaymentMethodId = invoiceEntity.Order.PaymentMethod.Id,
             PaymentStatus = paymentResponse.GetPaymentStatus()
         };
+
+        if (paymentEntity.Amount == invoiceEntity.TotalAmount && paymentEntity.PaymentStatus == PaymentStatus.Success)
+        {
+            paymentEntity.Invoice.InvoiceStatus = InvoiceStatus.Payed;
+        }
+        else
+        {
+            paymentEntity.Invoice.InvoiceStatus = InvoiceStatus.Declined;
+        }
 
         _bookShopDbContext.Payments.Add(paymentEntity);
         await _bookShopDbContext.SaveChangesAsync();

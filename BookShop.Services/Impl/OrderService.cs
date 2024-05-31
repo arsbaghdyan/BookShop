@@ -192,6 +192,12 @@ internal class OrderService : IOrderService
 
                 invoice = await _invoiceService.CreateInvoiceAsync(order);
                 paymentModel = await _paymentService.PayAsync(invoice.Id);
+
+                if (true)
+                {
+
+                }
+
                 await transaction.CommitAsync();
             }
             catch (Exception)

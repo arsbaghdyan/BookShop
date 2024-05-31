@@ -1,4 +1,6 @@
-﻿namespace BookShop.Services.Models.InvoiceModels;
+﻿using BookShop.Data.Enums;
+
+namespace BookShop.Services.Models.InvoiceModels;
 
 public class InvoiceModel
 {
@@ -7,4 +9,5 @@ public class InvoiceModel
     public long OrderId { get; set; }
     public DateTime CreatedAt { get; set; }
     public decimal TotalAmount { get; set; }
+    public InvoiceStatus InvoiceStatus { get; set; }
 }
