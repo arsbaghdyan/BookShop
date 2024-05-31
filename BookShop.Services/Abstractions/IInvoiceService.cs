@@ -5,6 +5,6 @@ namespace BookShop.Services.Abstractions;
 
 public interface IInvoiceService
 {
-    Task<InvoiceModel?> GetByIdAsync(long orderId);
+    Task<InvoiceModel?> GetByIdAsync(long invoiceId);
     Task<InvoiceModel> CreateInvoiceAsync(OrderEntity orderEntity);
 }

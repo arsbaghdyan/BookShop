@@ -16,9 +16,9 @@ public class InvoiceController : BaseAuthorizedController
     }
 
     [HttpGet("{orderId}")]
-    public async Task<ActionResult<InvoiceModel>> GetInvoiceById(long orderId)
+    public async Task<ActionResult<InvoiceModel>> GetInvoiceById(long invoiceId)
     {
-        var invoice = await _invoiceService.GetByIdAsync(orderId);
+        var invoice = await _invoiceService.GetByIdAsync(invoiceId);
 
         return Ok(invoice);
     }

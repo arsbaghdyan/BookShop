@@ -151,8 +151,10 @@ internal class OrderService : IOrderService
             });
         }
 
+        var paymentMethodId = orderInfoList.Select(o => o.PaymentMethodId).FirstOrDefault();
+
         var paymentMethod = await _bookShopDbContext.PaymentMethods
-            .FirstOrDefaultAsync(p => p.ClientId == clientId);
+            .FirstOrDefaultAsync(p => p.ClientId == clientId && p.Id == paymentMethodId);
 
         if (paymentMethod == null)
         {
