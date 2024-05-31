@@ -2,6 +2,7 @@
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Exceptions;
 using BookShop.Services.Helper;
 using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.PageModels;
@@ -69,7 +70,7 @@ internal class ProductService : IProductService
     {
         if (productAddModel.Count <= 0)
         {
-            throw new Exception("Product count can't be less or equal 0");
+            throw new InvalidProductCountException("Product count can't be less or equal 0");
         }
 
         var productCheck = await _bookShopDbContext.Products
@@ -103,7 +104,7 @@ internal class ProductService : IProductService
     {
         if (product.Count <= 0)
         {
-            throw new Exception("Product count can't be less than 0");
+            throw new NotEnoughProductException("Product count can't be less than 0");
         }
 
         var productToUpdate = await _bookShopDbContext.Products

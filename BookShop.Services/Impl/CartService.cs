@@ -3,6 +3,7 @@ using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Exceptions;
 using BookShop.Services.Models.CartItemModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -47,7 +48,7 @@ internal class CartService : ICartService
     {
         if (cartItemAddModel.Count <= 0)
         {
-            throw new Exception("Product count cant be less or equal 0");
+            throw new InvalidProductCountException("Product count cant be less or equal 0");
         }
 
         var clientId = _clientContextReader.GetClientContextId();
@@ -62,7 +63,7 @@ internal class CartService : ICartService
 
         if (productEntity.Count < cartItemAddModel.Count)
         {
-            throw new Exception("Not enough product");
+            throw new NotEnoughProductException("Not enough product");
         }
 
         var cartItemEntity = await _bookShopDbContext.CartItems
@@ -78,7 +79,7 @@ internal class CartService : ICartService
                 await _bookShopDbContext.SaveChangesAsync();
                 return _mapper.Map<CartItemModel>(cartItemEntity);
             }
-            throw new Exception("Not enough product");
+            throw new NotEnoughProductException("Not enough product");
         }
 
         var cartItemToAdd = _mapper.Map<CartItemEntity>(cartItemAddModel);
@@ -97,7 +98,7 @@ internal class CartService : ICartService
     {
         if (cartItemUpdateModel.Count < 0)
         {
-            throw new Exception("Product count cant be less than 0");
+            throw new InvalidProductCountException("Product count cant be less than 0");
         }
 
         var clientId = _clientContextReader.GetClientContextId();
@@ -125,7 +126,7 @@ internal class CartService : ICartService
 
         if (productEntity.Count < cartItemUpdateModel.Count)
         {
-            throw new Exception("Not enough product");
+            throw new NotEnoughProductException("Not enough product");
         }
 
         cartItemEntity.Count = cartItemUpdateModel.Count;

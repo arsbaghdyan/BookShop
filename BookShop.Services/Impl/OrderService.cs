@@ -3,6 +3,7 @@ using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Exceptions;
 using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModels;
 using BookShop.Services.Models.PaymentModels;
@@ -138,7 +139,7 @@ internal class OrderService : IOrderService
 
             if (productEntity.Count < orderInfo.Count)
             {
-                throw new Exception("Not enough product");
+                throw new NotEnoughProductException("Not enough product");
             }
 
             totalAmount += productEntity.Price * orderInfo.Count;
