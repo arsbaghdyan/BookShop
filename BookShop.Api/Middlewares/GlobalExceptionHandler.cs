@@ -34,9 +34,11 @@ public class GlobalExceptionHandler : IMiddleware
                 NotEnoughProductException => HttpStatusCode.NotFound,
                 _ => HttpStatusCode.InternalServerError
             };
-
+            
             var errorResponse = new BaseResponse<object>
             {
+                Data=null,
+                Success=false,
                 ErrorModels = new List<ErrorModel> { new ErrorModel { ErrorMessage = ex.Message } }
             };
 
