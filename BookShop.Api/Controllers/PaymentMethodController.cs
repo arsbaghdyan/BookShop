@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookShop.Api.Controllers;
 
 [Route("[controller]")]
-public class PaymentMethodController : BaseAuthorizedController
+public class PaymentMethodController : ShopBaseController
 {
     private readonly IPaymentMethodService _paymentMethodService;
 

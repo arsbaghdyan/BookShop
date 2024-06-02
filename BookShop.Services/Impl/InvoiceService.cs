@@ -2,6 +2,7 @@
 using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
+using BookShop.Data.Enums;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.InvoiceModels;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +37,15 @@ internal class InvoiceService : IInvoiceService
         }
 
         return _mapper.Map<InvoiceModel?>(invoiceEntity);
+    }
+
+    public async Task<List<InvoiceModel>> GetDeclinedInvoicesAsync()
+    {
+        var invoiceEntities = await _bookShopDbContext.Invoices
+            .Where(i => i.InvoiceStatus == InvoiceStatus.Declined)
+            .ToListAsync();
+
+        return _mapper.Map<List<InvoiceModel>>(invoiceEntities);
     }
 
     public async Task<InvoiceModel> CreateInvoiceAsync(OrderEntity orderEntity)

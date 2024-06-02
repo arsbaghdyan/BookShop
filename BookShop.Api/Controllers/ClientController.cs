@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookShop.Api.Controllers;
 
 [Route("[controller]")]
-public class ClientController : BaseAuthorizedController
+public class ClientController : ShopBaseController
 {
     private readonly IClientService _clientService;
 

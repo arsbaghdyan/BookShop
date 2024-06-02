@@ -7,4 +7,5 @@ public interface IInvoiceService
 {
     Task<InvoiceModel?> GetByIdAsync(long invoiceId);
     Task<InvoiceModel> CreateInvoiceAsync(OrderEntity orderEntity);
+    Task<List<InvoiceModel>> GetDeclinedInvoicesAsync();
 }

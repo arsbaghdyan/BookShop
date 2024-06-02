@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookShop.Api.Controllers;
 
 [Route("[controller]")]
-public class InvoiceController : BaseAuthorizedController
+public class InvoiceController : ShopBaseController
 {
     private readonly IInvoiceService _invoiceService;
 

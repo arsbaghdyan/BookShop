@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookShop.Api.Controllers;
 
 [Route("[controller]")]
-public class WishListController : BaseAuthorizedController
+public class WishListController : ShopBaseController
 {
     private readonly IWishListService _wishListService;
 
