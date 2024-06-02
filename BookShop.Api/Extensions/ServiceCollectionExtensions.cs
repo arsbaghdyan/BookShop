@@ -1,7 +1,7 @@
-﻿using BookShop.Api.Middlewares;
+﻿using BookShop.Api.Constants;
+using BookShop.Api.Middlewares;
 using BookShop.Api.Services;
 using BookShop.Services.Options;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
@@ -10,12 +10,15 @@ namespace BookShop.Api.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection AddJwtConfiguration(this IServiceCollection services, JwtOptions jwtOption)
+    public static IServiceCollection AddShopAuthentication(this IServiceCollection services,
+        ClientJwtOptions clientJwtOption,
+        AdminJwtOptions adminJwtOption)
     {
-        var key = Encoding.ASCII.GetBytes(jwtOption.Key);
+        var clientKey = Encoding.ASCII.GetBytes(clientJwtOption.Key);
+        var adminKey = Encoding.ASCII.GetBytes(adminJwtOption.Key);
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+        services.AddAuthentication()
+                .AddJwtBearer(AuthSchemas.ClientFlow, options =>
                 {
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -23,9 +26,22 @@ public static class ServiceCollectionExtensions
                         ValidateAudience = true,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        ValidIssuer = jwtOption.Issuer,
-                        ValidAudience = jwtOption.Audience,
-                        IssuerSigningKey = new SymmetricSecurityKey(key)
+                        ValidIssuer = clientJwtOption.Issuer,
+                        ValidAudience = clientJwtOption.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(clientKey)
+                    };
+                })
+                .AddJwtBearer(AuthSchemas.AdminFlow, options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = adminJwtOption.Issuer,
+                        ValidAudience = adminJwtOption.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(adminKey)
                     };
                 });
 

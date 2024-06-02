@@ -7,18 +7,20 @@ using BookShop.Common.ClientService;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dbOption = builder.Configuration.ConfigureDbOptions();
-var jwtOption = builder.Configuration.ConfigureJwtOptions();
-builder.Services.AddSingleton(dbOption);
-builder.Services.AddSingleton(jwtOption);
+var dbOptions = builder.Configuration.GetDbOptions();
+var clientJwtOptions = builder.Configuration.GetClientJwtOptions();
+var adminJwtOptions = builder.Configuration.GetAdminJwtOptions();
+builder.Services.AddSingleton(dbOptions);
+builder.Services.AddSingleton(clientJwtOptions);
+builder.Services.AddSingleton(adminJwtOptions);
 
 builder.Services.AddDatabaseMigrationService();
-builder.Services.AddBookShopDbContext(dbOption);
+builder.Services.AddBookShopDbContext(dbOptions);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAllServices();
-builder.Services.AddJwtConfiguration(jwtOption);
+builder.Services.AddShopAuthentication(clientJwtOptions, adminJwtOptions);
 builder.Services.AddSwaggerConfiguration();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddGlobalExceptionHandler();

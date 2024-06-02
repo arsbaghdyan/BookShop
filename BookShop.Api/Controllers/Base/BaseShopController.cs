@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers.Base;
 
-public class ShopBaseController : BaseAuthorizedController
+[ApiController]
+public class BaseShopController : ControllerBase
 {
     public override OkObjectResult Ok(object? value)
     {

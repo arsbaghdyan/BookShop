@@ -30,7 +30,7 @@ public class ClientContextMiddleware : IMiddleware
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityToken = tokenHandler.ReadJwtToken(token);
 
-            var clientIdClaim = securityToken.Claims.FirstOrDefault(c => c.Type == BookShopClaims.Id);
+            var clientIdClaim = securityToken.Claims.FirstOrDefault(c => c.Type == BookShopClaims.ClientId);
 
             if (clientIdClaim == null)
             {

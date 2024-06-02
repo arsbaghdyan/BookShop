@@ -2,7 +2,7 @@
 
 namespace BookShop.Services.Abstractions;
 
-public interface ICustomAuthenticationService
+public interface IShopAuthenticationService
 {
-    string GenerateToken(ClientModel client);
+    string GenerateClientToken(ClientModel client);
 }
