@@ -1,5 +1,7 @@
-﻿using BookShop.Common.ClientService.Abstractions;
+﻿using BookShop.Api.Constants;
+using BookShop.Common.ClientService.Abstractions;
 using BookShop.Common.Consts;
+using Microsoft.AspNetCore.Authentication;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace BookShop.Api.Middlewares;
@@ -19,6 +21,15 @@ public class ClientContextMiddleware : IMiddleware
 
         if (isAuthenticated == true)
         {
+            var authenticateResultFeature = context.Features.Get<IAuthenticateResultFeature>();
+
+            if (authenticateResultFeature?.AuthenticateResult?.Ticket?.AuthenticationScheme !=
+                AuthSchemas.ClientFlow)
+            {
+                await next(context);
+                return;
+            }
+
             var tokenHeader = context.Request.Headers["Authorization"].ToString();
 
             if (string.IsNullOrEmpty(tokenHeader))
