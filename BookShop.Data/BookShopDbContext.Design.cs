@@ -1,4 +1,5 @@
 ﻿using BookShop.Data.Configurations;
+using BookShop.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookShop.Data;
@@ -18,5 +19,6 @@ public partial class BookShopDbContext : DbContext
         modelBuilder.ApplyConfiguration(new WishListItemConfiguration());
         modelBuilder.ApplyConfiguration(new WishListConfiguration());
         modelBuilder.ApplyConfiguration(new CartConfiguration());
+        modelBuilder.ApplyConfiguration(new EmployeeConfiguration());
     }
 }
