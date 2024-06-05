@@ -3,7 +3,7 @@ using BookShop.Api.Middlewares;
 using BookShop.Data.Extensions;
 using BookShop.Services.Extensions;
 using BookShop.Services.Mapping;
-using BookShop.Common.ClientService;
+using BookShop.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 

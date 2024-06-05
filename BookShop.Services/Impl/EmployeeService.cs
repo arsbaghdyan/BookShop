@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using BookShop.Common.ClientService.Abstractions;
-using BookShop.Common.ClientService.Impl;
+using BookShop.Common.EmployeeService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
-using BookShop.Services.Models.ClientModels;
 using BookShop.Services.Models.EmployeeModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,18 +17,21 @@ internal class EmployeeService : IEmployeeService
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<EmployeeService> _logger;
     private readonly IMapper _mapper;
+    private readonly IEmployeeContextReader _employeeContextReader;
 
     public EmployeeService(BookShopDbContext bookShopDbContext,
         ILogger<EmployeeService> logger,
         IMapper mapper,
-        IClientContextReader clientContextReader)
+        IClientContextReader clientContextReader,
+        IEmployeeContextReader employeeContextReader)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
         _mapper = mapper;
+        _employeeContextReader = employeeContextReader;
     }
 
-    public async Task<EmployeeModel> EmployeeLoginAsync(string email, string password)
+    public async Task<EmployeeModel> GetByEmailAndPasswordAsync(string email, string password)
     {
         var employee = await _bookShopDbContext.Employees
            .FirstOrDefaultAsync(p => p.Email == email);
@@ -61,8 +63,10 @@ internal class EmployeeService : IEmployeeService
 
     public async Task<EmployeeModel> UpdateAsync(EmployeeUpdateModel employeeUpdateModel)
     {
+        var employeeId = _employeeContextReader.GetEmployeeContextId();
+
         var employeeToUpdate = await _bookShopDbContext.Employees
-            .FirstOrDefaultAsync(c => c.Id == 10);
+            .FirstOrDefaultAsync(c => c.Id == employeeId);
 
         if (employeeToUpdate == null)
         {
@@ -83,15 +87,18 @@ internal class EmployeeService : IEmployeeService
         }
 
         await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Employee with  Id modified successfully.");
+        _logger.LogInformation($"Employee with {employeeId} Id modified successfully.");
 
         return _mapper.Map<EmployeeModel>(employeeToUpdate);
     }
 
     public async Task RemoveAsync()
     {
+        var employeeId = _employeeContextReader.GetEmployeeContextId();
+
         await _bookShopDbContext.Employees
-            .ExecuteDeleteAsync();
+              .Where(e=>e.Id== employeeId)
+              .ExecuteDeleteAsync();
 
         _logger.LogInformation($"Employee with  Id removed successfully.");
     }

@@ -2,7 +2,7 @@
 
 namespace BookShop.Common.ClientService.Impl;
 
-public class ClientContextWriter : IClientContextWriter
+internal class ClientContextWriter : IClientContextWriter
 {
     private readonly ClientContext _clientContext;
 
