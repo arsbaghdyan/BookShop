@@ -18,6 +18,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IInvoiceService, InvoiceService>();
+        services.AddScoped<IEmployeeService, EmployeeService>();
 
         services.AddSingleton<IBillingService, MockBillingService>();
 

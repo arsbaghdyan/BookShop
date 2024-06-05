@@ -12,34 +12,78 @@ namespace BookShop.Api.Controllers;
 public class EmployeeController : BaseAdminAuthorizedController
 {
     private readonly IShopAuthenticationService _authenticationService;
+    private readonly IEmployeeService _employeeService;
 
-    public EmployeeController(IShopAuthenticationService authenticationService)
+    public EmployeeController(IShopAuthenticationService authenticationService, IEmployeeService employeeService)
     {
         _authenticationService = authenticationService;
+        _employeeService = employeeService;
     }
 
     [AllowAnonymous]
     [HttpPost]
-    [Route("login")]
-    public async Task<ActionResult<TokenModel>> Login(EmployeeLoginModel model)
+    [Route("login/admin")]
+    public async Task<ActionResult<TokenModel>> AdminLogin(EmployeeLoginModel model)
     {
-        // TODO Refactor. Create and Use IEmployeeService
-        var empl = new EmployeeModel
-        {
-            Id = 1,
-            Email = model.Email,
-        };
+        var employee = await _employeeService.GetAdminByEmailAndPasswordAsync(
+            model.Email,
+            model.Password);
 
-        var token = _authenticationService.GenerateAdminToken(empl);
+        if (employee == null)
+        {
+            return Unauthorized();
+        }
+
+        var token = _authenticationService.GenerateAdminToken(employee);
 
         var tokenModel = new TokenModel { Token = token };
 
         return Ok(tokenModel);
     }
 
-    // CreateEmployee
+    [AllowAnonymous]
+    [HttpPost]
+    [Route("login/employee")]
+    public async Task<ActionResult<TokenModel>> EmployeeLogin(EmployeeLoginModel model)
+    {
+        var employee = await _employeeService.GetEmployeeByEmailAndPasswordAsync(
+            model.Email,
+            model.Password);
 
-    // UpdateEmployee
+        if (employee == null)
+        {
+            return Unauthorized();
+        }
 
-    // RemoveEmployee
+        var token = _authenticationService.GenerateAdminToken(employee);
+
+        var tokenModel = new TokenModel { Token = token };
+
+        return Ok(tokenModel);
+    }
+
+    [HttpPost]
+    [Route("register")]
+    public async Task<ActionResult<EmployeeModel>> RegisterEmployee(EmployeeRegisterModel employeeRegisterModel)
+    {
+        var employee = await _employeeService.RegisterAsync(employeeRegisterModel);
+
+        return Ok(employee);
+    }
+
+    [HttpPut]
+    public async Task<ActionResult<EmployeeModel>> UpdateClient(EmployeeUpdateModel employeeUpdateModel)
+    {
+        var employee = await _employeeService.UpdateAsync(employeeUpdateModel);
+
+        return Ok(employee);
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult<EmployeeModel>> RemoveClient()
+    {
+        await _employeeService.RemoveAsync();
+
+        return Ok();
+    }
 }

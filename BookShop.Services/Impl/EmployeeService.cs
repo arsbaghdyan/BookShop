@@ -31,17 +31,33 @@ internal class EmployeeService : IEmployeeService
         _employeeContextReader = employeeContextReader;
     }
 
-    public async Task<EmployeeModel> GetByEmailAndPasswordAsync(string email, string password)
+    public async Task<EmployeeModel?> GetAdminByEmailAndPasswordAsync(string email, string password)
     {
         var employee = await _bookShopDbContext.Employees
            .FirstOrDefaultAsync(p => p.Email == email);
 
         if (employee != null)
         {
-            var hashedPassword = HashPassword(password);
-            if (employee.Password == hashedPassword)
+            if (employee.Password == password)
             {
                 return _mapper.Map<EmployeeModel>(employee);
+            }
+        }
+
+        return null;
+    }
+
+    public async Task<EmployeeModel?> GetEmployeeByEmailAndPasswordAsync(string email, string password)
+    {
+        var employee = await _bookShopDbContext.Employees
+            .FirstOrDefaultAsync(p => p.Email == email);
+
+        if (employee != null)
+        {
+            var hashedPassword = HashPassword(password);
+            if (employee.Password == password)
+            {
+                return _mapper.Map<EmployeeModel>(hashedPassword);
             }
         }
 
@@ -97,7 +113,7 @@ internal class EmployeeService : IEmployeeService
         var employeeId = _employeeContextReader.GetEmployeeContextId();
 
         await _bookShopDbContext.Employees
-              .Where(e=>e.Id== employeeId)
+              .Where(e => e.Id == employeeId)
               .ExecuteDeleteAsync();
 
         _logger.LogInformation($"Employee with  Id removed successfully.");
