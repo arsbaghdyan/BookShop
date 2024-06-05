@@ -1,4 +1,6 @@
-﻿namespace BookShop.Services.Models.OrderProductModels;
+﻿using BookShop.Services.Models.ProductModels;
+
+namespace BookShop.Services.Models.OrderProductModels;
 
 public class OrderProductModel
 {

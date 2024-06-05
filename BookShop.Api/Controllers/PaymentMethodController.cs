@@ -1,6 +1,7 @@
 ﻿using BookShop.Api.Controllers.Base;
 using BookShop.Data.Models;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Models.PaymentMethodModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;

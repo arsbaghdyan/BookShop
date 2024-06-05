@@ -2,6 +2,7 @@
 using BookShop.Api.Controllers.Base;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.PageModels;
+using BookShop.Services.Models.ProductModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
