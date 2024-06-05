@@ -22,5 +22,7 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<EmployeeEntity>
             Salary=10000
         });
 
+        builder.HasIndex(e => e.Email)
+               .IsUnique();
     }
 }

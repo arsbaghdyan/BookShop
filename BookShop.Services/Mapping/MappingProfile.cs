@@ -4,6 +4,7 @@ using BookShop.Data.Models;
 using BookShop.Services.Models.BillingModels;
 using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.ClientModels;
+using BookShop.Services.Models.EmployeeModels;
 using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModels;
 using BookShop.Services.Models.OrderProductModels;
@@ -53,5 +54,9 @@ public class MappingProfile : Profile
         CreateMap<CardDetails, BankCardInformation>();
 
         CreateMap<InvoiceEntity, InvoiceModel>();
+
+        CreateMap<EmployeeRegisterModel, EmployeeEntity>();
+        CreateMap<EmployeeUpdateModel, EmployeeEntity>();
+        CreateMap<EmployeeEntity, EmployeeModel>();
     }
 }

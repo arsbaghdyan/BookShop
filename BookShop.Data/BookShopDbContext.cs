@@ -21,5 +21,5 @@ public partial class BookShopDbContext : DbContext
     public DbSet<ProductEntity> Products { get; set; } = null!;
     public DbSet<WishListItemEntity> WishListItems { get; set; } = null!;
     public DbSet<WishListEntity> WishLists { get; set; } = null!;
-    public DbSet<EmployeeEntity> EmployeeEntities { get; set; } = null!;
+    public DbSet<EmployeeEntity> Employees { get; set; } = null!;
 }
