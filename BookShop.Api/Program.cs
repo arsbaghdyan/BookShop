@@ -25,6 +25,7 @@ builder.Services.AddSwaggerConfiguration();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddGlobalExceptionHandler();
 builder.Services.AddClientContextMiddleware();
+builder.Services.AddEmployeeContextMiddleware();
 builder.Services.AddClientContext();
 
 var app = builder.Build();
@@ -44,6 +45,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<ClientContextMiddleware>();
+
+app.UseMiddleware<EmployeeContextMiddleware>();
 
 app.MapControllers();
 

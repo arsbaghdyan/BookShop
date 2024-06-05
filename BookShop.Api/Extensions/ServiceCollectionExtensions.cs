@@ -86,6 +86,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddClientContextMiddleware(this IServiceCollection services)
         => services.AddTransient<ClientContextMiddleware>();
 
+    public static IServiceCollection AddEmployeeContextMiddleware(this IServiceCollection services)
+        => services.AddTransient<EmployeeContextMiddleware>();
+
     public static IServiceCollection AddDatabaseMigrationService(this IServiceCollection services)
         => services.AddHostedService<DatabaseMigrationService>();
 }
