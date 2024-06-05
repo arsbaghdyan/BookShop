@@ -12,6 +12,7 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<EmployeeEntity>
 
         builder.HasData(new EmployeeEntity 
         {
+            Id=1,
             FirstName="Admin",
             LastName="Adminyan",
             Address="New York",
