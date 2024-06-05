@@ -1,8 +1,6 @@
 ﻿using BookShop.Api.Constants;
 using BookShop.Api.Controllers.Base;
 using BookShop.Services.Abstractions;
-using BookShop.Services.Models.CartItemModels;
-using BookShop.Services.Models.ClientModels;
 using BookShop.Services.Models.TokenModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

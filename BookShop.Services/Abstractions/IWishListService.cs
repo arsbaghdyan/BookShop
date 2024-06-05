@@ -1,4 +1,4 @@
-﻿using BookShop.Services.Models.CartItemModels;
+﻿using BookShop.Services.Models.WishListItemModels;
 
 namespace BookShop.Services.Abstractions;
 

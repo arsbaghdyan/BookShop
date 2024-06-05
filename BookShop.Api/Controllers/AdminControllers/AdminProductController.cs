@@ -1,7 +1,6 @@
 ﻿using BookShop.Api.Constants;
 using BookShop.Api.Controllers.Base;
 using BookShop.Services.Abstractions;
-using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.PageModels;
 using Microsoft.AspNetCore.Mvc;
 

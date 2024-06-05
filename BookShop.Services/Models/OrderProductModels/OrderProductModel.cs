@@ -1,6 +1,4 @@
-﻿using BookShop.Services.Models.CartItemModels;
-
-namespace BookShop.Services.Models.OrderProductModels;
+﻿namespace BookShop.Services.Models.OrderProductModels;
 
 public class OrderProductModel
 {

@@ -7,7 +7,10 @@ using BookShop.Services.Models.ClientModels;
 using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModels;
 using BookShop.Services.Models.OrderProductModels;
+using BookShop.Services.Models.PaymentMethodModels;
 using BookShop.Services.Models.PaymentModels;
+using BookShop.Services.Models.ProductModels;
+using BookShop.Services.Models.WishListItemModels;
 using static BookShop.Services.Impl.OrderService;
 
 namespace BookShop.Services.Mapping;

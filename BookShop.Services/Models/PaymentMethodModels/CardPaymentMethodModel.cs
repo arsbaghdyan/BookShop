@@ -1,7 +1,7 @@
 ﻿using BookShop.Data.Enums;
 using BookShop.Data.Models;
 
-namespace BookShop.Services.Models.CartItemModels;
+namespace BookShop.Services.Models.PaymentMethodModels;
 
 public class BankCardInfo
 {

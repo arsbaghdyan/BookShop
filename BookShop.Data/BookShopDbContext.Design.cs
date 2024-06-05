@@ -1,5 +1,4 @@
 ﻿using BookShop.Data.Configurations;
-using BookShop.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookShop.Data;
