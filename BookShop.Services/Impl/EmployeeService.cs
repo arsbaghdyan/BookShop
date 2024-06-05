@@ -33,14 +33,14 @@ internal class EmployeeService : IEmployeeService
 
     public async Task<EmployeeModel?> GetAdminByEmailAndPasswordAsync(string email, string password)
     {
-        var employee = await _bookShopDbContext.Employees
+        var admin = await _bookShopDbContext.Employees
            .FirstOrDefaultAsync(p => p.Email == email);
 
-        if (employee != null)
+        if (admin != null)
         {
-            if (employee.Password == password)
+            if (admin.Password == password)
             {
-                return _mapper.Map<EmployeeModel>(employee);
+                return _mapper.Map<EmployeeModel>(admin);
             }
         }
 
@@ -55,9 +55,9 @@ internal class EmployeeService : IEmployeeService
         if (employee != null)
         {
             var hashedPassword = HashPassword(password);
-            if (employee.Password == password)
+            if (employee.Password == hashedPassword)
             {
-                return _mapper.Map<EmployeeModel>(hashedPassword);
+                return _mapper.Map<EmployeeModel>(employee);
             }
         }
 
