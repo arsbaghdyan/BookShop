@@ -4,10 +4,14 @@ using BookShop.Data.Models;
 using BookShop.Services.Models.BillingModels;
 using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.ClientModels;
+using BookShop.Services.Models.EmployeeModels;
 using BookShop.Services.Models.InvoiceModels;
 using BookShop.Services.Models.OrderModels;
 using BookShop.Services.Models.OrderProductModels;
+using BookShop.Services.Models.PaymentMethodModels;
 using BookShop.Services.Models.PaymentModels;
+using BookShop.Services.Models.ProductModels;
+using BookShop.Services.Models.WishListItemModels;
 using static BookShop.Services.Impl.OrderService;
 
 namespace BookShop.Services.Mapping;
@@ -50,5 +54,9 @@ public class MappingProfile : Profile
         CreateMap<CardDetails, BankCardInformation>();
 
         CreateMap<InvoiceEntity, InvoiceModel>();
+
+        CreateMap<EmployeeRegisterModel, EmployeeEntity>();
+        CreateMap<EmployeeUpdateModel, EmployeeEntity>();
+        CreateMap<EmployeeEntity, EmployeeModel>();
     }
 }

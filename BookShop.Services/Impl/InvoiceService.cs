@@ -2,6 +2,7 @@
 using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
+using BookShop.Data.Enums;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Models.InvoiceModels;
 using Microsoft.EntityFrameworkCore;
@@ -23,19 +24,28 @@ internal class InvoiceService : IInvoiceService
         _bookShopDbContext = bookShopDbContext;
     }
 
-    public async Task<InvoiceModel?> GetByIdAsync(long orderId)
+    public async Task<InvoiceModel?> GetByIdAsync(long invoiceId)
     {
         var clientId = _clientContextReader.GetClientContextId();
 
         var invoiceEntity = await _bookShopDbContext.Invoices
-            .FirstOrDefaultAsync(i => i.OrderId == orderId && i.ClientId == clientId);
+            .FirstOrDefaultAsync(i => i.Id == invoiceId && i.ClientId == clientId);
 
         if (invoiceEntity == null)
         {
-            throw new Exception($"Invoice with Id {invoiceEntity.Id} not found for client '{clientId}'.");
+            throw new Exception($"Invoice with Id {invoiceId} not found for client '{clientId}'.");
         }
 
         return _mapper.Map<InvoiceModel?>(invoiceEntity);
+    }
+
+    public async Task<List<InvoiceModel>> GetDeclinedInvoicesAsync()
+    {
+        var invoiceEntities = await _bookShopDbContext.Invoices
+            .Where(i => i.InvoiceStatus == InvoiceStatus.Declined)
+            .ToListAsync();
+
+        return _mapper.Map<List<InvoiceModel>>(invoiceEntities);
     }
 
     public async Task<InvoiceModel> CreateInvoiceAsync(OrderEntity orderEntity)

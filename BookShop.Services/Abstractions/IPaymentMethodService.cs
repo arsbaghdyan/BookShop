@@ -1,5 +1,5 @@
 ﻿using BookShop.Data.Models;
-using BookShop.Services.Models.CartItemModels;
+using BookShop.Services.Models.PaymentMethodModels;
 
 namespace BookShop.Services.Abstractions;
 

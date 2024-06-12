@@ -17,7 +17,7 @@ namespace BookShop.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "8.0.6")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -104,6 +104,62 @@ namespace BookShop.Data.Migrations
                     b.ToTable("Clients");
                 });
 
+            modelBuilder.Entity("BookShop.Data.Entities.EmployeeEntity", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Position")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Salary")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.ToTable("Employees");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1L,
+                            Address = "New York",
+                            Email = "admin",
+                            FirstName = "Admin",
+                            LastName = "Adminyan",
+                            Password = "admin",
+                            Position = "Admin",
+                            Salary = 10000m
+                        });
+                });
+
             modelBuilder.Entity("BookShop.Data.Entities.InvoiceEntity", b =>
                 {
                     b.Property<long>("Id")
@@ -117,6 +173,9 @@ namespace BookShop.Data.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("InvoiceStatus")
+                        .HasColumnType("integer");
 
                     b.Property<long>("OrderId")
                         .HasColumnType("bigint");

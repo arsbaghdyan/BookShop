@@ -1,4 +1,4 @@
-﻿namespace BookShop.Services.Models.CartItemModels;
+﻿namespace BookShop.Services.Models.ClientModels;
 
 public class ClientRegisterModel
 {

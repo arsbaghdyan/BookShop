@@ -3,7 +3,6 @@ using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
-using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.ClientModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -40,8 +39,6 @@ internal class ClientService : IClientService
     }
 
     public async Task<ClientModel?> GetByEmailAndPasswordAsync(
-
-
         string email,
         string password)
     {

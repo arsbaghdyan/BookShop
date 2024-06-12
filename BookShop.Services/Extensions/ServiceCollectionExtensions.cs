@@ -11,13 +11,14 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<IClientService, ClientService>();
         services.AddScoped<IProductService, ProductService>();
-        services.AddScoped<ICustomAuthenticationService, CustomAuthenticationService>();
+        services.AddScoped<IShopAuthenticationService, ShopAuthenticationService>();
         services.AddScoped<ICartService, CartService>();
         services.AddScoped<IWishListService, WishListService>();
         services.AddScoped<IPaymentMethodService, PaymentMethodService>();
         services.AddScoped<IPaymentService, PaymentService>();
         services.AddScoped<IOrderService, OrderService>();
         services.AddScoped<IInvoiceService, InvoiceService>();
+        services.AddScoped<IEmployeeService, EmployeeService>();
 
         services.AddSingleton<IBillingService, MockBillingService>();
 

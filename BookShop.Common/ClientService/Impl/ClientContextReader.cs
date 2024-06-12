@@ -2,7 +2,7 @@
 
 namespace BookShop.Common.ClientService.Impl;
 
-public class ClientContextReader : IClientContextReader
+internal class ClientContextReader : IClientContextReader
 {
     private readonly ClientContext _clientContext;
 

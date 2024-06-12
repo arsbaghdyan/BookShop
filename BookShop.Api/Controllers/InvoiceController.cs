@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookShop.Api.Controllers;
 
 [Route("[controller]")]
-public class InvoiceController : BaseAuthorizedController
+public class InvoiceController : BaseClientAuthorizedController
 {
     private readonly IInvoiceService _invoiceService;
 
@@ -15,10 +15,10 @@ public class InvoiceController : BaseAuthorizedController
         _invoiceService = invoiceService;
     }
 
-    [HttpGet("{orderId}")]
-    public async Task<ActionResult<InvoiceModel>> GetInvoiceById(long orderId)
+    [HttpGet("{invoiceId}")]
+    public async Task<ActionResult<InvoiceModel>> GetInvoiceById(long invoiceId)
     {
-        var invoice = await _invoiceService.GetByIdAsync(orderId);
+        var invoice = await _invoiceService.GetByIdAsync(invoiceId);
 
         return Ok(invoice);
     }

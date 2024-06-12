@@ -2,11 +2,14 @@
 using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
+using BookShop.Services.Exceptions;
 using BookShop.Services.Helper;
-using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.PageModels;
+using BookShop.Services.Models.ProductModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System.Linq.Expressions;
 
 namespace BookShop.Services.Impl;
@@ -16,18 +19,28 @@ internal class ProductService : IProductService
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<ProductService> _logger;
     private readonly IMapper _mapper;
+    private readonly IDistributedCache _cache;
 
     public ProductService(BookShopDbContext bookShopDbContext,
                           ILogger<ProductService> logger,
-                          IMapper mapper)
+                          IMapper mapper,
+                          IDistributedCache cache)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
         _mapper = mapper;
+        _cache = cache;
     }
 
     public async Task<PagedList<ProductModel?>> GetAllAsync(ProductPageModel productPageModel)
     {
+        var cachedData = await _cache.GetStringAsync("Products");
+        if (cachedData != null)
+        {
+            var cachedProducts = JsonConvert.DeserializeObject<PagedList<ProductModel?>>(cachedData);
+            return cachedProducts;
+        }
+
         var productQuery = _bookShopDbContext.Products;
 
         Expression<Func<ProductEntity, object>> keySelector = productPageModel.OrderBy?.ToLower() switch
@@ -54,7 +67,16 @@ internal class ProductService : IProductService
 
         var productModels = _mapper.Map<List<ProductModel?>>(productEntities.Items);
 
-        return new PagedList<ProductModel?>(productModels, productEntities.TotalCount, productEntities.CurrentPage, productEntities.PageSize);
+        var paginatedProducts = new PagedList<ProductModel?>(productModels, productEntities.TotalCount, productEntities.CurrentPage, productEntities.PageSize);
+
+        var cacheOptions = new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
+        };
+
+        await _cache.SetStringAsync("Products", JsonConvert.SerializeObject(paginatedProducts), cacheOptions);
+
+        return paginatedProducts;
     }
 
     public async Task<ProductModel?> GetByIdAsync(long productId)
@@ -69,7 +91,7 @@ internal class ProductService : IProductService
     {
         if (productAddModel.Count <= 0)
         {
-            throw new Exception("Product count can't be less or equal 0");
+            throw new InvalidProductCountException("Product count can't be less or equal 0");
         }
 
         var productCheck = await _bookShopDbContext.Products
@@ -103,7 +125,7 @@ internal class ProductService : IProductService
     {
         if (product.Count <= 0)
         {
-            throw new Exception("Product count can't be less than 0");
+            throw new NotEnoughProductException("Product count can't be less than 0");
         }
 
         var productToUpdate = await _bookShopDbContext.Products

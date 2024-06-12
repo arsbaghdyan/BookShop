@@ -1,6 +1,6 @@
 ﻿using BookShop.Api.Controllers.Base;
 using BookShop.Services.Abstractions;
-using BookShop.Services.Models.CartItemModels;
+using BookShop.Services.Models.ClientModels;
 using BookShop.Services.Models.TokenModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -8,12 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace BookShop.Api.Controllers;
 
 [Route("[controller]")]
-public class AuthenticationController : BaseAuthorizedController
+public class AuthenticationController : BaseClientAuthorizedController
 {
-    private readonly ICustomAuthenticationService _authenticationService;
+    private readonly IShopAuthenticationService _authenticationService;
     private readonly IClientService _clientService;
 
-    public AuthenticationController(ICustomAuthenticationService authenticationService,
+    public AuthenticationController(IShopAuthenticationService authenticationService,
         IClientService clientService)
     {
         _authenticationService = authenticationService;
@@ -34,7 +34,7 @@ public class AuthenticationController : BaseAuthorizedController
             return Unauthorized();
         }
 
-        var token = _authenticationService.GenerateToken(client);
+        var token = _authenticationService.GenerateClientToken(client);
 
         var tokenModel = new TokenModel { Token = token };
 

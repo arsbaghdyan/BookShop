@@ -1,13 +1,13 @@
 ﻿using BookShop.Api.Controllers.Base;
 using BookShop.Data.Models;
 using BookShop.Services.Abstractions;
-using BookShop.Services.Models.CartItemModels;
+using BookShop.Services.Models.PaymentMethodModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
 [Route("[controller]")]
-public class PaymentMethodController : BaseAuthorizedController
+public class PaymentMethodController : BaseClientAuthorizedController
 {
     private readonly IPaymentMethodService _paymentMethodService;
 

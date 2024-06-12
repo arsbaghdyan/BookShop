@@ -1,5 +1,7 @@
-﻿using BookShop.Common.ClientService.Abstractions;
+﻿using BookShop.Api.Constants;
+using BookShop.Common.ClientService.Abstractions;
 using BookShop.Common.Consts;
+using Microsoft.AspNetCore.Authentication;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace BookShop.Api.Middlewares;
@@ -19,6 +21,15 @@ public class ClientContextMiddleware : IMiddleware
 
         if (isAuthenticated == true)
         {
+            var authenticateResultFeature = context.Features.Get<IAuthenticateResultFeature>();
+
+            if (authenticateResultFeature?.AuthenticateResult?.Ticket?.AuthenticationScheme !=
+                AuthSchemas.ClientFlow)
+            {
+                await next(context);
+                return;
+            }
+
             var tokenHeader = context.Request.Headers["Authorization"].ToString();
 
             if (string.IsNullOrEmpty(tokenHeader))
@@ -30,7 +41,7 @@ public class ClientContextMiddleware : IMiddleware
             var tokenHandler = new JwtSecurityTokenHandler();
             var securityToken = tokenHandler.ReadJwtToken(token);
 
-            var clientIdClaim = securityToken.Claims.FirstOrDefault(c => c.Type == BookShopClaims.Id);
+            var clientIdClaim = securityToken.Claims.FirstOrDefault(c => c.Type == BookShopClaims.ClientId);
 
             if (clientIdClaim == null)
             {

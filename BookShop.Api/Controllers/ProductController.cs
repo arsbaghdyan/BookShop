@@ -1,14 +1,14 @@
 ﻿using BookShop.Api.Controllers.Base;
 using BookShop.Services.Abstractions;
-using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.PageModels;
+using BookShop.Services.Models.ProductModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookShop.Api.Controllers;
 
 [Route("[controller]")]
-public class ProductController : BaseAuthorizedController
+public class ProductController : BaseClientAuthorizedController
 {
     private readonly IProductService _productService;
 
@@ -33,29 +33,5 @@ public class ProductController : BaseAuthorizedController
         var product = await _productService.GetByIdAsync(productId);
 
         return Ok(product);
-    }
-
-    [HttpPost]
-    public async Task<ActionResult<ProductModel>> AddProduct(ProductAddModel productAddModel)
-    {
-        var product = await _productService.AddAsync(productAddModel);
-
-        return Ok(product);
-    }
-
-    [HttpPut]
-    public async Task<ActionResult<ProductModel>> UpdateProduct(ProductUpdateModel productUpdateModel)
-    {
-        var product = await _productService.UpdateAsync(productUpdateModel);
-
-        return Ok(product);
-    }
-
-    [HttpDelete("{productId}")]
-    public async Task<IActionResult> RemoveProduct(long productId)
-    {
-        await _productService.RemoveAsync(productId);
-
-        return Ok();
     }
 }

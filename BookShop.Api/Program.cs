@@ -3,27 +3,37 @@ using BookShop.Api.Middlewares;
 using BookShop.Data.Extensions;
 using BookShop.Services.Extensions;
 using BookShop.Services.Mapping;
-using BookShop.Common.ClientService;
+using BookShop.Common;
+using BookShop.Api.HealthChecks;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using HealthChecks.UI.Client;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dbOption = builder.Configuration.ConfigureDbOptions();
-var jwtOption = builder.Configuration.ConfigureJwtOptions();
-builder.Services.AddSingleton(dbOption);
-builder.Services.AddSingleton(jwtOption);
+var dbOptions = builder.Configuration.GetDbOptions();
+var clientJwtOptions = builder.Configuration.GetClientJwtOptions();
+var adminJwtOptions = builder.Configuration.GetAdminJwtOptions();
+var redisOptions = builder.Configuration.GetRedisOptions();
+builder.Services.AddSingleton(dbOptions);
+builder.Services.AddSingleton(clientJwtOptions);
+builder.Services.AddSingleton(adminJwtOptions);
+builder.Services.AddSingleton(redisOptions);
 
 builder.Services.AddDatabaseMigrationService();
-builder.Services.AddBookShopDbContext(dbOption);
+builder.Services.AddBookShopDbContext(dbOptions);
+builder.Services.AddRedisCache(redisOptions);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAllServices();
-builder.Services.AddJwtConfiguration(jwtOption);
+builder.Services.AddShopAuthentication(clientJwtOptions, adminJwtOptions);
 builder.Services.AddSwaggerConfiguration();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddGlobalExceptionHandler();
 builder.Services.AddClientContextMiddleware();
+builder.Services.AddEmployeeContextMiddleware();
 builder.Services.AddClientContext();
+builder.Services.AddHealthChecks().AddCheck<RedisHealthCheck>("Redis");
 
 var app = builder.Build();
 
@@ -35,6 +45,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddleware<GlobalExceptionHandler>();
 
+app.MapHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
@@ -42,6 +57,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<ClientContextMiddleware>();
+
+app.UseMiddleware<EmployeeContextMiddleware>();
 
 app.MapControllers();
 

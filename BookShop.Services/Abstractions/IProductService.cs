@@ -1,6 +1,6 @@
 ﻿using BookShop.Services.Helper;
-using BookShop.Services.Models.CartItemModels;
 using BookShop.Services.Models.PageModels;
+using BookShop.Services.Models.ProductModels;
 
 namespace BookShop.Services.Abstractions;
 

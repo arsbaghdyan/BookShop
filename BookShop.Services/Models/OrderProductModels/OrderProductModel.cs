@@ -1,4 +1,4 @@
-﻿using BookShop.Services.Models.CartItemModels;
+﻿using BookShop.Services.Models.ProductModels;
 
 namespace BookShop.Services.Models.OrderProductModels;
 

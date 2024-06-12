@@ -2,10 +2,10 @@
 using BookShop.Services.Abstractions;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
-using BookShop.Services.Models.CartItemModels;
 using AutoMapper;
 using BookShop.Common.ClientService.Abstractions;
 using BookShop.Data.Entities;
+using BookShop.Services.Models.WishListItemModels;
 
 namespace BookShop.Services.Impl;
 
