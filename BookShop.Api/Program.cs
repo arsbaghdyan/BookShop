@@ -10,9 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 var dbOptions = builder.Configuration.GetDbOptions();
 var clientJwtOptions = builder.Configuration.GetClientJwtOptions();
 var adminJwtOptions = builder.Configuration.GetAdminJwtOptions();
+var redisOption = builder.Configuration.GetRedisOptions();
 builder.Services.AddSingleton(dbOptions);
 builder.Services.AddSingleton(clientJwtOptions);
 builder.Services.AddSingleton(adminJwtOptions);
+builder.Services.AddSingleton(redisOption);
 
 builder.Services.AddDatabaseMigrationService();
 builder.Services.AddBookShopDbContext(dbOptions);

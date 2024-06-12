@@ -29,4 +29,11 @@ public static class ConfigurationExtensions
 
         return new AdminJwtOptions { Key = key!, Issuer = issuer!, Audience = audience! };
     }
+
+    public static RedisOptions GetRedisOptions(this IConfiguration configuration)
+    {
+        var config = configuration.GetSection($"{RedisOptions.SectionName}:{nameof(RedisOptions.Configuration)}").Value;
+        var instance = configuration.GetSection($"{RedisOptions.SectionName}:{nameof(RedisOptions.InstanceName)}").Value;
+        return new RedisOptions { Configuration = config, InstanceName = instance };
+    }
 }

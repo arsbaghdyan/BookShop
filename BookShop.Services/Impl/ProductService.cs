@@ -7,7 +7,9 @@ using BookShop.Services.Helper;
 using BookShop.Services.Models.PageModels;
 using BookShop.Services.Models.ProductModels;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System.Linq.Expressions;
 
 namespace BookShop.Services.Impl;
@@ -17,18 +19,29 @@ internal class ProductService : IProductService
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<ProductService> _logger;
     private readonly IMapper _mapper;
+    private readonly IDistributedCache _cache;
 
     public ProductService(BookShopDbContext bookShopDbContext,
                           ILogger<ProductService> logger,
-                          IMapper mapper)
+                          IMapper mapper,
+                          IDistributedCache cache)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
         _mapper = mapper;
+        _cache = cache;
     }
 
     public async Task<PagedList<ProductModel?>> GetAllAsync(ProductPageModel productPageModel)
     {
+        var cacheKey = $"Products_{productPageModel.OrderBy}_{(productPageModel.IsOrderAsc ? "Asc" : "Desc")}";
+        var cachedData = await _cache.GetStringAsync(cacheKey);
+        if (cachedData != null)
+        {
+            var cachedProducts = JsonConvert.DeserializeObject<PagedList<ProductModel?>>(cachedData);
+            return cachedProducts;
+        }
+
         var productQuery = _bookShopDbContext.Products;
 
         Expression<Func<ProductEntity, object>> keySelector = productPageModel.OrderBy?.ToLower() switch
@@ -54,6 +67,13 @@ internal class ProductService : IProductService
             .ToPagedListAsync(productQuery, productPageModel.PageNumber, productPageModel.PageSize);
 
         var productModels = _mapper.Map<List<ProductModel?>>(productEntities.Items);
+
+        var cacheOptions = new DistributedCacheEntryOptions
+        {
+            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
+        };
+
+        await _cache.SetStringAsync(cacheKey, JsonConvert.SerializeObject(productModels), cacheOptions);
 
         return new PagedList<ProductModel?>(productModels, productEntities.TotalCount, productEntities.CurrentPage, productEntities.PageSize);
     }
