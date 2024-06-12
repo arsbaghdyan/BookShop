@@ -34,12 +34,10 @@ internal class ProductService : IProductService
 
     public async Task<PagedList<ProductModel?>> GetAllAsync(ProductPageModel productPageModel)
     {
-        PagedList<ProductModel>? cachedProducts = null;
-
         var cachedData = await _cache.GetStringAsync("Products");
         if (cachedData != null)
         {
-            cachedProducts = JsonConvert.DeserializeObject<PagedList<ProductModel?>>(cachedData);
+            var cachedProducts = JsonConvert.DeserializeObject<PagedList<ProductModel?>>(cachedData);
             return cachedProducts;
         }
 
@@ -69,14 +67,16 @@ internal class ProductService : IProductService
 
         var productModels = _mapper.Map<List<ProductModel?>>(productEntities.Items);
 
+        var paginatedProducts = new PagedList<ProductModel?>(productModels, productEntities.TotalCount, productEntities.CurrentPage, productEntities.PageSize);
+
         var cacheOptions = new DistributedCacheEntryOptions
         {
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
         };
 
-        await _cache.SetStringAsync("Products", JsonConvert.SerializeObject(productModels), cacheOptions);
+        await _cache.SetStringAsync("Products", JsonConvert.SerializeObject(paginatedProducts), cacheOptions);
 
-        return new PagedList<ProductModel?>(productModels, productEntities.TotalCount, productEntities.CurrentPage, productEntities.PageSize);
+        return paginatedProducts;
     }
 
     public async Task<ProductModel?> GetByIdAsync(long productId)
