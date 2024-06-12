@@ -34,11 +34,12 @@ internal class ProductService : IProductService
 
     public async Task<PagedList<ProductModel?>> GetAllAsync(ProductPageModel productPageModel)
     {
-        var cacheKey = $"Products_{productPageModel.OrderBy}_{(productPageModel.IsOrderAsc ? "Asc" : "Desc")}";
-        var cachedData = await _cache.GetStringAsync(cacheKey);
+        PagedList<ProductModel>? cachedProducts = null;
+
+        var cachedData = await _cache.GetStringAsync("Products");
         if (cachedData != null)
         {
-            var cachedProducts = JsonConvert.DeserializeObject<PagedList<ProductModel?>>(cachedData);
+            cachedProducts = JsonConvert.DeserializeObject<PagedList<ProductModel?>>(cachedData);
             return cachedProducts;
         }
 
@@ -73,7 +74,7 @@ internal class ProductService : IProductService
             AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
         };
 
-        await _cache.SetStringAsync(cacheKey, JsonConvert.SerializeObject(productModels), cacheOptions);
+        await _cache.SetStringAsync("Products", JsonConvert.SerializeObject(productModels), cacheOptions);
 
         return new PagedList<ProductModel?>(productModels, productEntities.TotalCount, productEntities.CurrentPage, productEntities.PageSize);
     }

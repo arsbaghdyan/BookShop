@@ -1,5 +1,4 @@
 ﻿using BookShop.Api.Constants;
-using BookShop.Common.ClientService.Abstractions;
 using BookShop.Common.Consts;
 using BookShop.Common.EmployeeService.Abstractions;
 using Microsoft.AspNetCore.Authentication;

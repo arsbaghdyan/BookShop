@@ -80,6 +80,17 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection AddRedisCache(this IServiceCollection services, RedisOptions redisOptions)
+    {
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = redisOptions.Configuration;
+            options.InstanceName = redisOptions.InstanceName;
+        });
+
+        return services;
+    }
+
     public static IServiceCollection AddGlobalExceptionHandler(this IServiceCollection services)
         => services.AddTransient<GlobalExceptionHandler>();
 
