@@ -57,8 +57,10 @@ public static class ServiceCollectionExtensions
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Description = "JWT Authorization header using the Bearer scheme",
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer"
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "bearer",
+                Name = "JwtAuth",
+                In = ParameterLocation.Header
             });
 
             c.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -91,6 +93,9 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection AddAuthHeaderNameHandler(this IServiceCollection services)
+        => services.AddTransient<AuthHeaderNameHandler>();
+    
     public static IServiceCollection AddGlobalExceptionHandler(this IServiceCollection services)
         => services.AddTransient<GlobalExceptionHandler>();
 
