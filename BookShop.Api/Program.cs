@@ -29,6 +29,7 @@ builder.Services.AddAllServices();
 builder.Services.AddShopAuthentication(clientJwtOptions, adminJwtOptions);
 builder.Services.AddSwaggerConfiguration();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddAuthHeaderNameHandler();
 builder.Services.AddGlobalExceptionHandler();
 builder.Services.AddClientContextMiddleware();
 builder.Services.AddEmployeeContextMiddleware();
@@ -37,11 +38,10 @@ builder.Services.AddHealthChecks().AddCheck<RedisHealthCheck>("Redis");
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.UseMiddleware<AuthHeaderNameHandler>();
 
 app.UseMiddleware<GlobalExceptionHandler>();
 
