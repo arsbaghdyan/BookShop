@@ -4,6 +4,7 @@ using BookShop.Api.Services;
 using BookShop.Services.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using StackExchange.Redis;
 using System.Text;
 
 namespace BookShop.Api.Extensions;
@@ -88,6 +89,12 @@ public static class ServiceCollectionExtensions
         {
             options.Configuration = redisOptions.Configuration;
             options.InstanceName = redisOptions.InstanceName;
+        });
+
+        services.AddSingleton<IConnectionMultiplexer>(sp =>
+        {
+            var configuration = ConfigurationOptions.Parse(redisOptions.Configuration);
+            return ConnectionMultiplexer.Connect(configuration);
         });
 
         return services;
