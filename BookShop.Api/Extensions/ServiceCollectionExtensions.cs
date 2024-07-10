@@ -85,12 +85,6 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddRedisCache(this IServiceCollection services, RedisOptions redisOptions)
     {
-        services.AddStackExchangeRedisCache(options =>
-        {
-            options.Configuration = redisOptions.Configuration;
-            options.InstanceName = redisOptions.InstanceName;
-        });
-
         services.AddSingleton<IConnectionMultiplexer>(sp =>
         {
             var configuration = ConfigurationOptions.Parse(redisOptions.Configuration);

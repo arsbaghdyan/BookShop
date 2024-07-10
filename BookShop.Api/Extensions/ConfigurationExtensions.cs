@@ -33,7 +33,7 @@ public static class ConfigurationExtensions
     public static RedisOptions GetRedisOptions(this IConfiguration configuration)
     {
         var config = configuration.GetSection($"{RedisOptions.SectionName}:{nameof(RedisOptions.Configuration)}").Value;
-        var instance = configuration.GetSection($"{RedisOptions.SectionName}:{nameof(RedisOptions.InstanceName)}").Value;
-        return new RedisOptions { Configuration = config, InstanceName = instance };
+        var pass = configuration.GetSection($"{RedisOptions.SectionName}:{nameof(RedisOptions.Password)}").Value;
+        return new RedisOptions { Configuration = config, Password = pass };
     }
 }
