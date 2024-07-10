@@ -7,9 +7,9 @@ using BookShop.Services.Helper;
 using BookShop.Services.Models.PageModels;
 using BookShop.Services.Models.ProductModels;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 using System.Linq.Expressions;
 
 namespace BookShop.Services.Impl;
@@ -19,25 +19,41 @@ internal class ProductService : IProductService
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<ProductService> _logger;
     private readonly IMapper _mapper;
-    private readonly IDistributedCache _cache;
+    private readonly IConnectionMultiplexer _connectionMultiplexer;
 
     public ProductService(BookShopDbContext bookShopDbContext,
                           ILogger<ProductService> logger,
                           IMapper mapper,
-                          IDistributedCache cache)
+                          IConnectionMultiplexer connectionMultiplexer)
     {
         _bookShopDbContext = bookShopDbContext;
         _logger = logger;
         _mapper = mapper;
-        _cache = cache;
+        _connectionMultiplexer = connectionMultiplexer;
     }
 
     public async Task<PagedList<ProductModel?>> GetAllAsync(ProductPageModel productPageModel)
     {
-        var cachedData = await _cache.GetStringAsync("Products");
-        if (cachedData != null)
+        PagedList<ProductModel?> cachedProducts = null;
+        if (_connectionMultiplexer != null && _connectionMultiplexer.IsConnected)
         {
-            var cachedProducts = JsonConvert.DeserializeObject<PagedList<ProductModel?>>(cachedData);
+            try
+            {
+                var db = _connectionMultiplexer.GetDatabase();
+                var cachedData = await db.StringGetAsync("Products");
+                if (cachedData.HasValue)
+                {
+                    cachedProducts = JsonConvert.DeserializeObject<PagedList<ProductModel?>>(cachedData);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving data from Redis");
+            }
+        }
+
+        if (cachedProducts != null)
+        {
             return cachedProducts;
         }
 
@@ -69,12 +85,18 @@ internal class ProductService : IProductService
 
         var paginatedProducts = new PagedList<ProductModel?>(productModels, productEntities.TotalCount, productEntities.CurrentPage, productEntities.PageSize);
 
-        var cacheOptions = new DistributedCacheEntryOptions
+        if (_connectionMultiplexer != null && _connectionMultiplexer.IsConnected)
         {
-            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2)
-        };
-
-        await _cache.SetStringAsync("Products", JsonConvert.SerializeObject(paginatedProducts), cacheOptions);
+            try
+            {
+                var db = _connectionMultiplexer.GetDatabase();
+                await db.StringSetAsync("Products", JsonConvert.SerializeObject(paginatedProducts), TimeSpan.FromMinutes(2));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error setting data to Redis");
+            }
+        }
 
         return paginatedProducts;
     }
