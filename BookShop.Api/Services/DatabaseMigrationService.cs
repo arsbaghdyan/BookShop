@@ -20,14 +20,14 @@ public class DatabaseMigrationService : IHostedService
     {
         using var serviceScope = _serviceScopeFactory.CreateScope();
 
-        var fleetDbContext = serviceScope.ServiceProvider.GetRequiredService<BookShopDbContext>();
+        var bookshopDbContext = serviceScope.ServiceProvider.GetRequiredService<BookShopDbContext>();
 
         var migrationTime = Stopwatch.StartNew();
         _logger.LogInformation($"{nameof(BookShopDbContext)} migration started");
 
         try
         {
-            await fleetDbContext.Database.MigrateAsync();
+            await bookshopDbContext.Database.MigrateAsync();
         }
         catch (Exception ex)
         {

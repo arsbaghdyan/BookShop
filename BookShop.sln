@@ -9,7 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.Api", "BookShop.Ap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.Services", "BookShop.Services\BookShop.Services.csproj", "{CA898D1D-6357-4B24-83C8-C5E528CE33CF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookShop.Common", "BookShop.Common\BookShop.Common.csproj", "{F0A17C6B-C254-49A6-A081-0195325760A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookShop.Common", "BookShop.Common\BookShop.Common.csproj", "{F0A17C6B-C254-49A6-A081-0195325760A0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{CE01E7CB-5906-41B4-8025-1589F169263C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{CE697D95-E81E-4CEA-8938-58814B2BC7B4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +40,12 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DA679F5E-225D-4163-A4F5-639485F8EAB0} = {CE01E7CB-5906-41B4-8025-1589F169263C}
+		{A217FEBC-DC3A-4EA7-A272-990989A41F8B} = {CE01E7CB-5906-41B4-8025-1589F169263C}
+		{CA898D1D-6357-4B24-83C8-C5E528CE33CF} = {CE01E7CB-5906-41B4-8025-1589F169263C}
+		{F0A17C6B-C254-49A6-A081-0195325760A0} = {CE01E7CB-5906-41B4-8025-1589F169263C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9987E0B4-284D-4917-8171-550205C36C3C}
