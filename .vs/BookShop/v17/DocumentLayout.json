@@ -3,48 +3,8 @@
   "WorkspaceRootPath": "D:\\Arsen\\NewC#Learning\\BookShop\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|d:\\arsen\\newc#learning\\bookshop\\bookshop.services\\impl\\wishlistservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|solutionrelative:bookshop.services\\impl\\wishlistservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|d:\\arsen\\newc#learning\\bookshop\\bookshop.services\\impl\\shopauthenticationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|solutionrelative:bookshop.services\\impl\\shopauthenticationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|d:\\arsen\\newc#learning\\bookshop\\bookshop.services\\impl\\productservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|solutionrelative:bookshop.services\\impl\\productservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|d:\\arsen\\newc#learning\\bookshop\\bookshop.services\\impl\\paymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|solutionrelative:bookshop.services\\impl\\paymentservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|d:\\arsen\\newc#learning\\bookshop\\bookshop.services\\impl\\paymentmethodservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|solutionrelative:bookshop.services\\impl\\paymentmethodservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|d:\\arsen\\newc#learning\\bookshop\\bookshop.services\\impl\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|solutionrelative:bookshop.services\\impl\\orderservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|d:\\arsen\\newc#learning\\bookshop\\bookshop.services\\impl\\invoiceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|solutionrelative:bookshop.services\\impl\\invoiceservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|d:\\arsen\\newc#learning\\bookshop\\bookshop.services\\impl\\employeeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|solutionrelative:bookshop.services\\impl\\employeeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|d:\\arsen\\newc#learning\\bookshop\\bookshop.services\\impl\\clientservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|solutionrelative:bookshop.services\\impl\\clientservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|d:\\arsen\\newc#learning\\bookshop\\bookshop.services\\impl\\cartservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{CA898D1D-6357-4B24-83C8-C5E528CE33CF}|BookShop.Services\\BookShop.Services.csproj|solutionrelative:bookshop.services\\impl\\cartservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{DA679F5E-225D-4163-A4F5-639485F8EAB0}|BookShop.Data\\BookShop.Data.csproj|d:\\arsen\\newc#learning\\bookshop\\bookshop.data\\entities\\cartentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{DA679F5E-225D-4163-A4F5-639485F8EAB0}|BookShop.Data\\BookShop.Data.csproj|solutionrelative:bookshop.data\\entities\\cartentity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\WishListService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:BookShop.Services\\Impl\\WishListService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Tests\\BookShop.Service.Tests\\CartServiceTests\\CartServiceTests.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -53,6 +13,46 @@
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Tests\\BookShop.Tests.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:BookShop.Tests\\BookShop.Tests.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\ShopAuthenticationService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:BookShop.Services\\Impl\\ShopAuthenticationService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\ProductService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:BookShop.Services\\Impl\\ProductService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\PaymentService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:BookShop.Services\\Impl\\PaymentService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\PaymentMethodService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:BookShop.Services\\Impl\\PaymentMethodService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\OrderService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:BookShop.Services\\Impl\\OrderService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\InvoiceService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:BookShop.Services\\Impl\\InvoiceService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\EmployeeService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:BookShop.Services\\Impl\\EmployeeService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\ClientService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:BookShop.Services\\Impl\\ClientService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\CartService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:BookShop.Services\\Impl\\CartService.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Data\\Entities\\CartEntity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:BookShop.Data\\Entities\\CartEntity.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -80,14 +80,12 @@
               "RelativeDocumentMoniker": "BookShop.Services\\Impl\\WishListService.cs",
               "ToolTip": "D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\WishListService.cs",
               "RelativeToolTip": "BookShop.Services\\Impl\\WishListService.cs",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAC0AAABVAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-07-24T16:55:21.189Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-07-24T16:55:21.189Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 3,
               "Title": "ShopAuthenticationService.cs",
               "DocumentMoniker": "D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\ShopAuthenticationService.cs",
               "RelativeDocumentMoniker": "BookShop.Services\\Impl\\ShopAuthenticationService.cs",
@@ -99,7 +97,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "ProductService.cs",
               "DocumentMoniker": "D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\ProductService.cs",
               "RelativeDocumentMoniker": "BookShop.Services\\Impl\\ProductService.cs",
@@ -111,7 +109,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 5,
               "Title": "PaymentService.cs",
               "DocumentMoniker": "D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\PaymentService.cs",
               "RelativeDocumentMoniker": "BookShop.Services\\Impl\\PaymentService.cs",
@@ -123,7 +121,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 6,
               "Title": "PaymentMethodService.cs",
               "DocumentMoniker": "D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\PaymentMethodService.cs",
               "RelativeDocumentMoniker": "BookShop.Services\\Impl\\PaymentMethodService.cs",
@@ -135,7 +133,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 7,
               "Title": "OrderService.cs",
               "DocumentMoniker": "D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\OrderService.cs",
               "RelativeDocumentMoniker": "BookShop.Services\\Impl\\OrderService.cs",
@@ -147,7 +145,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 8,
               "Title": "InvoiceService.cs",
               "DocumentMoniker": "D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\InvoiceService.cs",
               "RelativeDocumentMoniker": "BookShop.Services\\Impl\\InvoiceService.cs",
@@ -159,7 +157,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 9,
               "Title": "EmployeeService.cs",
               "DocumentMoniker": "D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\EmployeeService.cs",
               "RelativeDocumentMoniker": "BookShop.Services\\Impl\\EmployeeService.cs",
@@ -171,7 +169,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 10,
               "Title": "ClientService.cs",
               "DocumentMoniker": "D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\ClientService.cs",
               "RelativeDocumentMoniker": "BookShop.Services\\Impl\\ClientService.cs",
@@ -183,7 +181,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 11,
               "Title": "CartService.cs",
               "DocumentMoniker": "D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Services\\Impl\\CartService.cs",
               "RelativeDocumentMoniker": "BookShop.Services\\Impl\\CartService.cs",
@@ -195,7 +193,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 12,
               "Title": "CartEntity.cs",
               "DocumentMoniker": "D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Data\\Entities\\CartEntity.cs",
               "RelativeDocumentMoniker": "BookShop.Data\\Entities\\CartEntity.cs",
@@ -207,7 +205,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 12,
+              "DocumentIndex": 2,
               "Title": "BookShop.Tests.csproj",
               "DocumentMoniker": "D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Tests\\BookShop.Tests.csproj",
               "RelativeDocumentMoniker": "BookShop.Tests\\BookShop.Tests.csproj",
@@ -218,7 +216,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 11,
+              "DocumentIndex": 1,
               "Title": "CartServiceTests.cs",
               "DocumentMoniker": "D:\\Arsen\\NewC#Learning\\BookShop\\BookShop.Tests\\BookShop.Service.Tests\\CartServiceTests\\CartServiceTests.cs",
               "RelativeDocumentMoniker": "BookShop.Tests\\BookShop.Service.Tests\\CartServiceTests\\CartServiceTests.cs",
