@@ -2565,6 +2565,7 @@
           "AutoMapper": "13.0.1",
           "BookShop.Common": "1.0.0",
           "BookShop.Data": "1.0.0",
+          "BookShop.Repositories": "1.0.0",
           "BookShop.Services": "1.0.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.6",
           "Microsoft.AspNetCore.Http.Abstractions": "2.1.1",
@@ -2615,6 +2616,19 @@
         },
         "runtime": {
           "bin/placeholder/BookShop.Data.dll": {}
+        }
+      },
+      "BookShop.Repositories/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "BookShop.Data": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/BookShop.Repositories.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/BookShop.Repositories.dll": {}
         }
       },
       "BookShop.Services/1.0.0": {
@@ -7864,6 +7878,11 @@
       "type": "project",
       "path": "../../src/BookShop.Data/BookShop.Data.csproj",
       "msbuildProject": "../../src/BookShop.Data/BookShop.Data.csproj"
+    },
+    "BookShop.Repositories/1.0.0": {
+      "type": "project",
+      "path": "../../src/BookShop.Repositories/BookShop.Repositories.csproj",
+      "msbuildProject": "../../src/BookShop.Repositories/BookShop.Repositories.csproj"
     },
     "BookShop.Services/1.0.0": {
       "type": "project",

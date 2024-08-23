@@ -20,6 +20,7 @@ builder.Services.AddSingleton(adminJwtOptions);
 builder.Services.AddSingleton(redisOptions);
 
 builder.Services.AddDatabaseMigrationService();
+builder.Services.AddRepositoryService();
 builder.Services.AddBookShopDbContext(dbOptions);
 builder.Services.AddRedisCache(redisOptions);
 builder.Services.AddControllers();

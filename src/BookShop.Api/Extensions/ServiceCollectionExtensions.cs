@@ -1,6 +1,8 @@
 ﻿using BookShop.Api.Constants;
 using BookShop.Api.Middlewares;
 using BookShop.Api.Services;
+using BookShop.Repositories.Impl;
+using BookShop.Repositories.Interfaces;
 using BookShop.Services.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -90,6 +92,13 @@ public static class ServiceCollectionExtensions
             var configuration = ConfigurationOptions.Parse(redisOptions.Configuration);
             return ConnectionMultiplexer.Connect(configuration);
         });
+
+        return services;
+    }
+
+    public static IServiceCollection AddRepositoryService(this IServiceCollection services)
+    {
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
         return services;
     }
