@@ -1,4 +1,7 @@
-﻿using BookShop.Services.Abstractions;
+﻿using BookShop.Data.Entities;
+using BookShop.Repositories.Impl;
+using BookShop.Repositories.Interfaces;
+using BookShop.Services.Abstractions;
 using BookShop.Services.Impl;
 using BookShop.Services.Mock;
 using Microsoft.Extensions.DependencyInjection;

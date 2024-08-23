@@ -20,13 +20,13 @@ builder.Services.AddSingleton(adminJwtOptions);
 builder.Services.AddSingleton(redisOptions);
 
 builder.Services.AddDatabaseMigrationService();
-builder.Services.AddRepositoryService();
 builder.Services.AddBookShopDbContext(dbOptions);
 builder.Services.AddRedisCache(redisOptions);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAllServices();
+builder.Services.AddRepositoryService();
 builder.Services.AddShopAuthentication(clientJwtOptions, adminJwtOptions);
 builder.Services.AddSwaggerConfiguration();
 builder.Services.AddAutoMapper(typeof(MappingProfile));

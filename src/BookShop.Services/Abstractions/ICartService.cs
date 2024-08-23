@@ -8,5 +8,4 @@ public interface ICartService
     Task<CartItemModel?> AddAsync(CartItemAddModel cartItem);
     Task<CartItemModel?> UpdateAsync(CartItemUpdateModel cartItemUpdateModel);
     Task RemoveAsync(long productId);
-    Task ClearAsync();
 }

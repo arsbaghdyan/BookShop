@@ -47,12 +47,4 @@ public class CartController : BaseClientAuthorizedController
 
         return Ok();
     }
-
-    [HttpDelete("clear")]
-    public async Task<IActionResult> ClearAllItems()
-    {
-        await _cartService.ClearAsync();
-
-        return Ok();
-    }
 }

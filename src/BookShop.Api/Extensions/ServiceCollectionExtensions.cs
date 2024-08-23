@@ -98,7 +98,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection AddRepositoryService(this IServiceCollection services)
     {
-        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
 
         return services;
     }
