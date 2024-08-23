@@ -1,41 +1,41 @@
 ﻿using AutoMapper;
-using BookShop.Data;
 using BookShop.Data.Entities;
 using BookShop.Services.Abstractions;
 using BookShop.Services.Exceptions;
 using BookShop.Services.Helper;
 using BookShop.Services.Models.PageModels;
 using BookShop.Services.Models.ProductModels;
-using Microsoft.EntityFrameworkCore;
+using BookShop.Services.Repos.Impl;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using StackExchange.Redis;
-using System.Linq.Expressions;
 
 namespace BookShop.Services.Impl;
 
 public class ProductService : IProductService
 {
-    private readonly BookShopDbContext _bookShopDbContext;
-    private readonly ILogger<ProductService> _logger;
+    private readonly IProductRepository _productRepository;
     private readonly IMapper _mapper;
-    private readonly IConnectionMultiplexer _connectionMultiplexer;
+    private readonly ILogger<ProductService> _logger;
+    private readonly IConnectionMultiplexer? _connectionMultiplexer;
 
-    public ProductService(BookShopDbContext bookShopDbContext,
-                          ILogger<ProductService> logger,
-                          IMapper mapper,
-                          IConnectionMultiplexer connectionMultiplexer)
+    public ProductService(
+        IProductRepository productRepository,
+        IMapper mapper,
+        ILogger<ProductService> logger,
+        IConnectionMultiplexer? connectionMultiplexer)
     {
-        _bookShopDbContext = bookShopDbContext;
-        _logger = logger;
+        _productRepository = productRepository;
         _mapper = mapper;
+        _logger = logger;
         _connectionMultiplexer = connectionMultiplexer;
     }
 
     public async Task<PagedList<ProductModel?>> GetAllAsync(ProductPageModel productPageModel)
     {
         PagedList<ProductModel?> cachedProducts = null;
-        if (_connectionMultiplexer != null && _connectionMultiplexer.IsConnected)
+
+        if (_connectionMultiplexer?.IsConnected == true)
         {
             try
             {
@@ -57,35 +57,11 @@ public class ProductService : IProductService
             return cachedProducts;
         }
 
-        var productQuery = _bookShopDbContext.Products;
-
-        Expression<Func<ProductEntity, object>> keySelector = productPageModel.OrderBy?.ToLower() switch
-        {
-            "id" => p => p.Id,
-            "name" => p => p.Name,
-            "price" => p => p.Price,
-            "manufacturer" => p => p.Manufacturer,
-            "count" => p => p.Count,
-            _ => p => p.Name,
-        };
-
-        if (productPageModel.IsOrderAsc)
-        {
-            productQuery.OrderBy(keySelector);
-        }
-        else
-        {
-            productQuery.OrderByDescending(keySelector);
-        }
-
-        var productEntities = await PagedList<ProductEntity>
-            .ToPagedListAsync(productQuery, productPageModel.PageNumber, productPageModel.PageSize);
-
+        var productEntities = await _productRepository.GetPagedListAsync(productPageModel);
         var productModels = _mapper.Map<List<ProductModel?>>(productEntities.Items);
-
         var paginatedProducts = new PagedList<ProductModel?>(productModels, productEntities.TotalCount, productEntities.CurrentPage, productEntities.PageSize);
 
-        if (_connectionMultiplexer != null && _connectionMultiplexer.IsConnected)
+        if (_connectionMultiplexer?.IsConnected == true)
         {
             try
             {
@@ -103,9 +79,7 @@ public class ProductService : IProductService
 
     public async Task<ProductModel?> GetByIdAsync(long productId)
     {
-        var productEntity = await _bookShopDbContext.Products
-            .FirstOrDefaultAsync(p => p.Id == productId);
-
+        var productEntity = await _productRepository.GetByIdAsync(productId);
         return _mapper.Map<ProductModel?>(productEntity);
     }
 
@@ -113,63 +87,53 @@ public class ProductService : IProductService
     {
         if (productAddModel.Count <= 0)
         {
-            throw new InvalidProductCountException("Product count can't be less or equal 0");
+            throw new InvalidProductCountException("Product count can't be less or equal to 0");
         }
 
-        var productCheck = await _bookShopDbContext.Products
-            .FirstOrDefaultAsync(p => p.Manufacturer == productAddModel.Manufacturer &&
-            p.Name == productAddModel.Name && p.Price == productAddModel.Price);
+        var existingProduct = await _productRepository.GetByDetailsAsync(productAddModel.Manufacturer, productAddModel.Name, productAddModel.Price);
 
-        var productEntity = new ProductEntity();
-
-        var productModel = new ProductModel();
-
-        if (productCheck != null)
+        if (existingProduct != null)
         {
-            productCheck.Count += productAddModel.Count;
-            await _bookShopDbContext.SaveChangesAsync();
-
-            _logger.LogInformation($"Product with Id {productCheck.Id} added successfully");
-
-            return _mapper.Map<ProductModel>(productCheck);
+            existingProduct.Count += productAddModel.Count;
+            await _productRepository.UpdateAsync(existingProduct);
+            _logger.LogInformation($"Product with Id {existingProduct.Id} updated successfully.");
+            return _mapper.Map<ProductModel>(existingProduct);
         }
 
-        productEntity = _mapper.Map<ProductEntity>(productAddModel);
-        _bookShopDbContext.Products.Add(productEntity);
-
-        await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Product with Id {productEntity.Id} added successfully");
+        var productEntity = _mapper.Map<ProductEntity>(productAddModel);
+        await _productRepository.AddAsync(productEntity);
+        _logger.LogInformation($"Product with Id {productEntity.Id} added successfully.");
 
         return _mapper.Map<ProductModel>(productEntity);
     }
 
-    public async Task<ProductModel?> UpdateAsync(ProductUpdateModel product)
+    public async Task<ProductModel?> UpdateAsync(ProductUpdateModel productUpdateModel)
     {
-        if (product.Count <= 0)
+        if (productUpdateModel.Count <= 0)
         {
             throw new NotEnoughProductException("Product count can't be less than 0");
         }
 
-        var productToUpdate = await _bookShopDbContext.Products
-            .FirstOrDefaultAsync(p => p.Id == product.Id);
+        var productEntity = await _productRepository.GetByIdAsync(productUpdateModel.Id);
+        if (productEntity == null)
+        {
+            throw new Exception("Product not found");
+        }
 
-        productToUpdate.Name = product.Name;
-        productToUpdate.Price = product.Price;
-        productToUpdate.Manufacturer = product.Manufacturer;
-        productToUpdate.Count = product.Count;
+        productEntity.Name = productUpdateModel.Name;
+        productEntity.Price = productUpdateModel.Price;
+        productEntity.Manufacturer = productUpdateModel.Manufacturer;
+        productEntity.Count = productUpdateModel.Count;
 
-        await _bookShopDbContext.SaveChangesAsync();
-        _logger.LogInformation($"Product with Id {product.Id} updated successfully.");
+        await _productRepository.UpdateAsync(productEntity);
+        _logger.LogInformation($"Product with Id {productUpdateModel.Id} updated successfully.");
 
-        return _mapper.Map<ProductModel?>(productToUpdate);
+        return _mapper.Map<ProductModel?>(productEntity);
     }
 
     public async Task RemoveAsync(long productId)
     {
-        await _bookShopDbContext.Products
-            .Where(p => p.Id == productId)
-            .ExecuteDeleteAsync();
-
+        await _productRepository.DeleteAsync(productId);
         _logger.LogInformation($"Product with Id {productId} removed successfully.");
     }
 }

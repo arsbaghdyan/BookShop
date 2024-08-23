@@ -2226,6 +2226,7 @@
           "AutoMapper": "13.0.1",
           "BookShop.Common": "1.0.0",
           "BookShop.Data": "1.0.0",
+          "BookShop.Repositories": "1.0.0",
           "Microsoft.AspNetCore.Http.Abstractions": "2.1.1",
           "Microsoft.Extensions.Caching.StackExchangeRedis": "8.0.6",
           "Moq": "4.20.70",

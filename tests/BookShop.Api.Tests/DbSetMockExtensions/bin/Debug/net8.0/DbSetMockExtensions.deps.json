@@ -1124,6 +1124,7 @@
           "AutoMapper": "13.0.1",
           "BookShop.Common": "1.0.0",
           "BookShop.Data": "1.0.0",
+          "BookShop.Repositories": "1.0.0",
           "BookShop.Services": "1.0.0",
           "Microsoft.AspNetCore.Authentication.JwtBearer": "8.0.6",
           "Microsoft.AspNetCore.Http.Abstractions": "2.1.1",
@@ -1133,7 +1134,10 @@
           "Swashbuckle.AspNetCore": "6.6.2"
         },
         "runtime": {
-          "BookShop.Api.dll": {}
+          "BookShop.Api.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       },
       "BookShop.Common/1.0.0": {
@@ -1144,7 +1148,10 @@
           "StackExchange.Redis": "2.7.33"
         },
         "runtime": {
-          "BookShop.Common.dll": {}
+          "BookShop.Common.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       },
       "BookShop.Data/1.0.0": {
@@ -1157,7 +1164,21 @@
           "StackExchange.Redis": "2.7.33"
         },
         "runtime": {
-          "BookShop.Data.dll": {}
+          "BookShop.Data.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "BookShop.Repositories/1.0.0": {
+        "dependencies": {
+          "BookShop.Data": "1.0.0"
+        },
+        "runtime": {
+          "BookShop.Repositories.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       },
       "BookShop.Services/1.0.0": {
@@ -1165,6 +1186,7 @@
           "AutoMapper": "13.0.1",
           "BookShop.Common": "1.0.0",
           "BookShop.Data": "1.0.0",
+          "BookShop.Repositories": "1.0.0",
           "Microsoft.AspNetCore.Http.Abstractions": "2.1.1",
           "Microsoft.Extensions.Caching.StackExchangeRedis": "8.0.6",
           "Moq": "4.20.70",
@@ -1174,7 +1196,10 @@
           "System.IdentityModel.Tokens.Jwt": "7.6.0"
         },
         "runtime": {
-          "BookShop.Services.dll": {}
+          "BookShop.Services.dll": {
+            "assemblyVersion": "1.0.0",
+            "fileVersion": "1.0.0.0"
+          }
         }
       }
     }
@@ -2064,6 +2089,11 @@
       "sha512": ""
     },
     "BookShop.Data/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "BookShop.Repositories/1.0.0": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

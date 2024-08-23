@@ -1,0 +1,7 @@
+D:\Arsen\NewC#Learning\BookShop\tests\BookShop.Api.Tests\bin\Debug\net8.0\CoverletSourceRootsMapping_BookShop.Api.Tests
+D:\Arsen\NewC#Learning\BookShop\tests\BookShop.Api.Tests\obj\Debug\net8.0\BookShop.Api.Tests.csproj.AssemblyReference.cache
+D:\Arsen\NewC#Learning\BookShop\tests\BookShop.Api.Tests\obj\Debug\net8.0\BookShop.Api.Tests.GeneratedMSBuildEditorConfig.editorconfig
+D:\Arsen\NewC#Learning\BookShop\tests\BookShop.Api.Tests\obj\Debug\net8.0\BookShop.Api.Tests.AssemblyInfoInputs.cache
+D:\Arsen\NewC#Learning\BookShop\tests\BookShop.Api.Tests\obj\Debug\net8.0\BookShop.Api.Tests.AssemblyInfo.cs
+D:\Arsen\NewC#Learning\BookShop\tests\BookShop.Api.Tests\obj\Debug\net8.0\BookShop.Api.Tests.csproj.CoreCompileInputs.cache
+D:\Arsen\NewC#Learning\BookShop\tests\BookShop.Api.Tests\obj\Debug\net8.0\BookShop.Api.Tests.sourcelink.json

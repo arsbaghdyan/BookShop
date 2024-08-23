@@ -1,18 +1,13 @@
 ﻿using BookShop.Data;
 using BookShop.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BookShop.Repositories.Impl
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        private readonly BookShopDbContext _context;
-        private readonly DbSet<T> _dbSet;
+        protected readonly BookShopDbContext _context;
+        protected readonly DbSet<T> _dbSet;
 
         public Repository(BookShopDbContext context)
         {
@@ -20,7 +15,7 @@ namespace BookShop.Repositories.Impl
             _dbSet = _context.Set<T>();
         }
 
-        public async Task<T> GetByIdAsync(int id)
+        public async Task<T> GetByIdAsync(long id)
         {
             return await _dbSet.FindAsync(id);
         }
@@ -43,7 +38,7 @@ namespace BookShop.Repositories.Impl
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(long id)
         {
             var entity = await _dbSet.FindAsync(id);
             _dbSet.Remove(entity);

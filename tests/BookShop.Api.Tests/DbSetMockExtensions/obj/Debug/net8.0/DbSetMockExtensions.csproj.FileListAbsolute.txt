@@ -25,3 +25,5 @@ D:\Arsen\NewC#Learning\BookShop\tests\BookShop.Api.Tests\DbSetMockExtensions\obj
 D:\Arsen\NewC#Learning\BookShop\tests\BookShop.Api.Tests\DbSetMockExtensions\obj\Debug\net8.0\refint\DbSetMockExtensions.dll
 D:\Arsen\NewC#Learning\BookShop\tests\BookShop.Api.Tests\DbSetMockExtensions\obj\Debug\net8.0\DbSetMockExtensions.pdb
 D:\Arsen\NewC#Learning\BookShop\tests\BookShop.Api.Tests\DbSetMockExtensions\obj\Debug\net8.0\ref\DbSetMockExtensions.dll
+D:\Arsen\NewC#Learning\BookShop\tests\BookShop.Api.Tests\DbSetMockExtensions\bin\Debug\net8.0\BookShop.Repositories.dll
+D:\Arsen\NewC#Learning\BookShop\tests\BookShop.Api.Tests\DbSetMockExtensions\bin\Debug\net8.0\BookShop.Repositories.pdb
