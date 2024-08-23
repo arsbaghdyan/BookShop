@@ -1,6 +1,6 @@
 ﻿namespace BookShop.Services.Repos.Inetrfaces
 {
-    internal interface IPaymentMethodRepository
+    public interface IPaymentMethodRepository
     {
     }
 }

@@ -1,6 +1,8 @@
-﻿namespace BookShop.Services.Repos.Impl
+﻿using BookShop.Services.Repos.Inetrfaces;
+
+namespace BookShop.Services.Repos.Impl
 {
-    internal class OrderRepository
+    public class OrderRepository : IOrderRepository
     {
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace BookShop.Services.Repos.Inetrfaces
 {
-    internal interface IWishListRepository
+    public interface IWishListRepository
     {
     }
 }

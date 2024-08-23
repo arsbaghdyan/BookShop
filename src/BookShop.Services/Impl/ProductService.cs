@@ -5,7 +5,6 @@ using BookShop.Services.Exceptions;
 using BookShop.Services.Helper;
 using BookShop.Services.Models.PageModels;
 using BookShop.Services.Models.ProductModels;
-using BookShop.Services.Repos.Impl;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using StackExchange.Redis;

@@ -1,6 +1,8 @@
-﻿namespace BookShop.Services.Repos.Impl
+﻿using BookShop.Services.Repos.Inetrfaces;
+
+namespace BookShop.Services.Repos.Impl
 {
-    internal class PaymentRepository
+    public class PaymentRepository : IPaymentRepository
     {
     }
 }

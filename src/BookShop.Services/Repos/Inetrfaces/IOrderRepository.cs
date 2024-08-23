@@ -1,6 +1,6 @@
 ﻿namespace BookShop.Services.Repos.Inetrfaces
 {
-    internal interface IOrderRepository
+    public interface IOrderRepository
     {
     }
 }

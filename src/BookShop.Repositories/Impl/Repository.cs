@@ -20,9 +20,9 @@ namespace BookShop.Repositories.Impl
             return await _dbSet.FindAsync(id);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IQueryable<T>> GetAllAsync()
         {
-            return await _dbSet.ToListAsync();
+            return (IQueryable<T>)await _dbSet.ToListAsync();
         }
 
         public async Task AddAsync(T entity)

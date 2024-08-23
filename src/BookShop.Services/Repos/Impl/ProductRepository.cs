@@ -3,11 +3,11 @@ using BookShop.Data.Entities;
 using BookShop.Repositories.Impl;
 using BookShop.Services.Helper;
 using BookShop.Services.Models.PageModels;
-using BookShop.Services.Repos.Impl;
+using BookShop.Services.Repos.Inetrfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace BookShop.Services.Repos.Inetrfaces
+namespace BookShop.Services.Repos.Impl
 {
     public class ProductRepository : Repository<ProductEntity>, IProductRepository
     {
