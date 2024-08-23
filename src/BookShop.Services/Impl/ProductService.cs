@@ -14,7 +14,7 @@ using System.Linq.Expressions;
 
 namespace BookShop.Services.Impl;
 
-internal class ProductService : IProductService
+public class ProductService : IProductService
 {
     private readonly BookShopDbContext _bookShopDbContext;
     private readonly ILogger<ProductService> _logger;
